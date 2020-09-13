@@ -7,7 +7,7 @@ Full Stack web application displaying congressional voting data for different vo
 * ```git clone https://github.com/vsharmanyc/416_Project.git```
 * ```cd 416_Project```
 * ```npm install```
-* ```npm run```
+* ```npm start```
 
 ___
 
