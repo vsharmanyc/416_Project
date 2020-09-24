@@ -7,7 +7,9 @@ function App() {
   return (
     <div className="App">
       <div>
-        <Navbar></Navbar>
+        <Navbar
+          sections={['Reports','Graphs', 'Sources']}
+        ></Navbar>
         <HomeScreen></HomeScreen>
       </div>
     </div>

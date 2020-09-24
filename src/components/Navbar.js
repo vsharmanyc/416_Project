@@ -23,7 +23,10 @@ class Navbar extends Component {
     }
 
     render() {
-        console.log(this.state);
+        let sections = [];
+        if (this.props.sections != null && Array.isArray(this.props.sections))
+            sections = this.props.sections;
+
         return (
             <div style={{
                 display: 'flex',
@@ -32,7 +35,7 @@ class Navbar extends Component {
                 width: this.state.width,
                 height: this.state.height * 0.10,
             }}>
-                <div style={{position: 'absolute', zIndex: 99 }}>
+                <div style={{ position: 'absolute', zIndex: 99 }}>
                     <img style={{
                         marginTop: '3%',
                         height: this.state.height * .12,
@@ -46,13 +49,15 @@ class Navbar extends Component {
                     backgroundColor: '#63BEB6',
                 }}>
                     <div style={{
-                        width: '15%',
+                        position: 'absolute',
+                        right: 0,
+                        width: (7.5 * sections.length) + '%',
                         display: 'flex',
-                        marginLeft: '85%',
                         justifyContent: 'space-around'
                     }}>
-                        <h3>Graphs</h3>
-                        <h3>Sources</h3>
+                        {sections.map((section, index) => {
+                            return (<h3>{section}</h3>);
+                        })}
                     </div>
                 </div>
             </div>
