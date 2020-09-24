@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Map from './Map.js'
+import Sidebar from './Sidebar.js'
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -29,6 +30,20 @@ class HomeScreen extends Component {
         console.log(this.state);
         return (
             <div>
+                <Sidebar
+                    height={this.state.height * .75}
+                    width={this.state.width * .20}
+                    side='left' 
+                >
+                </Sidebar>
+
+                <Sidebar
+                    height={this.state.height * .75}
+                    width={this.state.width * .20}
+                    side='right' 
+                >
+                </Sidebar>
+
                 <Map
                     width={this.state.width}
                     height={this.state.height * .875}
