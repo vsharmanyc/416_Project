@@ -1,30 +1,37 @@
 import React, { Component } from 'react';
-import { Map, GoogleApiWrapper } from 'google-maps-react';
+import ReactMapGL from 'react-map-gl';
 
-const mapStyles = {
+class Map extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            width: props.width,
+            height: props.height,
+            latitude: props.latitude,
+            longitude: props.longitude,
+            zoom: props.zoom,
+        };
+    }
 
-    width: '100%',
-    height: '100%'
-};
+    onViewportChange = (viewport) => {
+        this.setState({
+            longitude: viewport.longitude,
+            latitude: viewport.latitude,
+            zoom: viewport.zoom
+        });
+    }
 
-export class MapContainer extends Component {
     render() {
         return (
-            <Map
-                google={this.props.google}
-                zoom={5}
-                style={mapStyles}
-                initialCenter={
-                    {
-                        lat: 38.9618303,
-                        lng: -96.6980505
-                    }
-                }
-            />
+            <div>
+                <ReactMapGL
+                    mapboxApiAccessToken='pk.eyJ1IjoidmFzZWdvZCIsImEiOiJja2ZiZXNnOHQxMXI1MnRvOG1yY25icHZrIn0.8eLTRoe92V02KENueM7PqQ'
+                    {...this.state}
+                    onViewportChange={this.onViewportChange}
+                />
+            </div>
         );
     }
 }
 
-export default GoogleApiWrapper({
-    apiKey: 'AIzaSyCphiTQeeYRd23P6L8DTK9ie8Qcy2tSya4'
-})(MapContainer);
+export default Map;

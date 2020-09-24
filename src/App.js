@@ -1,14 +1,14 @@
 import React from 'react';
-import Map from './components/Map.js'
+import HomeScreen from './components/HomeScreen.js'
+import Navbar from './components/Navbar.js'
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <div style={{
-        display: 'flex'
-      }}>
-        <Map></Map>
+      <div>
+        <Navbar></Navbar>
+        <HomeScreen></HomeScreen>
       </div>
     </div>
   );
