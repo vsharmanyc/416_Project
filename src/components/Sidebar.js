@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { renderIntoDocument } from 'react-dom/test-utils';
 
 class Sidebar extends Component {
     constructor(props) {
@@ -44,6 +43,7 @@ class Sidebar extends Component {
                         borderStyle: 'solid',
                         borderWidth: 3
                     }}>
+                        {this.props.children != null ? this.props.children : <div></div>}
                     </div>
                     :
                     <div></div>

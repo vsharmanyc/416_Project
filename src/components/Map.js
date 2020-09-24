@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactMapGL from 'react-map-gl';
-import Tab from './Tab.js'
+import Tab from './Tabs.js'
 
 class Map extends Component {
     constructor(props) {
