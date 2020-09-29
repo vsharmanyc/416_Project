@@ -5,6 +5,7 @@ import Tabs from './Tabs.js'
 import FilterTab from './FilterTab'
 import ModifyTab from './ModifyTab'
 import GraphTab from './GraphTab'
+import SettingsTab from './SettingsTab'
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -30,25 +31,9 @@ class HomeScreen extends Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight }, this.forceUpdate);
     }
 
-    updateFilterCriteria = (filter, subFilter, filterValue) => {
-        let filterCriteria = this.state.filterCriteria;
-        filterCriteria[filter][subFilter] = filterValue;
-        this.setState({ filterCriteria: filterCriteria });
-    }
-
-    resetFilterCriteria = () => {
-        this.setState({
-            filterCriteria: {
-                state: { use: true, value: '' },
-                population: { use: false },
-                party: { use: false, value: '' },
-                race: { use: false, value: '' },
-            }
-        })
-    }
-
     render() {
         const checkboxStyle = { color: "#63BEB6" }
+        console.log(this.state.mapColor);
         return (
             <div>
                 <Sidebar
@@ -69,7 +54,7 @@ class HomeScreen extends Component {
                 >
                     <Tabs tabsNames={['Graph', 'Settings']}>
                         <GraphTab></GraphTab>
-                        <div>hi</div>
+                        <SettingsTab></SettingsTab>
                     </Tabs>
                 </Sidebar>
 
@@ -79,6 +64,8 @@ class HomeScreen extends Component {
                     longitude={this.state.longitude}
                     latitude={this.state.latitude}
                     zoom={this.state.zoom}
+                    mapColor={this.state.mapColor}
+                    triggerRepaint={true}
                 >
                 </Map>
             </div>

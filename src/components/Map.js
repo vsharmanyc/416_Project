@@ -7,6 +7,7 @@ class Map extends Component {
         this.state = {
             width: props.width,
             height: props.height,
+            mapColor: props.mapColor,
             latitude: props.latitude,
             longitude: props.longitude,
             zoom: props.zoom,
@@ -17,15 +18,15 @@ class Map extends Component {
                 roads: true,
                 labels: true,
                 background: true
-              },
-              color: {
+            },
+            color: {
                 water: 'blue',
                 parks: '#E6EAE9',
                 buildings: '#c0c0c8',
                 roads: '#ffffff',
                 labels: '#78888a',
                 background: '#EBF0F0'
-              }
+            }
         };
     }
 
