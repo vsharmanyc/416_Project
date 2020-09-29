@@ -129,8 +129,8 @@ class BatchesTab extends Component {
                 <Button onClick={this.addBatch}><AddCircleIcon fontSize='large' style={{ color: "#63BEB6" }} /></Button>
                 <div style={{ display: 'flex', width:'75%', height: '10%', flexDirection: 'row', marginTop: '5%' }}>
                     <Button variant="contained" 
-                        onClick={this.clearBatches} >
-                        Clear Batches
+                         >
+                        Generate Selected Batches
                     </Button>
                     <Button variant="contained" style={{ backgroundColor: '#63BEB6' }}>
                         Generate Summary
