@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import { Button, InputLabel, Select, MenuItem, FormControl, FormControlLabel, Checkbox, Typography } from '@material-ui/core/';
+import {
+    Button, InputLabel, Select, MenuItem, FormControl,
+    FormGroup, FormLabel, FormControlLabel, Checkbox, Typography
+} from '@material-ui/core/';
+import Graph from './Graph';
 
 class GraphTab extends Component {
     constructor(props) {
@@ -7,8 +11,10 @@ class GraphTab extends Component {
         this.state = {
             width: window.innerWidth,
             height: window.innerHeight,
-            filterCriteria: {
-                state: { use: true, value: '' },
+            showGraphModal: false,
+            graphCriteria: {
+                year: { use: true, value: [] },
+                state: { use: true, value: [] },
                 population: { use: false },
                 party: { use: false, value: '' },
                 race: { use: false, value: '' },
@@ -28,16 +34,17 @@ class GraphTab extends Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight }, this.forceUpdate);
     }
 
-    updateFilterCriteria = (filter, subFilter, filterValue) => {
-        let filterCriteria = this.state.filterCriteria;
-        filterCriteria[filter][subFilter] = filterValue;
-        this.setState({ filterCriteria: filterCriteria });
+    updateGraphCriteria = (graph, subGraph, graphValue) => {
+        let graphCriteria = this.state.graphCriteria;
+        graphCriteria[graph][subGraph] = graphValue;
+        this.setState({ graphCriteria: graphCriteria });
     }
 
-    resetFilterCriteria = () => {
+    resetGraphCriteria = () => {
         this.setState({
-            filterCriteria: {
-                state: { use: true, value: '' },
+            graphCriteria: {
+                year: { use: true, value: [] },
+                state: { use: true, value: [] },
                 population: { use: false },
                 party: { use: false, value: '' },
                 race: { use: false, value: '' },
@@ -47,96 +54,108 @@ class GraphTab extends Component {
 
     render() {
         const checkboxStyle = { color: "#63BEB6" }
-        const unsetFilters = {
-            state: { use: true, value: '' },
+        const unsetGraphs = {
+            year: { use: true, value: [] },
+            state: { use: true, value: [] },
             population: { use: false },
             party: { use: false, value: '' },
             race: { use: false, value: '' },
         };
 
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <div>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
-                <div style={{ display: 'flex', flexDirection: 'column', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', marginTop: '5%', padding: '2%' }}>
-                    <Typography variant="subtitle1" component="h2">Pick A State:</Typography>
-                    <FormControl margin='dense' style={{ display: 'flex', flexDirection: 'row', minWidth: this.state.width * .02, maxWidth: this.state.width * .02 }}>
-                        <FormControl style={{ marginLeft: '50%', minWidth: this.state.width * .15, maxWidth: this.state.width * .15 }}>
-                            <InputLabel id="demo-simple-select-label">State</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={this.state.filterCriteria.state.value}
-                                onChange={(e) => { this.updateFilterCriteria('state', 'value', e.target.value) }}
-                            >
-                                <MenuItem value='New York'>New York</MenuItem>
-                                <MenuItem value='Pennsylvania'>Pennsylvania</MenuItem>
-                                <MenuItem value='Maryland'>Maryland</MenuItem>
-                            </Select>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', marginTop: '5%', padding: '2%' }}>
+                        <Typography variant="subtitle1" component="h2">Pick A Voting Year:</Typography>
+                        <FormControl margin='dense' style={{ display: 'flex', flexDirection: 'row', minWidth: this.state.width * .02, maxWidth: this.state.width * .02 }}>
+                            <FormControl style={{ marginLeft: '50%', minWidth: this.state.width * .15, maxWidth: this.state.width * .15 }}>
+                                <InputLabel id="demo-simple-select-label">Voting Year</InputLabel>
+                                <Select
+                                    multiple
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={this.state.graphCriteria.year.value}
+                                    onChange={(e) => { this.updateGraphCriteria('year', 'value', e.target.value) }}
+                                >
+                                    <MenuItem value='2016'>2016</MenuItem>
+                                    <MenuItem value='2012'>2012</MenuItem>
+                                    <MenuItem value='2010'>2010</MenuItem>
+                                </Select>
+                            </FormControl>
                         </FormControl>
-                    </FormControl>
-                </div>
+                    </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', marginTop: '5%', padding: '2%' }}>
-                    <Typography variant="subtitle1" component="h2">Pick One:</Typography>
-                    <FormControl margin='dense' style={{ display: 'flex', flexDirection: 'row', minWidth: this.state.width * .02, maxWidth: this.state.width * .02 }}>
-                        <Checkbox checked={this.state.filterCriteria.party.use}
-                            style={checkboxStyle}
-                            onChange={() => { this.updateFilterCriteria('party', 'use', !this.state.filterCriteria.party.use) }} />
-                        <FormControl style={{ minWidth: this.state.width * .15, maxWidth: this.state.width * .15 }}>
-                            <InputLabel id="demo-simple-select-label">Political Party</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={this.state.filterCriteria.party.value}
-                                onChange={(e) => { this.updateFilterCriteria('party', 'value', e.target.value) }}
-                            >
-                                <MenuItem value='Democrat'>Democrat</MenuItem>
-                                <MenuItem value='Republican'>Republican</MenuItem>
-                                <MenuItem value='Libertarian'>Libertarian</MenuItem>
-                                <MenuItem value='Green Party'>Green Party</MenuItem>
-                                <MenuItem value='Unaffiliated'>Unaffiliated</MenuItem>
-                            </Select>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', marginTop: '5%', padding: '2%' }}>
+                        <Typography variant="subtitle1" component="h2">Pick States:</Typography>
+                        <FormControl margin='dense' style={{ display: 'flex', flexDirection: 'row', minWidth: this.state.width * .02, maxWidth: this.state.width * .02 }}>
+                            <FormControl style={{ marginLeft: '50%', minWidth: this.state.width * .15, maxWidth: this.state.width * .15 }}>
+                                <InputLabel id="demo-simple-select-label">States</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    multiple
+                                    id="demo-simple-select"
+                                    value={this.state.graphCriteria.state.value}
+                                    onChange={(e) => { console.log(e.target.value); this.updateGraphCriteria('state', 'value', e.target.value) }}
+                                >
+                                    <MenuItem value='New York'>New York</MenuItem>
+                                    <MenuItem value='Pennsylvania'>Pennsylvania</MenuItem>
+                                    <MenuItem value='Maryland'>Maryland</MenuItem>
+                                </Select>
+                            </FormControl>
                         </FormControl>
-                    </FormControl>
+                    </div>
 
-                    <FormControl margin='dense' style={{ display: 'flex', flexDirection: 'row', minWidth: this.state.width * .02, maxWidth: this.state.width * .02 }}>
-                        <Checkbox checked={this.state.filterCriteria.race.use}
-                            style={checkboxStyle}
-                            onChange={() => { this.updateFilterCriteria('race', 'use', !this.state.filterCriteria.race.use) }} />
-                        <FormControl style={{ minWidth: this.state.width * .15, maxWidth: this.state.width * .15 }}>
-                            <InputLabel id="demo-simple-select-label">Race</InputLabel>
-                            <Select
-                                overflow='auto'
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={this.state.filterCriteria.race.value}
-                                onChange={(e) => { this.updateFilterCriteria('race', 'value', e.target.value) }}
-                            >
-                                <MenuItem value='Black'>Black</MenuItem>
-                                <MenuItem value='White'>White</MenuItem>
-                                <MenuItem value='Native American and Alaska Native'>Native American and Alaska Native</MenuItem>
-                                <MenuItem value='Native Hawaiian and Pacific Islander'>Native Hawaiian and Pacific Islander</MenuItem>
-                                <MenuItem value='Asian'>Asian</MenuItem>
-                                <MenuItem value='Hispanic'>Hispanic</MenuItem>
-                            </Select>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', marginTop: '5%', padding: '2%' }}>
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Select Data Points</FormLabel>
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={<Checkbox style={checkboxStyle} 
+                                    onChange={() => { this.updateGraphCriteria('party', 'use', !this.state.graphCriteria.party.use) }}/>}
+                                    label="Political Parties"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox style={checkboxStyle} 
+                                    onChange={() => { this.updateGraphCriteria('race', 'use', !this.state.graphCriteria.race.use) }}/>}
+                                    label="Race"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox style={checkboxStyle} 
+                                    onChange={() => { this.updateGraphCriteria('population', 'use', !this.state.graphCriteria.population.use) }}/>}
+                                    label="Population"
+                                />
+                            </FormGroup>
                         </FormControl>
-                    </FormControl>
-
-                    <FormControl margin='dense' style={{ display: 'flex', flexDirection: 'row', }}>
-                        <Checkbox checked={this.state.filterCriteria.population.use} style={checkboxStyle}
-                            onChange={() => { this.updateFilterCriteria('population', 'use', !this.state.filterCriteria.population.use) }} />
-                        <Typography variant="subtitle1" component="h2" style={{ paddingTop: '2.5%' }}>Population</Typography>
-                    </FormControl>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', marginTop: '5%' }}>
-                    <Button variant="contained" disabled={JSON.stringify(this.state.filterCriteria) == JSON.stringify(unsetFilters)} 
-                        onClick={this.resetFilterCriteria} >
-                        Reset Filter
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'row', marginTop: '5%' }}>
+                        <Button variant="contained" disabled={JSON.stringify(this.state.graphCriteria) == JSON.stringify(unsetGraphs)}
+                            onClick={this.resetGraphCriteria} >
+                            Reset Fields
                     </Button>
-                    <Button variant="contained" style={{ backgroundColor: '#63BEB6' }}>
-                        Run Filter
+                        <Button variant="contained" style={{ backgroundColor: '#63BEB6' }} onClick={() => { this.setState({ showGraphModal: true }) }}>
+                            Make Graph
                     </Button>
+                    </div>
                 </div>
+
+                {this.state.showGraphModal ?
+                    <div 
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        position: 'fixed',
+                        left: '30%',
+                        top: '25%',
+                        zIndex: 100,
+                        backgroundColor: 'white'
+                    }}>
+                        <Graph graphCriteria={this.state.graphCriteria}></Graph>
+                    </div>
+                    : <></>
+                }
+
             </div>
         );
     }

@@ -86,8 +86,8 @@ class ModifyTab extends Component {
                 <Typography variant="caption">{this.state.selectedDistrict}</Typography>
                 {this.state.mods.map((data, index) => {
                     return (
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
-                            <DeleteIcon onClick={() => { this.deleteMod(index) }} />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>        
+                            <DeleteIcon onClick={() => { this.deleteMod(index) }}/>
                             <div style={{ display: 'flex', flexDirection: 'row', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', padding: '2%' }}>
                                 <FormControl style={{ minWidth: this.state.width * .1, maxWidth: this.state.width * .1 }}>
                                     <InputLabel id="demo-simple-select-label">Field</InputLabel>
