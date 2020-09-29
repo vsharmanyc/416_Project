@@ -6,7 +6,7 @@ import FilterTab from './FilterTab'
 import ModifyTab from './ModifyTab'
 import GraphTab from './GraphTab'
 import SettingsTab from './SettingsTab'
-import PlansTab from './PlansTab'
+import BatchesTab from './BatchesTab'
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -42,9 +42,10 @@ class HomeScreen extends Component {
                     width={this.state.width * .20}
                     side='left'
                 >
-                    <Tabs tabsNames={['Filter', 'Modify']}>
+                    <Tabs tabsNames={['Filter', 'Modify', 'Batches']}>
                         <FilterTab></FilterTab>
                         <ModifyTab></ModifyTab>
+                        <BatchesTab></BatchesTab>
                     </Tabs>
                 </Sidebar>
 
