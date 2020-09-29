@@ -4,6 +4,7 @@ import Sidebar from './Sidebar.js'
 import Tabs from './Tabs.js'
 import FilterTab from './FilterTab'
 import ModifyTab from './ModifyTab'
+import GraphTab from './GraphTab'
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -14,13 +15,6 @@ class HomeScreen extends Component {
             latitude: 38.9618303,
             longitude: -96.6980505,
             zoom: 3.5,
-            demOp: '=',
-            filterCriteria: {
-                state: { use: true, value: '' },
-                population: { use: false },
-                party: { use: false, value: '' },
-                race: { use: false, value: '' },
-            }
         };
     }
 
@@ -73,13 +67,10 @@ class HomeScreen extends Component {
                     width={this.state.width * .20}
                     side='right'
                 >
-                    <Tabs
-                        tabsNames={['Genenrate', 'Settings']}
-                        tabsInnerJSX={[
-                            <div>Map Generation Criteria Fields</div>,
-                            <div>Adjust App Settings</div>,
-                        ]}
-                    />
+                    <Tabs tabsNames={['Graph', 'Settings']}>
+                        <GraphTab></GraphTab>
+                        <div>hi</div>
+                    </Tabs>
                 </Sidebar>
 
                 <Map

@@ -9,7 +9,23 @@ class ModifyTab extends Component {
         this.state = {
             width: window.innerWidth,
             height: window.innerHeight,
-            mods: []
+            showUnfilledError: false,
+            showDuplicateError: false,
+            selectedDistrict: 'Selected District: Maryland - 5th District',
+            districtData: {
+                'Democrat': 250000,
+                'Republican': 307550,
+                'Libertarian': 2000,
+                'Green Party': 100,
+                'Unaffiliated': 1000,
+                'Black': 100000,
+                'White': 300000,
+                'Native American and Alaska Native': 400,
+                'Native Hawaiian and Pacific Islander': 250,
+                'Asian': 90000,
+                'Hispanic': 70000,
+            },
+            mods: [{ field: '', population: null }]
         };
     }
 
@@ -32,28 +48,46 @@ class ModifyTab extends Component {
     }
 
     clearMods = () => {
-        this.setState({mods: []})
+        this.setState({ mods: [] })
     }
 
-    addMod = () =>{
+    addMod = () => {
         let mods = this.state.mods;
-        mods.push({field: '', population: 0})
-        this.setState({mods: mods});
+        mods.push({ field: '', population: null })
+        this.setState({ mods: mods });
     }
 
     deleteMod = (modIndex) => {
         let mods = this.state.mods;
         mods.splice(modIndex, 1);
-        this.setState({mods: mods});
+        this.setState({ mods: mods });
+    }
+
+    validateAndRun = () => {
+        let mods = this.state.mods;
+        let hasUnfilled = false;
+        let hasDuplicates = false;
+        let seenFields = [];
+        for (let i = 0; i < mods.length; i++){
+            if (mods[i].field === '')
+                hasUnfilled = true;
+            if (seenFields[mods[i].field])
+                hasDuplicates = true;
+            else
+                seenFields[mods[i].field] = true;
+        }
+        this.setState({ showUnfilledError: hasUnfilled, showDuplicateError: hasDuplicates })
     }
 
     render() {
+        console.log(this.state);
         return (
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
+                <Typography variant="caption">{this.state.selectedDistrict}</Typography>
                 {this.state.mods.map((data, index) => {
                     return (
-                        <div  style={{ display: 'flex', flexDirection: 'row', justifyContent:'center', alignItems:'center', marginTop: '5%' }}>
-                            <DeleteIcon onClick={() => { this.deleteMod(index) }}/>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
+                            <DeleteIcon onClick={() => { this.deleteMod(index) }} />
                             <div style={{ display: 'flex', flexDirection: 'row', width: '90%', backgroundColor: '#ededed', borderRadius: '5%', padding: '2%' }}>
                                 <FormControl style={{ minWidth: this.state.width * .1, maxWidth: this.state.width * .1 }}>
                                     <InputLabel id="demo-simple-select-label">Field</InputLabel>
@@ -78,11 +112,11 @@ class ModifyTab extends Component {
                                 </FormControl>
                                 <FormControl>
                                     <TextField
-                                        value={data.population}
+                                        value={data.population === null ? this.state.districtData[data.field] : data.population}
                                         onChange={(e) => { this.updateMod(index, 'population', e.target.value) }}
                                         label="Population"
                                         type="number"
-                                        InputLabelProps={{shrink: true}}
+                                        InputLabelProps={{ shrink: true }}
                                         InputProps={{ inputProps: { min: 0 } }}
                                     />
                                 </FormControl>
@@ -90,15 +124,20 @@ class ModifyTab extends Component {
                         </div>
                     );
                 })}
-                <AddCircleIcon fontSize='large' style={{ color: "#63BEB6" }} onClick={this.addMod}/>
+                <Button onClick={this.addMod}><AddCircleIcon fontSize='large' style={{ color: "#63BEB6" }} /></Button>
                 <div style={{ display: 'flex', flexDirection: 'row', marginTop: '5%' }}>
-                    <Button variant="contained" disabled={this.state.mods.length === 0}onClick={this.clearMods} >
+                    <Button variant="contained" disabled={this.state.mods.length === 0} onClick={this.clearMods} >
                         Clear Mods
                     </Button>
-                    <Button variant="contained" style={{ backgroundColor: '#63BEB6' }}>
-                        Make Mods
+                    <Button variant="contained" disabled={this.state.mods.length === 0} style={{ backgroundColor: '#63BEB6' }}
+                        onClick={this.validateAndRun}>
+                        Apply Mods
                     </Button>
                 </div>
+                {this.state.showUnfilledError && this.state.mods.length != 0 ?
+                    <Typography variant="caption" style={{ color: 'red' }}>Must fill all fields first</Typography> : <></>}
+                {this.state.showDuplicateError && this.state.mods.length != 0 ?
+                    <Typography variant="caption" style={{ color: 'red' }}>Can't have duplicate fields</Typography> : <></>}
             </div>
         );
     }

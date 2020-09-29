@@ -1,4 +1,3 @@
-import { findByLabelText } from '@testing-library/react';
 import React, { Component } from 'react';
 
 class Tabs extends Component {
