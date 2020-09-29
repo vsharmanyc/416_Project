@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button, Typography } from '@material-ui/core/';
 
 class Graph extends Component {
     constructor(props) {
@@ -23,14 +24,67 @@ class Graph extends Component {
     }
 
     render() {
-        const checkboxStyle = { color: "#63BEB6" }
+        let dataPoints = [];
+        if (this.state.graphCriteria.party.use)
+            dataPoints.push('Political Parties');
+        if (this.state.graphCriteria.race.use)
+            dataPoints.push('Race');
+        if (this.state.graphCriteria.population.use)
+            dataPoints.push('Population');
+
         return (
-            <div style={{ width: '100%', height: '100%', display:'flex', flexDirection: 'column', backgroundColor: 'white' }}>
-                <img 
-                    style={{height: '80%', width: '90%'}}
+            <div>
+                <img
+                    style={{ height: '75%', width: '75%' }}
                     src='https://clipartstation.com/wp-content/uploads/2018/10/line-graph-clipart-1.jpg'
                 />
-                {this.getformattedGraphData()}
+                <div>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography variant='h6'>Years: </Typography>
+                        <div style={{ display: 'flex', flexDirection: 'row', marginLeft: '2%', alignItems: 'flex-end' }}>
+                            {this.state.graphCriteria.year.value.length !== 0 ?
+                                this.state.graphCriteria.year.value.map((year) => {
+                                    return (
+                                        <Typography style={{ whiteSpace: 'pre-wrap' }} variant='subtitle1'>{year + '   '}</Typography>
+                                    );
+                                })
+                                :
+                                <Typography variant='subtitle1'> None Selected</Typography>
+                            }
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography variant='h6'>States: </Typography>
+                        <div style={{ display: 'flex', flexDirection: 'row', marginLeft: '2%', alignItems: 'flex-end' }}>
+                            {this.state.graphCriteria.state.value.length !== 0 ?
+                                this.state.graphCriteria.state.value.map((state) => {
+                                    return (
+                                        <Typography style={{ whiteSpace: 'pre-wrap' }} variant='subtitle1'>{state + '   '}</Typography>
+                                    );
+                                })
+                                :
+                                <Typography variant='subtitle1'>None Selected</Typography>
+                            }
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography variant='h6'>Data Points: </Typography>
+                        <div style={{ display: 'flex', flexDirection: 'row', marginLeft: '2%', alignItems: 'flex-end' }}>
+                            {dataPoints.length !== 0 ?
+                                dataPoints.map((dataPoint) => {
+                                    return (
+                                        <Typography style={{ whiteSpace: 'pre-wrap' }} variant='subtitle1'>{dataPoint + '   '}</Typography>
+                                    );
+                                })
+                                :
+                                <Typography variant='subtitle1'>None Selected</Typography>
+                            }
+                        </div>
+                    </div>
+
+                </div>
             </div>
         );
     }

@@ -4,6 +4,7 @@ import {
     FormGroup, FormLabel, FormControlLabel, Checkbox, Typography
 } from '@material-ui/core/';
 import Graph from './Graph';
+import CloseIcon from '@material-ui/icons/Close';
 
 class GraphTab extends Component {
     constructor(props) {
@@ -48,7 +49,8 @@ class GraphTab extends Component {
                 population: { use: false },
                 party: { use: false, value: '' },
                 race: { use: false, value: '' },
-            }
+            },
+            showGraphModal: false
         })
     }
 
@@ -80,7 +82,7 @@ class GraphTab extends Component {
                                 >
                                     <MenuItem value='2016'>2016</MenuItem>
                                     <MenuItem value='2012'>2012</MenuItem>
-                                    <MenuItem value='2010'>2010</MenuItem>
+                                    <MenuItem value='2008'>2008</MenuItem>
                                 </Select>
                             </FormControl>
                         </FormControl>
@@ -111,18 +113,21 @@ class GraphTab extends Component {
                             <FormLabel component="legend">Select Data Points</FormLabel>
                             <FormGroup>
                                 <FormControlLabel
-                                    control={<Checkbox style={checkboxStyle} 
-                                    onChange={() => { this.updateGraphCriteria('party', 'use', !this.state.graphCriteria.party.use) }}/>}
+                                    control={<Checkbox style={checkboxStyle}
+                                        checked={this.state.graphCriteria.party.use}
+                                        onChange={() => { this.updateGraphCriteria('party', 'use', !this.state.graphCriteria.party.use) }} />}
                                     label="Political Parties"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox style={checkboxStyle} 
-                                    onChange={() => { this.updateGraphCriteria('race', 'use', !this.state.graphCriteria.race.use) }}/>}
+                                    control={<Checkbox style={checkboxStyle}
+                                        checked={this.state.graphCriteria.race.use}
+                                        onChange={() => { this.updateGraphCriteria('race', 'use', !this.state.graphCriteria.race.use) }} />}
                                     label="Race"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox style={checkboxStyle} 
-                                    onChange={() => { this.updateGraphCriteria('population', 'use', !this.state.graphCriteria.population.use) }}/>}
+                                    control={<Checkbox style={checkboxStyle}
+                                        checked={this.state.graphCriteria.population.use}
+                                        onChange={() => { this.updateGraphCriteria('population', 'use', !this.state.graphCriteria.population.use) }} />}
                                     label="Population"
                                 />
                             </FormGroup>
@@ -133,25 +138,36 @@ class GraphTab extends Component {
                             onClick={this.resetGraphCriteria} >
                             Reset Fields
                     </Button>
-                        <Button variant="contained" style={{ backgroundColor: '#63BEB6' }} onClick={() => { this.setState({ showGraphModal: true }) }}>
+                        <Button variant="contained"
+                            disabled={JSON.stringify(this.state.graphCriteria) == JSON.stringify(unsetGraphs)}
+                            style={{ backgroundColor: '#63BEB6' }} onClick={() => { this.setState({ showGraphModal: true }) }}>
                             Make Graph
                     </Button>
                     </div>
                 </div>
 
                 {this.state.showGraphModal ?
-                    <div 
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignContent: 'center',
+
+                    <div style={{
                         position: 'fixed',
-                        left: '30%',
+                        left: '25%',
                         top: '25%',
                         zIndex: 100,
-                        backgroundColor: 'white'
+                        backgroundColor: 'white',
+                        height: '48%',
+                        width: '48%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        padding: '1%',
+                        borderStyle: 'solid'
                     }}>
-                        <Graph graphCriteria={this.state.graphCriteria}></Graph>
+                        <div><Graph graphCriteria={this.state.graphCriteria}></Graph></div>
+                        <Button variant="contained"
+                            onClick={() => { this.setState({ showGraphModal: false }) }}
+                            style={{ position: 'absolute', backgroundColor: '#63BEB6', width: '5%', height: '10%', top: '2%', left: '2%' }}
+                        >
+                            <CloseIcon />
+                        </Button>
                     </div>
                     : <></>
                 }
