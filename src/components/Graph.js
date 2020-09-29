@@ -35,7 +35,7 @@ class Graph extends Component {
         return (
             <div>
                 <img
-                    style={{ height: '75%', width: '75%' }}
+                    style={{ height: '60%', width: '60%' }}
                     src='https://clipartstation.com/wp-content/uploads/2018/10/line-graph-clipart-1.jpg'
                 />
                 <div>
