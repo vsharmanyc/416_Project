@@ -12,6 +12,7 @@ class BatchesTab extends Component {
                 'Number of Plans': '',
                 'Compact Threshold': '',
                 'Population Equality Threshold': '',
+                'Compactness Measurement Method': '',
                 'use': false
             }]
         };
@@ -35,6 +36,7 @@ class BatchesTab extends Component {
             'Number of Plans': '',
             'Compact Threshold': '',
             'Population Equality Threshold': '',
+            'Compactness Measurement Method': '',
             'use': false
         })
         this.setState({ batches: batches });
@@ -111,6 +113,12 @@ class BatchesTab extends Component {
                                             type="number"
                                             InputLabelProps={{ shrink: true }}
                                             InputProps={{ inputProps: { min: 0 } }}
+                                        />
+                                        <TextField
+                                            value={batch['Compactness Measurement Method']}
+                                            onChange={(e) => { this.updateBatch(index, 'Compactness Measurement Method', e.target.value) }}
+                                            label="Compactness Measurement Method"
+                                            InputLabelProps={{ shrink: true }}
                                         />
                                     </FormControl>
                                 </div>
