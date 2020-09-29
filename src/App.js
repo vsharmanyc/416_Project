@@ -8,7 +8,7 @@ function App() {
     <div className="App">
       <div>
         <Navbar
-          sections={['Reports','Graphs', 'Sources']}
+          sections={[]}
         ></Navbar>
         <HomeScreen></HomeScreen>
       </div>

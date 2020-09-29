@@ -44,8 +44,7 @@ class Map extends Component {
                     mapboxApiAccessToken='pk.eyJ1IjoidmFzZWdvZCIsImEiOiJja2ZiZXNnOHQxMXI1MnRvOG1yY25icHZrIn0.8eLTRoe92V02KENueM7PqQ'
                     {...this.state}
                     onViewportChange={this.onViewportChange}
-                    visibility={this.state.visibility}
-                    color={this.state.color}
+                    mapStyle='mapbox://styles/vasegod/ckfocvfiu02jw19kjulasl3dq'
                 />
             </div>
         );
