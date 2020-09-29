@@ -1,3 +1,4 @@
+import { findByLabelText } from '@testing-library/react';
 import React, { Component } from 'react';
 
 class Tabs extends Component {
@@ -50,9 +51,10 @@ class Tabs extends Component {
                     height: '95.5%',
                     borderStyle: 'solid',
                     borderRadius: 5,
-                    backgroundColor: 'white'
+                    backgroundColor: 'white',
+                    overflow: 'auto'
                 }}>
-                    {this.state.tabsInnerJSX[this.state.currentTab]}
+                    {this.props.children != null ? this.props.children[this.state.currentTab] : <div></div>}
                 </div>
             </div>
         );

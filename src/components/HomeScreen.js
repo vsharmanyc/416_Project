@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Map from './Map.js'
 import Sidebar from './Sidebar.js'
 import Tabs from './Tabs.js'
+import FilterTab from './FilterTab'
+import ModifyTab from './ModifyTab'
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -11,7 +13,14 @@ class HomeScreen extends Component {
             height: window.innerHeight,
             latitude: 38.9618303,
             longitude: -96.6980505,
-            zoom: 3.5
+            zoom: 3.5,
+            demOp: '=',
+            filterCriteria: {
+                state: { use: true, value: '' },
+                population: { use: false },
+                party: { use: false, value: '' },
+                race: { use: false, value: '' },
+            }
         };
     }
 
@@ -27,8 +36,25 @@ class HomeScreen extends Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight }, this.forceUpdate);
     }
 
+    updateFilterCriteria = (filter, subFilter, filterValue) => {
+        let filterCriteria = this.state.filterCriteria;
+        filterCriteria[filter][subFilter] = filterValue;
+        this.setState({ filterCriteria: filterCriteria });
+    }
+
+    resetFilterCriteria = () => {
+        this.setState({
+            filterCriteria: {
+                state: { use: true, value: '' },
+                population: { use: false },
+                party: { use: false, value: '' },
+                race: { use: false, value: '' },
+            }
+        })
+    }
+
     render() {
-        console.log(this.state);
+        const checkboxStyle = { color: "#63BEB6" }
         return (
             <div>
                 <Sidebar
@@ -36,14 +62,10 @@ class HomeScreen extends Component {
                     width={this.state.width * .20}
                     side='left'
                 >
-                    <Tabs
-                        tabsNames={['Sort', 'Filter', 'Modify']}
-                        tabsInnerJSX={[
-                            <div>Sorting Data Fields</div>,
-                            <div>Filtering Data Fields</div>,
-                            <div>Modification Data Feilds</div>,
-                        ]}
-                    />
+                    <Tabs tabsNames={['Filter', 'Modify']}>
+                        <FilterTab></FilterTab>
+                        <ModifyTab></ModifyTab>
+                    </Tabs>
                 </Sidebar>
 
                 <Sidebar

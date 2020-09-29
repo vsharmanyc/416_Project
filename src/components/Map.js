@@ -11,6 +11,22 @@ class Map extends Component {
             latitude: props.latitude,
             longitude: props.longitude,
             zoom: props.zoom,
+            visibility: {
+                water: true,
+                parks: true,
+                buildings: true,
+                roads: true,
+                labels: true,
+                background: true
+              },
+              color: {
+                water: 'blue',
+                parks: '#E6EAE9',
+                buildings: '#c0c0c8',
+                roads: '#ffffff',
+                labels: '#78888a',
+                background: '#EBF0F0'
+              }
         };
     }
 
@@ -29,6 +45,8 @@ class Map extends Component {
                     mapboxApiAccessToken='pk.eyJ1IjoidmFzZWdvZCIsImEiOiJja2ZiZXNnOHQxMXI1MnRvOG1yY25icHZrIn0.8eLTRoe92V02KENueM7PqQ'
                     {...this.state}
                     onViewportChange={this.onViewportChange}
+                    visibility={this.state.visibility}
+                    color={this.state.color}
                 />
             </div>
         );
