@@ -6,6 +6,7 @@ import FilterTab from './FilterTab'
 import ModifyTab from './ModifyTab'
 import GraphTab from './GraphTab'
 import SettingsTab from './SettingsTab'
+import PlansTab from './PlansTab'
 
 class HomeScreen extends Component {
     constructor(props) {

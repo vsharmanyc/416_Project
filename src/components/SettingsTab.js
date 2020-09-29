@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
-    Button, InputLabel, Select, MenuItem, FormControl, Link, Typography
-} from '@material-ui/core/';
+import { Button, Link } from '@material-ui/core/';
 
 
 class SettingsTab extends Component {
