@@ -9,24 +9,16 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.panthers</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>panthers</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Panthers</name>
-	<description>Analyzing Congressional District Gerrymandering in NY, PA, and MD</description>
+	<description>Analyzing Congressional Districting Bias/Gerrymandering in NY, PA, MD</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-hateoas</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
