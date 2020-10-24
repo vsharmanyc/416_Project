@@ -14,9 +14,11 @@ class HomeScreen extends Component {
         this.state = {
             width: window.innerWidth,
             height: window.innerHeight,
-            latitude: 38.9618303,
-            longitude: -96.6980505,
-            zoom: 3.5,
+            state: 'PA',
+            level: 'Precinct',
+            latitude: 37.15,
+            longitude: -102.46,
+            zoom: 4,
         };
     }
 
@@ -33,8 +35,6 @@ class HomeScreen extends Component {
     }
 
     render() {
-        const checkboxStyle = { color: "#63BEB6" }
-        console.log(this.state.mapColor);
         return (
             <div>
                 <Sidebar
@@ -42,19 +42,9 @@ class HomeScreen extends Component {
                     width={this.state.width * .20}
                     side='left'
                 >
-                    <Tabs tabsNames={['Filter', 'Modify', 'Batches']}>
+                    <Tabs tabsNames={['Filter', 'Batches', 'Graph', 'Settings']}>
                         <FilterTab></FilterTab>
-                        <ModifyTab></ModifyTab>
                         <BatchesTab></BatchesTab>
-                    </Tabs>
-                </Sidebar>
-
-                <Sidebar
-                    height={this.state.height * .75}
-                    width={this.state.width * .20}
-                    side='right'
-                >
-                    <Tabs tabsNames={['Graph', 'Settings']}>
                         <GraphTab></GraphTab>
                         <SettingsTab></SettingsTab>
                     </Tabs>
@@ -63,11 +53,14 @@ class HomeScreen extends Component {
                 <Map
                     width={this.state.width}
                     height={this.state.height * .875}
-                    longitude={this.state.longitude}
                     latitude={this.state.latitude}
+                    longitude={this.state.longitude}
                     zoom={this.state.zoom}
                     mapColor={this.state.mapColor}
                     triggerRepaint={true}
+                    levelColoring={this.state.levels}
+                    state={this.state.state}
+                    level={this.state.level}
                 >
                 </Map>
             </div>
