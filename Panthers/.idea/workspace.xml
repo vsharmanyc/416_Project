@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="87f634a0-b13b-40d8-b70d-d2f4659d3abe" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/api/mapController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/dataAccess/PrecinctData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/mapModel/Demographic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/mapModel/District.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/mapModel/ElectionData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/mapModel/Precinct.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/mapModel/State.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/mapModel/States.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server/src/main/java/services/PrecinctService.java" afterDir="false" />
-    </list>
+    <list default="true" id="87f634a0-b13b-40d8-b70d-d2f4659d3abe" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/../server/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -65,10 +52,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../server/src/main/java/mapModel/ElectionData.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="780">
+            <state relative-caret-position="676">
               <caret line="52" column="33" selection-start-line="52" selection-start-column="33" selection-end-line="52" selection-end-column="33" />
               <folding>
                 <element signature="e#687#688#0" expanded="true" />
@@ -121,8 +108,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../server/src/main/java/api/mapController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+            <state relative-caret-position="390">
+              <caret line="26" selection-start-line="26" selection-end-line="26" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#324#325#0" expanded="true" />
@@ -132,11 +119,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../server/src/main/java/dataAccess/PrecinctData.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
+            <state relative-caret-position="300">
+              <caret line="20" column="24" lean-forward="true" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#285#286#0" expanded="true" />
@@ -149,8 +136,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../server/src/main/java/services/PrecinctService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="30" column="58" lean-forward="true" selection-start-line="30" selection-start-column="58" selection-end-line="30" selection-end-column="58" />
+            <state relative-caret-position="435">
+              <caret line="29" column="54" lean-forward="true" selection-start-line="29" selection-start-column="54" selection-end-line="29" selection-end-column="54" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#199#200#0" expanded="true" />
@@ -189,11 +176,11 @@
         <option value="$PROJECT_DIR$/../server/src/main/java/dataAccess/PrecintDataAccess.java" />
         <option value="$PROJECT_DIR$/../server/src/main/java/services/PrecintService.java" />
         <option value="$PROJECT_DIR$/../server/src/main/java/dataAccess/PrecinctData.java" />
-        <option value="$PROJECT_DIR$/../server/src/main/java/services/PrecinctService.java" />
-        <option value="$PROJECT_DIR$/../server/src/main/java/api/mapController.java" />
         <option value="$PROJECT_DIR$/../server/src/main/java/mapModel/District.java" />
         <option value="$PROJECT_DIR$/../server/src/main/java/mapModel/Precinct.java" />
         <option value="$PROJECT_DIR$/../server/src/main/java/mapModel/ElectionData.java" />
+        <option value="$PROJECT_DIR$/../server/src/main/java/api/mapController.java" />
+        <option value="$PROJECT_DIR$/../server/src/main/java/services/PrecinctService.java" />
       </list>
     </option>
   </component>
@@ -432,18 +419,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../server/src/main/java/api/mapController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#324#325#0" expanded="true" />
-            <element signature="e#378#379#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../server/src/main/java/mapModel/Precinct.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="795">
@@ -469,33 +444,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../server/src/main/java/services/PrecinctService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="58" lean-forward="true" selection-start-line="30" selection-start-column="58" selection-end-line="30" selection-end-column="58" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#199#200#0" expanded="true" />
-            <element signature="e#245#246#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../server/src/main/java/dataAccess/PrecinctData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#285#286#0" expanded="true" />
-            <element signature="e#328#329#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../server/src/main/java/mapModel/ElectionData.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
+        <state relative-caret-position="676">
           <caret line="52" column="33" selection-start-line="52" selection-start-column="33" selection-end-line="52" selection-end-column="33" />
           <folding>
             <element signature="e#687#688#0" expanded="true" />
@@ -513,6 +464,42 @@
             <element signature="e#1750#1751#0" expanded="true" />
             <element signature="e#1801#1802#0" expanded="true" />
             <element signature="e#1847#1848#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../server/src/main/java/api/mapController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#324#325#0" expanded="true" />
+            <element signature="e#378#379#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../server/src/main/java/services/PrecinctService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" column="54" lean-forward="true" selection-start-line="29" selection-start-column="54" selection-end-line="29" selection-end-column="54" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#199#200#0" expanded="true" />
+            <element signature="e#245#246#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../server/src/main/java/dataAccess/PrecinctData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="24" lean-forward="true" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#285#286#0" expanded="true" />
+            <element signature="e#328#329#0" expanded="true" />
           </folding>
         </state>
       </provider>
