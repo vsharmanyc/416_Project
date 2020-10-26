@@ -11,6 +11,7 @@ states = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
 shpDir = pathlib.Path(__file__).parent / 'data'
 
 def findDistrictNeighbors(filename):
+    print("test district")
     #find district neighbors
 
     #empty set
@@ -23,6 +24,7 @@ def findDistrictNeighbors(filename):
     return
 
 def findPrecinctNeighbors(filename):
+    print("test precinct")
     #find precinct neighbors
 
     #empty set
@@ -53,5 +55,3 @@ if __name__ == "__main__":
     for entry in os.listdir(shpDir):
         if entry.lower().endswith('.shp'):
             createState(entry)
-
-    return
