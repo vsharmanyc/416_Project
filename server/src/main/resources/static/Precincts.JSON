@@ -1,0 +1,64 @@
+{
+  "districts": [
+    {
+      "name": "Red",
+      "precinctNum": 1,
+      "population": 276213,
+      "votingAgePopulation": 167293
+    },
+    {
+      "name": "Blue",
+      "precinctNum": 2,
+      "population": 1892039,
+      "votingAgePopulation": 1592093
+    },
+    {
+      "name": "Green",
+      "precinctNum": 3,
+      "population": 20931,
+      "votingAgePopulation": 10928
+    },
+    {
+      "name": "Noir",
+      "precinctNum": 4,
+      "population": 999289,
+      "votingAgePopulation": 762893
+    },
+    {
+      "name": "Orange",
+      "precinctNum": 5,
+      "population": 12632,
+      "votingAgePopulation": 5000
+    },
+    {
+      "name": "Grey",
+      "precinctNum": 6,
+      "population": 8093762,
+      "votingAgePopulation": 5092776
+    },
+    {
+      "name": "Bleumarine",
+      "precinctNum": 7,
+      "population": 198234,
+      "votingAgePopulation": 100234
+    },
+    {
+      "name": "Sponge",
+      "precinctNum": 8,
+      "population": 892894,
+      "votingAgePopulation": 762031
+    },
+    {
+      "name": "Donk",
+      "precinctNum": 9,
+      "population": 1092,
+      "votingAgePopulation": 384
+    },
+    {
+      "name": "Yellow",
+      "precinctNum": 10,
+      "population": 2,
+      "votingAgePopulation": 2
+    }
+  ]
+}

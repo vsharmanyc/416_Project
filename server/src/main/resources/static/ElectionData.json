@@ -1,0 +1,274 @@
+{
+  "electionData": [
+    {
+      "precinctNum": 1,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 2,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 3,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 4,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 5,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 6,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 7,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 8,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 9,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    },
+    {
+      "precinctNum": 10,
+      "population": 872831,
+      "votingAgePopulation": 802121,
+      "demographics": [
+        {
+          "group": "AFRICAN_AMERICAN",
+          "minorityPopulations": 290912,
+          "minorityVAP": 200983
+        },
+        {
+          "group": "ASIAN",
+          "minorityPopulations": 100293,
+          "minorityVAP": 90102
+        },
+        {
+          "group": "HISPANIC_LATINO",
+          "minorityPopulations": 98231,
+          "minorityVAP": 80291
+        },
+        {
+          "group": "AM_INDIAN_AK_NATIVE",
+          "minorityPopulations": 8912,
+          "minorityVAP": 5029
+        }
+      ]
+    }
+  ]
+}
