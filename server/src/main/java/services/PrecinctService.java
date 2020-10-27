@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
+/**
+ * Services are in charge of business logic (algorithms, getting data, etc etc)
+ * Precinct service would then get the available precincts from the database/storage.
+ *
+ */
 public class PrecinctService {
 
     private PrecinctData precinctData;
@@ -26,7 +31,7 @@ public class PrecinctService {
 //            demographics.put(Demographic.AFRICAN_AMERICAN, minorityPopulation);
 //            demographicVAP.put(Demographic.AFRICAN_AMERICAN, minorityVAPopulation);
 //
-//            ElectionData ed = new ElectionDatas(population, votingAgePopulation, demographics, demographicVAP);
+//            ElectionData ed = new ElectionData(population, votingAgePopulation, demographics, demographicVAP);
 //            List<Precinct> conn = new ArrayList<>();
 //            Precinct p = new Precinct(name, conn, id, ed);
 //            precinctData.addPrecinct(p);

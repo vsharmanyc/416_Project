@@ -15,6 +15,7 @@ public class PrecinctData {
 
     public PrecinctData() {
         this.precincts = new ArrayList<Precinct>();
+
     }
 
     public int addPrecinct(Precinct p){

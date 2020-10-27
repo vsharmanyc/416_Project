@@ -10,20 +10,24 @@ import services.PrecinctService;
  * needed by the map)
  */
 @RestController
-public class mapController {
+public class MapController {
     private PrecinctService precinctService;
 
     @Autowired
-    public mapController(PrecinctService precinctService) {
+    public MapController(PrecinctService precinctService) {
         this.precinctService = precinctService;
     }
 
     @PostMapping
     public void addPrecinct(){
-//        precinctService.addPrecinct();
+
     }
     @PostMapping
     public void addElectionData(){
+
+    }
+
+    public void getDistrictings(){
 
     }
 }
