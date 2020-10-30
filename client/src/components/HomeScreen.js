@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
 import Map from './Map.js'
-import Sidebar from './Sidebar.js'
-import Tabs from './Tabs.js'
-import FilterTab from './FilterTab'
-import ModifyTab from './ModifyTab'
-import GraphTab from './GraphTab'
-import SettingsTab from './SettingsTab'
-import BatchesTab from './BatchesTab'
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -37,18 +30,6 @@ class HomeScreen extends Component {
     render() {
         return (
             <div>
-                <Sidebar
-                    height={this.state.height * .75}
-                    width={this.state.width * .20}
-                    side='left'
-                >
-                    <Tabs tabsNames={['Filter', 'Batches', 'Graph', 'Settings']}>
-                        <FilterTab></FilterTab>
-                        <BatchesTab></BatchesTab>
-                        <GraphTab></GraphTab>
-                        <SettingsTab></SettingsTab>
-                    </Tabs>
-                </Sidebar>
 
                 <Map
                     width={this.state.width}
