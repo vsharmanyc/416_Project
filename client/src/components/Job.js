@@ -12,10 +12,10 @@ class Job extends Component {
             marginTop: '2%', 
             height: '20%', 
             width: '90%', 
-            backgroundColor: 'white', 
+            backgroundColor: '#f7ffff', 
             border: 'solid',
             borderWidth: '3px',
-            borderColor: '#63BEB6',
+            borderColor: '#438f88',
         };
 
         return (
