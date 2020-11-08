@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
 import States from './../geoJSON/states.geojson'
+import NY from './../geoJSON/NY.geojson'
 import '../App.css';
 
 
@@ -12,6 +13,7 @@ class Map extends Component {
         mapboxgl.accessToken = 'pk.eyJ1IjoidmFzZWdvZCIsImEiOiJja2ZiZXNnOHQxMXI1MnRvOG1yY25icHZrIn0.8eLTRoe92V02KENueM7PqQ';
         this.map = null;
         this.state = {
+            currentLayer: 'states',
             lng: -95,
             lat: 39,
             zoom: 3.5,
@@ -26,93 +28,98 @@ class Map extends Component {
             zoom: this.state.zoom
         });
 
-        this.map.on('mousemove', (e) => this.props.onMouseCoordsUpdate({ lat: e.lngLat.lat, lng: e.lngLat.lng }));
-        let map = this.map;
-        let hoveredStateId = null;
-        map.on('load', () => {
-            map.addSource('states', {
-                'type': 'geojson',
-                'data':
-                    States
-            });
-
-            // The feature-state dependent fill-opacity expression will render the hover effect
-            // when a feature's hover state is set to true.
-            map.addLayer({
-                'id': 'state-fills',
-                'type': 'fill',
-                'source': 'states',
-                'layout': {},
-                'paint': {
-                    'fill-color': '#627BC1',
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        1,
-                        0.5
-                    ]
-                }
-            });
-
-            map.addLayer({
-                'id': 'state-borders',
-                'type': 'line',
-                'source': 'states',
-                'layout': {},
-                'paint': {
-                    'line-color': '#627BC1',
-                    'line-width': 2
-                }
-            });
-
-            // When the user moves their mouse over the state-fill layer, we'll update the
-            // feature state for the feature under the mouse.
-            map.on('mousemove', 'state-fills', function (e) {
-                if (e.features.length > 0) {
-                    if (hoveredStateId) {
-                        map.setFeatureState(
-                            { source: 'states', id: hoveredStateId },
-                            { hover: false }
-                        );
-                    }
-                    hoveredStateId = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'states', id: hoveredStateId },
-                        { hover: true }
-                    );
-                }
-            });
-
-            map.on('click', 'state-fills', (e) => {
-                let stateName = e.features[0].properties.STATE_NAME;
-                this.zoomTo(stateName);
-                this.props.onStateSelect({ state: stateName, stateLevel: 'state' });
-            });
-
-            // When the mouse leaves the state-fill layer, update the feature state of the
-            // previously hovered feature.
-            map.on('mouseleave', 'state-fills', function () {
-                if (hoveredStateId) {
-                    map.setFeatureState(
-                        { source: 'states', id: hoveredStateId },
-                        { hover: false }
-                    );
-                }
-                hoveredStateId = null;
-            });
+        this.map.on('load', () => {
+            this.addGeoJsonLayer('NY', NY);
         });
     }
 
     componentWillUnmount() {
-        this.map.off('mousemove', (e) => this.props.onMouseCoordsUpdate({ lat: e.lngLat.lat, lng: e.lngLat.lng }));
+
     }
 
     componentDidUpdate(prevProps) {
-        console.log(prevProps);
-        console.log(this.props);
         if (this.props.state !== prevProps.state) {
-          this.zoomTo(this.props.state);
+            this.zoomTo(this.props.state);
         }
+    }
+
+    addGeoJsonLayer = (sourceName, geoJSON) => {
+        let hoveredStateId = null;
+
+        this.map.addSource(sourceName, {
+            'type': 'geojson',
+            'data':
+                geoJSON
+        });
+
+        // The feature-state dependent fill-opacity expression will render the hover effect
+        // when a feature's hover state is set to true.
+        this.map.addLayer({
+            'id': 'state-fills',
+            'type': 'fill',
+            'source': sourceName,
+            'layout': {},
+            'paint': {
+                'fill-color': '#627BC1',
+                'fill-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'hover'], false],
+                    1,
+                    0.5
+                ]
+            }
+        });
+
+        this.map.addLayer({
+            'id': 'state-borders',
+            'type': 'line',
+            'source': sourceName,
+            'layout': {},
+            'paint': {
+                'line-color': '#627BC1',
+                'line-width': 2
+            }
+        });
+
+        // When the user moves their mouse over the state-fill layer, we'll update the
+        // feature state for the feature under the mouse.
+        this.map.on('mousemove', 'state-fills', (e) => {
+            if (e.features.length > 0) {
+                if (hoveredStateId) {
+                    this.map.setFeatureState(
+                        { source: sourceName, id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = e.features[0].properties.GEOID10;
+                this.map.setFeatureState(
+                    { source: sourceName, id: hoveredStateId },
+                    { hover: true }
+                );
+
+                this.props.onGeoDataUpdate(e.features[0].properties)
+            }
+        });
+
+        this.map.on('click', 'state-fills', (e) => {
+            let stateName = e.features[0].properties.STATE;
+            if (this.props.state != stateName) {
+                this.zoomTo(stateName);
+                this.props.onStateSelect(stateName);
+            }
+        });
+
+        // When the mouse leaves the state-fill layer, update the feature state of the
+        // previously hovered feature.
+        this.map.on('mouseleave', 'state-fills', () => {
+            if (hoveredStateId) {
+                this.map.setFeatureState(
+                    { source: sourceName, id: hoveredStateId },
+                    { hover: false }
+                );
+            }
+            hoveredStateId = null;
+        });
     }
 
     zoomTo = (state) => {
@@ -132,7 +139,7 @@ class Map extends Component {
             this.map.flyTo({
                 center: [-76.6413, 39.0458],
                 zoom: 7,
-                essential: true 
+                essential: true
             });
     }
 

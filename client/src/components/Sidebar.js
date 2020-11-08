@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Tab, Tabs} from 'react-bootstrap';
 import Jobs from './Jobs'
 import CreateJob from './CreateJob'
+import Data from './Data'
 import '../App.css';
 
 
@@ -36,7 +37,7 @@ class Sidebar extends Component {
                 borderColor: '#63BEB6'
             }}>
                 <Tabs activeKey={this.state.tabNum} onSelect={this.changeTab} id="controlled-tab-example">
-                    <Tab eventKey={0} title="Data">{'Lat: ' + this.props.mouseCoords.lat + ', Lng: ' + this.props.mouseCoords.lng}</Tab>
+                    <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData}/></Tab>
                     <Tab eventKey={1} title="Filter"></Tab>
                     <Tab eventKey={2} title="Create Job"><CreateJob/></Tab>
                     <Tab eventKey={3} title="Jobs"><Jobs jobs={this.props.jobs}/></Tab>

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import mapboxgl from 'mapbox-gl';
 import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
@@ -10,8 +9,8 @@ class Project extends Component {
         super(props);
         this.state = {
             state: '',
-            mouseCoords: { lat: 39, lng: -95 },
             geoJSON: null,
+            geoData: {},
             jobs: [{
                 jobID: 0,
                 compactness: 'very',
@@ -23,12 +22,11 @@ class Project extends Component {
     onComponentDidMount() {
     }
 
-    onMouseCoordsUpdate = (mouseCoords) => {
-        this.setState({ mouseCoords: mouseCoords });
+    onGeoDataUpdate = (geoData) => {
+        this.setState({ geoData: geoData });
     }
 
     onStateSelect = (state) => {
-        console.log(state);
         this.setState({ state: state });
     }
 
@@ -56,12 +54,12 @@ class Project extends Component {
                         jobs={this.state.jobs}
                         updateJobs={this.updateJobs}
                         state={this.state.state}
-                        mouseCoords={this.state.mouseCoords} />
+                        geoData={this.state.geoData} />
                 </div>
                 <Map
                     style={mapStyle}
+                    onGeoDataUpdate={this.onGeoDataUpdate}
                     onStateSelect={this.onStateSelect}
-                    onMouseCoordsUpdate={this.onMouseCoordsUpdate}
                     state={this.state.state} />
             </div>
         );
