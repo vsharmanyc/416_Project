@@ -7,22 +7,58 @@ class CreateJob extends Component {
         super(props);
 
         this.state = {
-            numDistrings: -1,
+            numDistrictings: 0,
             compactness: '',
             popDiff: '',
-            popEqThres: 0.0,
+            popEqThres: 0,
             demographics: [],
         }
     }
 
     onPopEqThresChange = (e) => { this.setState({ popEqThres: e.target.value }); }
-    onNumDistrictingsChange = (e) => { this.setState({ numDistrings: e.target.value }); }
+    onNumDistrictingsChange = (e) => { this.setState({ numDistrictings: e.target.value }); }
     onCompactnessChange = (e) => { this.setState({ compactness: e.target.value }); }
     onPopDiffChange = (e) => { this.setState({ popDiff: e.target.value }); }
-    onDemographicsSelect = (selected) => {
+    onDemographicsSelect = (selected) => { this.setState({ demographics: selected }); }
+
+    onCreateJob = (e) => {
+        e.preventDefault();
         let demographics = [];
-        selected.map((option) => demographics.push(option.value) );
-        this.setState({ demographics: demographics });
+        this.state.demographics.map((option) => demographics.push(option.value) );
+
+        let compactness =  'low compactness';
+        if(this.state.compactness >=35 && this.state.compactness <=75)
+            compactness = 'somewhat compact';
+        else if(this.state.compactness > 75)
+            compactness = 'high compactness'; 
+
+        let job = {
+            jobID: new Date().getTime(),
+            demographics: demographics,
+            numDistrictings: this.state.numDistrictings,
+            compactness: this.state.compactness,
+            populationDifference:  this.state.popDiff,
+            popEqThres: this.state.popEqThres,
+            status: 'pending'
+        };
+        this.addJob(job);
+        this.clearForm();
+    }
+
+    addJob = (job) =>{
+        let jobs = this.props.jobs;
+        jobs.push(job);
+        this.props.updateJobs(jobs);
+    }
+
+    clearForm = () => {
+        this.setState({
+            numDistrictings: 0,
+            compactness: '',
+            popDiff: '',
+            popEqThres: 0.0,
+            demographics: [],
+        })
     }
 
     render() {
@@ -48,18 +84,19 @@ class CreateJob extends Component {
                     <form>
                         <div class="form-group">
                             <label for="number-input1 row">Number of Districtings</label>
-                            <input class="form-control" type="number" defaultValue="100" min="1" id="number-input1"
+                            <input class="form-control" type="number" defaultValue="0" value={this.state.numDistrictings}
+                            min="1" id="number-input1"
                                 onChange={this.onNumDistrictingsChange} />
                         </div>
                         <div class="form-group">
                             <label for="FormControlSelect2">Select Demographics</label>
-                            <MultiSelect onChange={this.onDemographicsSelect} isMulti options={demographics}/>
+                            <MultiSelect  value={this.state.demographics} onChange={this.onDemographicsSelect} isMulti options={demographics}/>
                         </div>
                         <div class="form-group">
                             <label for="customRange1">Compactness</label>
                             <div style={{ display: 'flex', flexDirection: 'row' }}>
                                 Least Compact
-                                <input type="range" class="custom-range" id="customRange1" onChange={this.onCompactnessChange} />
+                                <input type="range" class="custom-range" id="customRange1" value={this.state.compactness} onChange={this.onCompactnessChange} />
                                 Most Compact
                             </div>
                         </div>
@@ -67,16 +104,16 @@ class CreateJob extends Component {
                             <label for="customRange2">Population Difference</label>
                             <div style={{ display: 'flex', flexDirection: 'row' }}>
                                 Least Difference
-                                <input type="range" class="custom-range" id="customRange2" onChange={this.onPopDiffChange} />
+                                <input type="range" class="custom-range" id="customRange2" value={this.state.popDiff} onChange={this.onPopDiffChange} />
                                 Most Difference
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="number-input2 row">Population Equation Threshold</label>
-                            <input onChange={this.onPopEqThresChange} class="form-control" type="number" defaultValue="0.5"
+                            <input onChange={this.onPopEqThresChange} class="form-control" type="number" defaultValue="0" value={this.state.popEqThres}
                                 step="0.01" min="0" id="number-input2" />
                         </div>
-                        <button style={{ backgroundColor: '#63BEB6', color: '#ffffff' }} type="submit" class="btn">Submit</button>
+                        <button onClick={this.onCreateJob} style={{ backgroundColor: '#63BEB6', color: '#ffffff' }} type="submit" class="btn">Submit</button>
                     </form>
                 </div>
             </div>

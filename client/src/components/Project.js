@@ -11,11 +11,7 @@ class Project extends Component {
             state: '',
             geoJSON: null,
             geoData: {},
-            jobs: [{
-                jobID: 0,
-                compactness: 'very',
-                status: 'in progress',
-            }],
+            jobs: [],
         }
     }
 

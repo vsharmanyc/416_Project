@@ -12,13 +12,15 @@ class Jobs extends Component {
         const style = { 
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
             height: '100%', 
             width: '100%', 
         };
 
         return (
             <div style={style}>
-                {this.props.jobs.map((job) => <Job job={job}/>)}
+                {this.props.jobs.map((job) => <Job updateJobs={this.props.updateJobs} jobs={this.props.jobs} job={job}/>)}
             </div>
         );
     }

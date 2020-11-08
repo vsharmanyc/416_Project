@@ -96,8 +96,9 @@ class Map extends Component {
                     { source: sourceName, id: hoveredStateId },
                     { hover: true }
                 );
-
-                this.props.onGeoDataUpdate(e.features[0].properties)
+                
+                if(this.props.state === e.features[0].properties.STATE)
+                    this.props.onGeoDataUpdate(e.features[0].properties)
             }
         });
 
