@@ -49,14 +49,19 @@ class Data extends Component {
                             <td>{this.props.geoData.AVAP}</td>
                         </tr>
                         <tr>
-                            <td>Hispanic and Latino</td>
+                            <td>Hispanic or Latino</td>
                             <td>{this.props.geoData.HLTOT}</td>
                             <td>{this.props.geoData.HLVAP}</td>
                         </tr>
                         <tr>
-                            <td>American Indian and Alaska Native</td>
+                            <td>American Indian or Alaska Native</td>
                             <td>{this.props.geoData.AIANTOT}</td>
                             <td>{this.props.geoData.AIANVAP}</td>
+                        </tr>
+                        <tr>
+                            <td>Native Hawaiian or Other Pacific Islander</td>
+                            <td>{this.props.geoData.NHOPTOT}</td>
+                            <td>{this.props.geoData.NHOPVAP}</td>
                         </tr>
                         <tr>
                             <td>Two or More Races</td>

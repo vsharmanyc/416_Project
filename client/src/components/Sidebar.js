@@ -32,6 +32,7 @@ class Sidebar extends Component {
             <div style={{
                 height: '100%',
                 width: '100%',
+                overflow: 'auto',
                 borderStyle: 'solid',
                 borderWidth: '2px',
                 borderColor: '#63BEB6'
