@@ -1,90 +1,50 @@
 import React, { Component } from 'react';
+import { Tab, Tabs} from 'react-bootstrap';
+import Jobs from './Jobs'
+import CreateJob from './CreateJob'
+import Data from './Data'
+import '../App.css';
+
 
 class Sidebar extends Component {
+
     constructor(props) {
         super(props);
-        let side = this.props.side === 'left' || this.props.side === 'right' ? this.props.side : 'left';
-
         this.state = {
-            width: props.width,
-            height: props.height,
-            isExpanded: true,
-            side: side,
-            expandSymbol: side === 'left' ? '🡆' : '🡄',
-            hideSymbol: side === 'left' ? '🡄' : '🡆'
-        };
+            tabNum: 0
+        }
     }
 
-    toggleSidebar = () => {
-        this.setState({ isExpanded: !this.state.isExpanded });
+    componentDidMount() {
     }
+
+    componentWillUnmount() {
+    }
+
+    changeTab = (tabNum) =>{
+        this.setState({tabNum: tabNum});
+    }
+
 
     render() {
-        const borderColor = '#c9c9c9';
-        const backgroundColor = '#ebebeb';
 
         return (
             <div style={{
-                position: 'absolute',
-                zIndex: 100,
-                display: 'flex',
-                flexDirection: this.state.side === 'left' ? 'row' : 'row-reverse',
-                justifyContent: 'center',
-                alignItems: 'center',
-                right: this.state.side === 'right' ? 0 : null
+                height: '100%',
+                width: '100%',
+                borderStyle: 'solid',
+                borderWidth: '2px',
+                borderColor: '#63BEB6'
             }}>
-
-                {this.state.isExpanded ?
-                    <div style={{
-                        width: this.state.width,
-                        height: this.state.height,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        borderStyle: 'solid',
-                        borderWidth: 3
-                    }}>
-                        {this.props.children != null ? this.props.children : <div></div>}
-                    </div>
-                    :
-                    <div></div>
-                }
-
-
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: this.state.height,
-                    width: this.state.width * .1
-                }}>
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: this.state.width * .1,
-                        height: this.state.height * .35,
-                        backgroundColor: backgroundColor,
-                        borderRightColor: this.state.side === 'left' ? borderColor : backgroundColor,
-                        borderTopColor: borderColor,
-                        borderBottomColor: borderColor,
-                        borderLeftColor: this.state.side === 'left' ? backgroundColor : borderColor,
-                        borderStyle: 'solid',
-                        borderWidth: 3
-                    }}
-                        onClick={this.toggleSidebar}
-                    >
-                        <div style={{
-                            position: 'absolute',
-                            fontSize: this.state.height * .045,
-                        }}>
-                            {this.state.isExpanded ? this.state.hideSymbol : this.state.expandSymbol}
-                        </div>
-                    </div>
-                </div>
-
-            </div >
+                <Tabs activeKey={this.state.tabNum} onSelect={this.changeTab} id="controlled-tab-example">
+                    <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData}/></Tab>
+                    <Tab eventKey={1} title="Filter"></Tab>
+                    <Tab eventKey={2} title="Create Job"><CreateJob/></Tab>
+                    <Tab eventKey={3} title="Jobs"><Jobs jobs={this.props.jobs}/></Tab>
+                </Tabs>
+            </div>
         );
     }
-
 }
 
 export default Sidebar;
