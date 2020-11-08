@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import mapboxgl from 'mapbox-gl';
 import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
@@ -8,28 +9,33 @@ class Project extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            stateData: { stateLevel: '', stateName: '' },
+            state: '',
             mouseCoords: { lat: 39, lng: -95 },
             geoJSON: null,
-            jobs: [ {
+            jobs: [{
                 jobID: 0,
                 compactness: 'very',
-                status : 'in progress', 
+                status: 'in progress',
             }],
         }
+    }
+
+    onComponentDidMount() {
     }
 
     onMouseCoordsUpdate = (mouseCoords) => {
         this.setState({ mouseCoords: mouseCoords });
     }
 
-    onStateDataUpdate = (stateData) => {
-        this.setState({ stateData: stateData });
+    onStateSelect = (state) => {
+        console.log(state);
+        this.setState({ state: state });
     }
 
-    updateJobs = (jobs) =>{
+    updateJobs = (jobs) => {
         this.setState({ jobs: jobs });
     }
+
 
 
     render() {
@@ -37,25 +43,26 @@ class Project extends Component {
         const sidebarStyle = { position: 'absolute', top: '10%', height: '90%', width: '25%' }
         const mapStyle = { position: 'absolute', left: '25%', top: '10%', height: '90%', width: '75%' };
 
+
         return (
             <div>
                 <div style={headerStyle}>
-                    <Header 
-                        stateData={this.state.stateData}
-                        onStateDataUpdate={this.onStateDataUpdate} />
+                    <Header
+                        state={this.state.state}
+                        onStateSelect={this.onStateSelect} />
                 </div>
                 <div style={sidebarStyle}>
                     <Sidebar
                         jobs={this.state.jobs}
                         updateJobs={this.updateJobs}
-                        stateData={this.state.stateData}
+                        state={this.state.state}
                         mouseCoords={this.state.mouseCoords} />
                 </div>
-                <Map 
-                    style={mapStyle} 
-                    onStateDataUpdate={this.onStateDataUpdate}
-                    onMouseCoordsUpdate={this.onMouseCoordsUpdate} 
-                    stateData={this.stateData} />
+                <Map
+                    style={mapStyle}
+                    onStateSelect={this.onStateSelect}
+                    onMouseCoordsUpdate={this.onMouseCoordsUpdate}
+                    state={this.state.state} />
             </div>
         );
     }

@@ -86,7 +86,7 @@ class Map extends Component {
             map.on('click', 'state-fills', (e) => {
                 let stateName = e.features[0].properties.STATE_NAME;
                 this.zoomTo(stateName);
-                this.props.onStateDataUpdate({ state: stateName, stateLevel: 'state' });
+                this.props.onStateSelect({ state: stateName, stateLevel: 'state' });
             });
 
             // When the mouse leaves the state-fill layer, update the feature state of the
@@ -107,24 +107,32 @@ class Map extends Component {
         this.map.off('mousemove', (e) => this.props.onMouseCoordsUpdate({ lat: e.lngLat.lat, lng: e.lngLat.lng }));
     }
 
+    componentDidUpdate(prevProps) {
+        console.log(prevProps);
+        console.log(this.props);
+        if (this.props.state !== prevProps.state) {
+          this.zoomTo(this.props.state);
+        }
+    }
+
     zoomTo = (state) => {
         if (state === 'New York')
             this.map.flyTo({
                 center: [-74.2179, 43.2994],
                 zoom: 6,
-                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                essential: true
             });
         else if (state === 'Pennsylvania')
             this.map.flyTo({
                 center: [-77.1945, 41.2033],
                 zoom: 6.8,
-                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                essential: true
             });
-        else
+        else if (state === 'Maryland')
             this.map.flyTo({
                 center: [-76.6413, 39.0458],
                 zoom: 7,
-                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                essential: true 
             });
     }
 
