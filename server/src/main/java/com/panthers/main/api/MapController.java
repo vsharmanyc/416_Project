@@ -27,14 +27,24 @@ public class MapController {
 //    public String handleGetPrecincts(){
 //        return null;
 //    }
-//
+
+    /**
+     * in charge of returning precints for the state we are looking at.
+     * @return returns the JSON of the current districting
+     */
+    @GetMapping("/getDistricts")
+    @ResponseBody
+    public String handleGetDistricts(){
+        return mapHandler.requestDistricts();
+    }
+
 //    /**
-//     * in charge of returning precints for the state we are looking at.
-//     * @return returns the JSON of the current districting
+//     * pulls state from storage, and returns it. Returns state object, complete with districts and precincts.
+//     * @return returns the JSON of the state representation
 //     */
-//    @GetMapping
-//    public String handleGetDistricts(){
-//        return null;
+//    @GetMapping("/getState")
+//    public Object handleGetState(@RequestParam String state){
+//        return mapHandler.requestState(state);
 //    }
 
     /**
@@ -46,21 +56,19 @@ public class MapController {
     @ResponseBody
     public ResponseEntity handleChangeState(@RequestBody StateDto dto){
         String state = dto.getState();
-
-        if (state.equals("NY")){
-            mapHandler.changeState(States.NY);
-            return new ResponseEntity(HttpStatus.ACCEPTED);
+        switch (state) {
+            case "NY":
+                mapHandler.changeState(States.NY);
+                return new ResponseEntity(HttpStatus.ACCEPTED);
+            case "PA":
+                mapHandler.changeState(States.PA);
+                return new ResponseEntity(HttpStatus.ACCEPTED);
+            case "MD":
+                mapHandler.changeState(States.MD);
+                return new ResponseEntity(HttpStatus.ACCEPTED);
+            default:
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        else if (state.equals("PA")){
-            mapHandler.changeState(States.PA);
-            return new ResponseEntity(HttpStatus.ACCEPTED);
-        }
-        else if (state.equals("MD")){
-            mapHandler.changeState(States.MD);
-            return new ResponseEntity(HttpStatus.ACCEPTED);
-        }
-        else
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/getState")
