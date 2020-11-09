@@ -49,10 +49,10 @@ class Map extends Component {
         }
     }
 
-    requestStateGeoJson = (stateName) => {
+    postReqChangeState = (stateName) => {
         let state = this.stateInitials(stateName);
 
-        /*fetch('http://localhost:8080/api/map/changeState',
+        fetch('http://localhost:8080/api/map/changeState',
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -63,20 +63,7 @@ class Map extends Component {
                 mode: 'cors'
             })
             .then(response => response.json())
-            .then(response => console.log(response)); */
-
-        /* fetch('http://localhost:8080/api/map/changeState', {
-             method: 'POST',
-             headers: {
-                 "Access-Control-Allow-Origin": "*",
-                 'Accept': 'application/json',
-                 'Content-Type': 'application/json',
-             },
-             body: JSON.stringify({'state': state }),
-             mode: 'no-cors'
-         })
-         .then(response => { console.log(response); return response.json(); })
-         .then(data => console.log(data)); */
+            .then(response => console.log(response));
     }
 
     stateInitials = (stateName) => {
@@ -234,19 +221,19 @@ class Map extends Component {
     }
 
     changeState = (currentState, requestState) =>{
+        this.postReqChangeState(requestState);
+
         let currentStateInitials = this.stateInitials(currentState);
         let requestStateInitials = this.stateInitials(requestState);
 
         if(currentState !== 'Select...'){
             this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
             this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'));
-            console.log('removed ' + currentStateInitials + '_Precincts\n' + 'added ' + currentStateInitials + '_Districts');
         }
 
         if(requestState != 'Select...'){
             this.removeGeoJsonLayer(requestStateInitials + '_Districts');
             this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'));
-            console.log('removed ' + requestStateInitials + '_Districts\n' + 'added ' + requestStateInitials + '_Precincts');
         }
         
         this.zoomTo(requestState);

@@ -7,7 +7,6 @@ class Job extends Component {
     }
 
     cancelJob = () => {
-        console.log('cancel');
         let jobs = this.props.jobs;
         for (let i = 0; i < jobs.length; i++) {
             if (jobs[i].jobID === this.props.job.jobID)
@@ -17,7 +16,6 @@ class Job extends Component {
     }
 
     deleteJob = () => {
-        console.log('delete');
         let jobs = this.props.jobs;
         for (let i = 0; i < jobs.length; i++) {
             if (jobs[i].jobID === this.props.job.jobID)
