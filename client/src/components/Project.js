@@ -8,7 +8,7 @@ class Project extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            state: '',
+            state: 'Select...',
             geoJSON: null,
             geoData: {},
             jobs: [],

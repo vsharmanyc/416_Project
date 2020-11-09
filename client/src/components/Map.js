@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
-import States from './../geoJSON/states.geojson'
-import NY from './../geoJSON/NY.geojson'
+import NY_Districts from './../geoJSON/NY_Districts.geojson'
+import PA_Districts from './../geoJSON/PA_Districts.geojson'
+import MD_Districts from './../geoJSON/MD_Districts.geojson'
+import NY_Precincts from './../geoJSON/NY_Precincts.geojson'
+import PA_Precincts from './../geoJSON/PA_Precincts.geojson'
+import MD_Precincts from './../geoJSON/MD_Precincts.geojson'
 import '../App.css';
 
 
@@ -29,7 +33,9 @@ class Map extends Component {
         });
 
         this.map.on('load', () => {
-            this.addGeoJsonLayer('NY', NY);
+            this.addGeoJsonLayer('NY_Districts', NY_Districts);
+            this.addGeoJsonLayer('PA_Districts', PA_Districts);
+            this.addGeoJsonLayer('MD_Districts', MD_Districts);
         });
     }
 
@@ -39,47 +45,14 @@ class Map extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.state !== prevProps.state) {
-            this.zoomTo(this.props.state);
-            this.requestStateGeoJson(this.props.state);
+            this.changeState(prevProps.state, this.props.state);
         }
     }
 
     requestStateGeoJson = (stateName) => {
-        let state = '';
-        if (stateName == 'Maryland')
-            state = 'MD';
-        else if (stateName == 'New York')
-            state = 'NY';
-        else if (stateName == 'Pennsylvania')
-            state = 'PA';
+        let state = this.stateInitials(stateName);
 
-
-        /*let xhr = new XMLHttpRequest(); 
-        let url = 'localhost:8080';
-
-          // open a connection 
-          xhr.open("POST", url, true); 
-  
-          // Set the request header i.e. which type of content you are sending 
-          xhr.setRequestHeader("Content-Type", "application/json"); 
-
-          // Create a state change callback 
-          xhr.onreadystatechange = function () { 
-              if (xhr.readyState === 4 && xhr.status === 200) { 
-
-                  // Print received data from server 
-                console.log("Response from server: ", this.responseText);
-
-              } 
-          }; 
-
-          // Converting JSON data to string 
-          var data = JSON.stringify({"state": state}); 
-
-          // Sending data with the request 
-          xhr.send(data); 
-          */
-        fetch('http://localhost:8080/api/map/changeState',
+        /*fetch('http://localhost:8080/api/map/changeState',
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -90,20 +63,40 @@ class Map extends Component {
                 mode: 'cors'
             })
             .then(response => response.json())
-            .then(response => console.log(response)); 
+            .then(response => console.log(response)); */
 
-       /* fetch('http://localhost:8080/api/map/changeState', {
-            method: 'POST',
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({'state': state }),
-            mode: 'no-cors'
-        })
-        .then(response => { console.log(response); return response.json(); })
-        .then(data => console.log(data)); */
+        /* fetch('http://localhost:8080/api/map/changeState', {
+             method: 'POST',
+             headers: {
+                 "Access-Control-Allow-Origin": "*",
+                 'Accept': 'application/json',
+                 'Content-Type': 'application/json',
+             },
+             body: JSON.stringify({'state': state }),
+             mode: 'no-cors'
+         })
+         .then(response => { console.log(response); return response.json(); })
+         .then(data => console.log(data)); */
+    }
+
+    stateInitials = (stateName) => {
+        if (stateName == 'Maryland')
+            return 'MD';
+        else if (stateName == 'New York')
+            return 'NY';
+        else if (stateName == 'Pennsylvania')
+            return 'PA';
+        return stateName;
+    }
+
+    stateName = (stateInitials) => {
+        if (stateInitials == 'MD')
+            return 'Maryland';
+        else if (stateInitials == 'NY')
+            return 'New York';
+        else if (stateInitials == 'PA')
+            return 'Pennsylvania';
+        return stateInitials;
     }
 
     addGeoJsonLayer = (sourceName, geoJSON) => {
@@ -118,7 +111,7 @@ class Map extends Component {
         // The feature-state dependent fill-opacity expression will render the hover effect
         // when a feature's hover state is set to true.
         this.map.addLayer({
-            'id': 'state-fills',
+            'id': sourceName + ' state-fills',
             'type': 'fill',
             'source': sourceName,
             'layout': {},
@@ -134,7 +127,7 @@ class Map extends Component {
         });
 
         this.map.addLayer({
-            'id': 'state-borders',
+            'id': sourceName + ' state-borders',
             'type': 'line',
             'source': sourceName,
             'layout': {},
@@ -146,7 +139,7 @@ class Map extends Component {
 
         // When the user moves their mouse over the state-fill layer, we'll update the
         // feature state for the feature under the mouse.
-        this.map.on('mousemove', 'state-fills', (e) => {
+        this.map.on('mousemove', sourceName + ' state-fills', (e) => {
             if (e.features.length > 0) {
                 if (hoveredStateId) {
                     this.map.setFeatureState(
@@ -160,23 +153,24 @@ class Map extends Component {
                     { hover: true }
                 );
 
-                if (this.props.state === e.features[0].properties.STATE)
+                if (sourceName.includes("Districts") && this.props.state === e.features[0].properties.statename
+                    || sourceName.includes("Precincts") && this.stateInitials(this.props.state) === e.features[0].properties.STATE)
                     this.props.onGeoDataUpdate(e.features[0].properties)
             }
         });
 
-        this.map.on('click', 'state-fills', (e) => {
-            let stateName = e.features[0].properties.STATE;
+        this.map.on('click', sourceName + ' state-fills', (e) => {
+            let stateName = e.features[0].properties.statename;
+            if (sourceName.includes("Precincts"))
+                stateName = this.stateName(e.features[0].properties.STATE);
             if (this.props.state != stateName) {
-
-                this.zoomTo(stateName);
                 this.props.onStateSelect(stateName);
             }
         });
 
         // When the mouse leaves the state-fill layer, update the feature state of the
         // previously hovered feature.
-        this.map.on('mouseleave', 'state-fills', () => {
+        this.map.on('mouseleave', sourceName + ' state-fills', () => {
             if (hoveredStateId) {
                 this.map.setFeatureState(
                     { source: sourceName, id: hoveredStateId },
@@ -185,6 +179,12 @@ class Map extends Component {
             }
             hoveredStateId = null;
         });
+    }
+
+    removeGeoJsonLayer(sourceName){
+        this.map.removeLayer(sourceName + ' state-fills');
+        this.map.removeLayer(sourceName + ' state-borders');
+        this.map.removeSource(sourceName);
     }
 
     zoomTo = (state) => {
@@ -206,6 +206,50 @@ class Map extends Component {
                 zoom: 7,
                 essential: true
             });
+        else
+            this.map.flyTo({
+                center: [-95, 39],
+                zoom: 3.5,
+                essential: true
+            });
+    }
+
+    getGeoJsonFile = (fileName) =>{
+        switch(fileName) {
+            case 'MD_Districts':
+                return MD_Districts;
+            case 'NY_Districts':
+                return NY_Districts;
+            case 'PA_Districts':
+                return PA_Districts
+            case 'MD_Precincts':
+                return MD_Precincts;
+            case 'NY_Precincts':
+                return NY_Precincts;
+            case 'PA_Precincts':
+                return PA_Precincts;
+            default:
+              return;
+          }
+    }
+
+    changeState = (currentState, requestState) =>{
+        let currentStateInitials = this.stateInitials(currentState);
+        let requestStateInitials = this.stateInitials(requestState);
+
+        if(currentState !== 'Select...'){
+            this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
+            this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'));
+            console.log('removed ' + currentStateInitials + '_Precincts\n' + 'added ' + currentStateInitials + '_Districts');
+        }
+
+        if(requestState != 'Select...'){
+            this.removeGeoJsonLayer(requestStateInitials + '_Districts');
+            this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'));
+            console.log('removed ' + requestStateInitials + '_Districts\n' + 'added ' + requestStateInitials + '_Precincts');
+        }
+        
+        this.zoomTo(requestState);
     }
 
     render() {
