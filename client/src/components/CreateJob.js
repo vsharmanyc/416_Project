@@ -26,17 +26,17 @@ class CreateJob extends Component {
         let demographics = [];
         this.state.demographics.map((option) => demographics.push(option.value) );
 
-        let compactness =  'low compactness';
+        let compactness =  'low';
         if(this.state.compactness >=35 && this.state.compactness <=75)
-            compactness = 'somewhat compact';
+            compactness = 'somewhat';
         else if(this.state.compactness > 75)
-            compactness = 'high compactness'; 
+            compactness = 'high'; 
 
         let job = {
             jobID: new Date().getTime(),
             demographics: demographics,
             numDistrictings: this.state.numDistrictings,
-            compactness: this.state.compactness,
+            compactness: compactness,
             populationDifference:  this.state.popDiff,
             popEqThres: this.state.popEqThres,
             status: 'pending'

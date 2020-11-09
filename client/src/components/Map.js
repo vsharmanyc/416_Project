@@ -40,7 +40,70 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.state !== prevProps.state) {
             this.zoomTo(this.props.state);
+            this.requestStateGeoJson(this.props.state);
         }
+    }
+
+    requestStateGeoJson = (stateName) => {
+        let state = '';
+        if (stateName == 'Maryland')
+            state = 'MD';
+        else if (stateName == 'New York')
+            state = 'NY';
+        else if (stateName == 'Pennsylvania')
+            state = 'PA';
+
+
+        /*let xhr = new XMLHttpRequest(); 
+        let url = 'localhost:8080';
+
+          // open a connection 
+          xhr.open("POST", url, true); 
+  
+          // Set the request header i.e. which type of content you are sending 
+          xhr.setRequestHeader("Content-Type", "application/json"); 
+
+          // Create a state change callback 
+          xhr.onreadystatechange = function () { 
+              if (xhr.readyState === 4 && xhr.status === 200) { 
+
+                  // Print received data from server 
+                console.log("Response from server: ", this.responseText);
+
+              } 
+          }; 
+
+          // Converting JSON data to string 
+          var data = JSON.stringify({"state": state}); 
+
+          // Sending data with the request 
+          xhr.send(data); 
+          */
+        fetch('http://localhost:8080/api/map/changeState',
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                method: "POST",
+                body: JSON.stringify({ "state": state }),
+                mode: 'cors'
+            })
+            .then(response => response.json())
+            .then(response => console.log(response)); 
+
+       /* fetch('http://localhost:8080/api/map/changeState', {
+            method: 'POST',
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'state': state }),
+            mode: 'no-cors'
+        })
+        .then(response => { console.log(response); return response.json(); })
+        .then(data => console.log(data)); */
     }
 
     addGeoJsonLayer = (sourceName, geoJSON) => {
@@ -96,8 +159,8 @@ class Map extends Component {
                     { source: sourceName, id: hoveredStateId },
                     { hover: true }
                 );
-                
-                if(this.props.state === e.features[0].properties.STATE)
+
+                if (this.props.state === e.features[0].properties.STATE)
                     this.props.onGeoDataUpdate(e.features[0].properties)
             }
         });
@@ -105,6 +168,7 @@ class Map extends Component {
         this.map.on('click', 'state-fills', (e) => {
             let stateName = e.features[0].properties.STATE;
             if (this.props.state != stateName) {
+
                 this.zoomTo(stateName);
                 this.props.onStateSelect(stateName);
             }
