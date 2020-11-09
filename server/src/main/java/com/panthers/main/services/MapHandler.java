@@ -55,7 +55,7 @@ public class MapHandler {
                 path += "MD_Districts.json";
                 break;
             case PA:
-                path += "PA_DISTRICTS.json";
+                path += "PA_Districts.json";
                 break;
         }
         try{
@@ -70,8 +70,29 @@ public class MapHandler {
      *
      * @return returns the states current precinct plan
      */
-    public List<District> requestPrecincts(){
-        return null;
+    public String requestPrecincts(){
+        // MODIFY PATH HERE TO FIT YOUR LOCAL MACHINE!!!
+        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/";
+        States s = getState();
+
+        // Determines which precinct json to load
+        switch (s){
+            case NY:
+                path += "NY_Precincts.json";
+                break;
+            case MD:
+                path += "MD_Precincts.json";
+                break;
+            case PA:
+                path += "PA_Precincts.json";
+                break;
+        }
+        try{
+            path = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
+        return path;
     }
 
     /**
@@ -114,8 +135,6 @@ public class MapHandler {
         States s = getState();
         // Parsing state from JSON object
         ObjectMapper mapper = new ObjectMapper();
-
-
 
         return null;
     }

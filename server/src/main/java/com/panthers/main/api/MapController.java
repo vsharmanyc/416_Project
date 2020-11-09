@@ -13,6 +13,7 @@ import com.panthers.main.services.MapHandler;
  * Class functions as controller for API/REST calls to get district/precint data, election data, etc etc (things
  * needed by the map)
  */
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
 @RequestMapping("/api/map")
 public class MapController {
@@ -23,10 +24,11 @@ public class MapController {
         this.mapHandler = mapHandler;
     }
 
-//    @GetMapping
-//    public String handleGetPrecincts(){
-//        return null;
-//    }
+    @GetMapping("/getPrecincts")
+    @ResponseBody
+    public String handleGetPrecincts(){
+        return mapHandler.requestPrecincts();
+    }
 
     /**
      * in charge of returning precints for the state we are looking at.
@@ -54,20 +56,20 @@ public class MapController {
      */
     @PostMapping("/changeState")
     @ResponseBody
-    public ResponseEntity handleChangeState(@RequestBody StateDto dto){
+    public String handleChangeState(@RequestBody StateDto dto){
         String state = dto.getState();
         switch (state) {
             case "NY":
                 mapHandler.changeState(States.NY);
-                return new ResponseEntity(HttpStatus.ACCEPTED);
+                return "{}";
             case "PA":
                 mapHandler.changeState(States.PA);
-                return new ResponseEntity(HttpStatus.ACCEPTED);
+                return "{}";
             case "MD":
                 mapHandler.changeState(States.MD);
-                return new ResponseEntity(HttpStatus.ACCEPTED);
+                return "{}";
             default:
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+                return "{}";
         }
     }
 
