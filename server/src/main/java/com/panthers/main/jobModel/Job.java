@@ -3,45 +3,37 @@ package com.panthers.main.jobModel;
 import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.mapModel.State;
 
+import javax.swing.*;
+import java.util.Date;
 import java.util.List;
 
 public class Job {
-    private String name;
-    private State state;
+    private int numDistrictings;
     private List<Demographic> demographicGroups;
     private double popEqThreshold;
-    private CompactnessMeasure compactness;
+    private String compactness;
     private int jobId;
     private JobStatus jobStatus;
     //private DistrictingPlans runResults;
 
 
-    public Job(String name, State state, List<Demographic> demographicGroups, double popEqThreshold,
-               CompactnessMeasure compactness, int jobId) {
-        this.name = name;
-        this.state = state;
+    public Job(int numDistrictings, List<Demographic> demographicGroups, double popEqThreshold,
+               String compactness) {
+        this.numDistrictings = numDistrictings;
         this.demographicGroups = demographicGroups;
         this.popEqThreshold = popEqThreshold;
         this.compactness = compactness;
-        this.jobId = jobId;
+        this.jobId = -1;
         this.jobStatus = JobStatus.PENDING;
     }
 
     /*GETTERS/SETTERS*/
-    public String getName() {
-        return name;
+    public int getName() {
+        return numDistrictings;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
+    public void setName(int numDistrictings) {
+        this.numDistrictings = numDistrictings;
     }
 
     public List<Demographic> getDemographicGroups() {
@@ -60,11 +52,11 @@ public class Job {
         this.popEqThreshold = popEqThreshold;
     }
 
-    public CompactnessMeasure getCompactness() {
+    public String getCompactness() {
         return compactness;
     }
 
-    public void setCompactness(CompactnessMeasure compactness) {
+    public void setCompactness(String compactness) {
         this.compactness = compactness;
     }
 
