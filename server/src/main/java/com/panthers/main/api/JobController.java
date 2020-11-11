@@ -5,6 +5,7 @@ import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.services.JobHandler;
 import com.panthers.main.services.MapHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,20 +22,30 @@ public class JobController {
     }
 
     /*+ handleDataRequest(): int
-+ handleCreateJob(int numDistrictings,...): void
-+ handleDeleteJob(int jobID): void"
++ handleDeleteJob(int jobID): void
 + handleCancelJob(int jobID): void
 + handleDisplayJob(int jobID): JSON
 + handleGetGraphData(int jobID): JSON*/
 
     /**
      * function takes parameters in to create a job on the server/seawulf. Returns id of the newly generated job.
-     * @param newJob
+     * @param newJob new job to be generated
      * @return returns the id of the newly generated job
      */
     @PostMapping("/createJob")
     @ResponseBody
-    public List<Job> handlerCreateJob(@RequestBody Job newJob){
+    public List<Job> handleCreateJob(@RequestBody Job newJob){
         return jobHandler.createJob(newJob);
+    }
+
+    /**
+     * function cancels the job with the given job id
+     * @param job jobId to cancel the job for.
+     * @return returns new job history with the cancelled job.
+     */
+    @PostMapping("/cancelJob")
+    @ResponseBody
+    public List<Job> handleCancelJob(@RequestBody Job job){
+        return jobHandler.cancelJob(job.getJobId());
     }
 }

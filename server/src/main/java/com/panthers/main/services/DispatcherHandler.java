@@ -1,0 +1,113 @@
+package com.panthers.main.services;
+
+import com.panthers.main.jobModel.DistrictingPlans;
+import com.panthers.main.jobModel.Job;
+import org.springframework.stereotype.Service;
+
+/**
+ * Dispatcher controls where the job will be run, and performs that run depending!
+ */
+@Service
+public class DispatcherHandler {
+    private DistrictingPlans runResults;
+    private boolean runOnSeaWulf;
+
+    public DispatcherHandler() {
+        this.runResults = null;
+        this.runOnSeaWulf = false;//Assume we don't run on seawulf
+    }
+
+    /*GETTERS/SETTERS*/
+//    public Job getJob() {
+//        return job;
+//    }
+//
+//    public void setJob(Job job) {
+//        this.job = job;
+//    }
+
+    public DistrictingPlans getRunResults() {
+        return runResults;
+    }
+
+    public void setRunResults(DistrictingPlans runResults) {
+        this.runResults = runResults;
+    }
+
+
+    /**
+     * function will simply compute best environment for the job to be processed; SeaWulf or Server
+     */
+    public void computeBestEnvironment(Job job){
+        //If we are to generate more than 5000 districtings, well send it to the seawulf
+        if (job.getNumDistrictings() > 5000)
+            runOnSeaWulf = true;
+    }
+
+    /**
+     * function proceeds to start the job on the server.
+     * @param job job to be started on server
+     * @return returns run results from the algorithm
+     */
+    public DistrictingPlans runAlgorithmOnServer(Job job){
+        return null;
+    }
+
+    /**
+     * function proceeds to start the job on the seawulf.
+     * @param job job to be started on seawulf
+     * @return returns run results from the algorithm
+     */
+    public DistrictingPlans runAlgorithmOnSeaWulf(Job job){
+        return null;
+    }
+
+    /**
+     * function writes results of algorithm run to our database
+     * @return returns true if writing was successful, false otherwise.
+     */
+    public boolean writeResultsToFileSystem(){
+        return false;
+    }
+
+    /**
+     * function dispatches job to determined environment.
+     * @param job job to be dispatched
+     */
+    public void dispatchJob(Job job){
+        computeBestEnvironment(job);
+
+        //Route execution to a separate thread, which will begin execution.
+        if (runOnSeaWulf){
+            new Thread(new Runnable() {
+                public void run(){
+                    System.out.println("Mapping execution for job " + job.getJobId() + " to SeaWulf");
+                    for (int i = 0; i < 5; i++){
+                        System.out.println(i);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }
+        else{
+            new Thread(new Runnable() {
+                public void run(){
+                    System.out.println("Mapping execution for job " + job.getJobId() + " to Server");
+                    for (int i = 0; i < 5; i++){
+                        System.out.println(i);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }
+    }
+
+}

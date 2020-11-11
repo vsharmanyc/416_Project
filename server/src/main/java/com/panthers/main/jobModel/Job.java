@@ -27,6 +27,10 @@ public class Job {
         this.jobStatus = JobStatus.PENDING;
     }
 
+    public Job(int jobId){
+        this.jobId = jobId;
+    }
+
     /*GETTERS/SETTERS*/
     public int getName() {
         return numDistrictings;
@@ -75,6 +79,15 @@ public class Job {
     public void setJobStatus(JobStatus jobStatus) {
         this.jobStatus = jobStatus;
     }
+
+    public int getNumDistrictings() {
+        return numDistrictings;
+    }
+
+    public void setNumDistrictings(int numDistrictings) {
+        this.numDistrictings = numDistrictings;
+    }
+
     /*FUNCTIONS*/
 
     /**
