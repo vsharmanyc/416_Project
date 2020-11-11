@@ -41,8 +41,36 @@ class CreateJob extends Component {
             popEqThres: this.state.popEqThres,
             status: 'pending'
         };
+
+        this.postReqCreateJob(job);
         this.addJob(job);
         this.clearForm();
+    }
+
+
+    postReqCreateJob = (variable) => {
+        console.log('good shit');
+
+        fetch('http://localhost:8080/api/job/createJob',
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                method: "POST",
+                body: JSON.stringify( {
+                    "numDistrictings": 20000,
+                    "demographicGroups": [
+                    "AFRICAN_AMERICAN",
+                    "ASIAN",
+                    "HISPANIC_LATINO"],
+                    "popEqThreshold": 0.98,
+                    "compactness": "Somewhat Compact"
+                } ),
+                mode: 'cors'
+            })
+            .then(response => response.json())
+            .then(response => console.log(response));
     }
 
     addJob = (job) =>{
