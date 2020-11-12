@@ -84,10 +84,10 @@ public class JobHandler {
         //Attaching the job to the job history!
         job.setJobStatus(JobStatus.QUEUED);
         jobHistory.add(job);
-
+        System.out.println("Created job:" + job.toString());
         //Dispatch the job
         dispatcherHandler.dispatchJob(job);
-
+        System.out.println("Dispatched job #" + job.getJobId());
         return jobHistory;
     }
 
@@ -172,15 +172,34 @@ public class JobHandler {
         /*
         * CANCELLING
         */
+        System.out.println("Cancelled execution of Job #"+jobId);
         return jobHistory;
     }
+
+    /**
+     * function deletes the job from the job history
+     * @param jobId jobId of job to delete
+     * @return the newly updated job history, with this deleted job change
+     */
+    public List<Job> deleteJob(int jobId){
+        int index = findJob(jobId);
+
+        if (index == -1)
+            return jobHistory;//Some error occurred, just ignore the call.
+
+        jobHistory.remove(index);
+        System.out.println("Deleted Job #"+jobId+" from Job History.");
+        return jobHistory;
+    }
+
+
 
     /**
      * function finds index of job in job history list.
      * @param jobId job to search for
      * @return index in job history of the requested job
      */
-    public int findJob(int jobId){
+    private int findJob(int jobId){
         for (int i = 0; i < jobHistory.size(); i++){
             if (jobHistory.get(i).getJobId() == jobId)
                 return i;

@@ -83,7 +83,7 @@ public class DispatcherHandler {
                 public void run(){
                     System.out.println("Mapping execution for job " + job.getJobId() + " to SeaWulf");
                     for (int i = 0; i < 5; i++){
-                        System.out.println(i);
+                        System.out.println("Work" + i);
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
@@ -98,7 +98,7 @@ public class DispatcherHandler {
                 public void run(){
                     System.out.println("Mapping execution for job " + job.getJobId() + " to Server");
                     for (int i = 0; i < 5; i++){
-                        System.out.println(i);
+                        System.out.println("Work" + i);
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {

@@ -97,4 +97,14 @@ public class Job {
     public String generateJobSummary(){
         return null;
     }
+
+    /**
+     * Returns string representation of job
+     * @return string representation of job
+     */
+    public String toString(){
+        return "\n{\nJob #" + jobId + ",\n" + "Requested Districtings: " + numDistrictings + ",\n"+
+                "Demographic Groups: " + demographicGroups + ",\n" + "Population Equality Threshold: " +
+                popEqThreshold + ",\n" + "Requested Compactness: " + compactness + "\n}";
+    }
 }

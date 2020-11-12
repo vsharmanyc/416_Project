@@ -23,7 +23,6 @@ public class JobController {
 
     /*+ handleDataRequest(): int
 + handleDeleteJob(int jobID): void
-+ handleCancelJob(int jobID): void
 + handleDisplayJob(int jobID): JSON
 + handleGetGraphData(int jobID): JSON*/
 
@@ -48,4 +47,17 @@ public class JobController {
     public List<Job> handleCancelJob(@RequestBody Job job){
         return jobHandler.cancelJob(job.getJobId());
     }
+
+    /**
+     * function deletes the job with the given job id
+     * @param job jobId to delete the job for.
+     * @return returns new job history with the deleted job.
+     */
+    @PostMapping("/deleteJob")
+    @ResponseBody
+    public List<Job> deleteCancelJob(@RequestBody Job job){
+        return jobHandler.deleteJob(job.getJobId());
+    }
+
+
 }
