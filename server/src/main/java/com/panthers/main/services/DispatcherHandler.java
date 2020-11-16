@@ -1,6 +1,6 @@
 package com.panthers.main.services;
 
-import com.panthers.main.jobModel.DistrictingPlans;
+import com.panthers.main.jobModel.RunResults;
 import com.panthers.main.jobModel.Job;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DispatcherHandler {
-    private DistrictingPlans runResults;
+    private RunResults runResults;
     private boolean runOnSeaWulf;
 
     public DispatcherHandler() {
@@ -26,11 +26,11 @@ public class DispatcherHandler {
 //        this.job = job;
 //    }
 
-    public DistrictingPlans getRunResults() {
+    public RunResults getRunResults() {
         return runResults;
     }
 
-    public void setRunResults(DistrictingPlans runResults) {
+    public void setRunResults(RunResults runResults) {
         this.runResults = runResults;
     }
 
@@ -49,7 +49,7 @@ public class DispatcherHandler {
      * @param job job to be started on server
      * @return returns run results from the algorithm
      */
-    public DistrictingPlans runAlgorithmOnServer(Job job){
+    public RunResults runAlgorithmOnServer(Job job){
         return null;
     }
 
@@ -58,7 +58,7 @@ public class DispatcherHandler {
      * @param job job to be started on seawulf
      * @return returns run results from the algorithm
      */
-    public DistrictingPlans runAlgorithmOnSeaWulf(Job job){
+    public RunResults runAlgorithmOnSeaWulf(Job job){
         return null;
     }
 

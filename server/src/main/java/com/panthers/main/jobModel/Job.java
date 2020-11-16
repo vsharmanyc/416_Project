@@ -14,7 +14,7 @@ public class Job {
     private String compactness;
     private int jobId;
     private JobStatus jobStatus;
-    //private DistrictingPlans runResults;
+    //private RunResults runResults;
 
 
     public Job(int numDistrictings, List<Demographic> demographicGroups, double popEqThreshold,

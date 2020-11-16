@@ -1,23 +1,32 @@
 package com.panthers.main.jobModel;
 
+import com.panthers.main.mapModel.District;
+import com.panthers.main.mapModel.Precinct;
+
 import java.util.List;
 
-public class DistrictingPlans {
+public class RunResults {
     private Job job;
     private List<DistrictingPlan> plans;
     private DistrictingPlan extremeDistricting;
     private DistrictingPlan averageDistricting;
     private DistrictingPlan randomDistricting;
-    //private List<T> counties;
-    private List<DistrictPlot> boxAndWhiskerData;
+    private List<Precinct> precinctGeometry;
+    private List<List<List<District>>> districtingGraph;
+    private int counties;
+    //private List<BoxPlot> boxAndWhiskerData;
+    //private Summary summary;
+    private List<Double> averageDistrictingMVAP;
 
-    public DistrictingPlans(Job job, List<DistrictingPlan> plans) {
+    public RunResults(Job job, List<DistrictingPlan> plans) {
         this.job = job;
         this.plans = plans;
         this.extremeDistricting = null;
         this.averageDistricting = null;
         this.randomDistricting = null;
-        this.boxAndWhiskerData = null;
+        this.precinctGeometry = null;
+        this.districtingGraph = null;
+        this.averageDistrictingMVAP = null;
     }
 
     /*GETTERS/SETTERS*/
@@ -59,14 +68,6 @@ public class DistrictingPlans {
 
     public void setRandomDistricting(DistrictingPlan randomDistricting) {
         this.randomDistricting = randomDistricting;
-    }
-
-    public List<DistrictPlot> getBoxAndWhiskerData() {
-        return boxAndWhiskerData;
-    }
-
-    public void setBoxAndWhiskerData(List<DistrictPlot> boxAndWhiskerData) {
-        this.boxAndWhiskerData = boxAndWhiskerData;
     }
 
     /*FUNCTIONS*/

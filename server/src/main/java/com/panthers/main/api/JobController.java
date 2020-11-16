@@ -1,6 +1,8 @@
 package com.panthers.main.api;
 
+import com.panthers.main.jobModel.DistrictingPlan;
 import com.panthers.main.jobModel.Job;
+import com.panthers.main.jobModel.RunResults;
 import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.services.JobHandler;
 import com.panthers.main.services.MapHandler;
@@ -59,5 +61,14 @@ public class JobController {
         return jobHandler.deleteJob(job.getJobId());
     }
 
+    /**
+     * Purely for testing methods.
+     * @return returns runResults
+     */
+    @GetMapping("/randomRunResult")
+    @ResponseBody
+    public RunResults generateRandomRunResult(){
+        return jobHandler.getRunResults();
+    }
 
 }

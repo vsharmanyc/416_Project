@@ -2,11 +2,12 @@ package com.panthers.main.jobModel;
 
 import com.panthers.main.mapModel.District;
 import com.panthers.main.mapModel.State;
+import com.panthers.main.mapModel.States;
 
 import java.util.List;
 
 public class DistrictingPlan {
-    private State state;
+    private States state;
     private List<District> districts;
     private CompactnessMeasure compactnessMeasure;
     private double popEqThreshold;
@@ -14,22 +15,21 @@ public class DistrictingPlan {
     private DistrictingType type;
     private int counties;
 
-    public DistrictingPlan(State state, List<District> districts, CompactnessMeasure compactnessMeasure,
+    public DistrictingPlan(States state, List<District> districts,
                            double popEqThreshold, String compactnessRequested, DistrictingType type, int counties) {
         this.state = state;
         this.districts = districts;
-        this.compactnessMeasure = compactnessMeasure;
         this.popEqThreshold = popEqThreshold;
         this.compactnessRequested = compactnessRequested;
         this.type = type;
         this.counties = counties;
     }
     /*GETTERS/SETTERS*/
-    public State getState() {
+    public States getState() {
         return state;
     }
 
-    public void setState(State state) {
+    public void setState(States state) {
         this.state = state;
     }
 
@@ -79,5 +79,10 @@ public class DistrictingPlan {
 
     public void setCounties(int counties) {
         this.counties = counties;
+    }
+
+    public String toString(){
+        return "Districts:" + districts + ",\nPopEqThreshold: " + popEqThreshold + ",\nCompactness: "  + compactnessRequested
+         + ",\nType: " + type + "\n\n";
     }
 }

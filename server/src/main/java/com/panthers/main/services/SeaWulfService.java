@@ -1,6 +1,6 @@
 package com.panthers.main.services;
 
-import com.panthers.main.jobModel.DistrictingPlans;
+import com.panthers.main.jobModel.RunResults;
 import com.panthers.main.jobModel.Job;
 import com.panthers.main.mapModel.District;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class SeaWulfService {
     private Job job;
-    private DistrictingPlans algorithmResults;
+    private RunResults algorithmResults;
     private List<District> currentDistricting;
 
     public SeaWulfService(Job job) {
@@ -36,7 +36,7 @@ public class SeaWulfService {
      * @param job job that will be worked on
      * @return returns districting plans resulting from the job.
      */
-    public DistrictingPlans executeJob(Job job){
+    public RunResults executeJob(Job job){
         return null;
     }
 
@@ -71,7 +71,7 @@ public class SeaWulfService {
     /**
      * function would write the results of our algorithm running form the seawulf to the file syste,
      */
-    public void writeToDirectory(DistrictingPlans algorithmResults){
+    public void writeToDirectory(RunResults algorithmResults){
 
     }
 
@@ -79,7 +79,7 @@ public class SeaWulfService {
      * function will compile results and generate data required to show the box and whisker plot.
      * @param results results to compile the box and whisker plot from
      */
-    public void generateDistrictingPlot(DistrictingPlans results){
+    public void generateDistrictingPlot(RunResults results){
 
     }
 }
