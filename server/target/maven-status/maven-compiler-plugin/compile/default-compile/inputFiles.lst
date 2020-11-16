@@ -1,6 +1,7 @@
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/services/DistrictService.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/api/JobController.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/jobModel/DistrictingPlan.java
+/mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/mapModel/Population.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/jobModel/Job.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/api/MapController.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/requestDto/StateDto.java
@@ -8,6 +9,7 @@
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/PanthersApplication.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/jobModel/CompactnessMeasure.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/services/JobHandler.java
+/mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/services/EntityManagerLoad.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/mapModel/States.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/jobModel/DistrictingType.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/mapModel/Demographic.java
@@ -20,6 +22,6 @@
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/services/PrecinctService.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/jobModel/DistrictingPlans.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/services/DispatcherHandler.java
-/mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/mapModel/ElectionData.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/mapModel/Precinct.java
+/mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/api/TestController.java
 /mnt/c/users/vshar/desktop/files/416/server/src/main/java/com/panthers/main/services/SeaWulfService.java
