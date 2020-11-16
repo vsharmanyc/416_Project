@@ -24,7 +24,7 @@ public class PrecinctService {
 //            demographics.put(Demographic.AFRICAN_AMERICAN, minorityPopulation);
 //            demographicVAP.put(Demographic.AFRICAN_AMERICAN, minorityVAPopulation);
 //
-//            ElectionData ed = new ElectionData(population, votingAgePopulation, demographics, demographicVAP);
+//            Population ed = new Population(population, votingAgePopulation, demographics, demographicVAP);
 //            List<Precinct> conn = new ArrayList<>();
 //            Precinct p = new Precinct(name, conn, id, ed);
 //            precinctData.addPrecinct(p);

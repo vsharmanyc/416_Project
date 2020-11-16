@@ -7,24 +7,24 @@ import java.util.List;
  * Districts have some precincts, neighboring districts, election data and a number&name.
  */
 public class District {
-    private String name;
+    private String state;
     private int districtNum;
     private List<District> neighbors;
     private List<Precinct> precincts;
 
-    public District(String name, int districtNum, List<District> neighbors, List<Precinct> precincts) {
-        this.name = name;
+    public District(String state, int districtNum, List<District> neighbors, List<Precinct> precincts) {
+        this.state = state;
         this.districtNum = districtNum;
         this.neighbors = neighbors;
         this.precincts = precincts;
     }
 
-    public String getName() {
-        return name;
+    public String getState() {
+        return state;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public int getDistrictNum() {
@@ -51,4 +51,7 @@ public class District {
         this.precincts = precincts;
     }
 
+    public String toString(){
+        return "District ID: " + districtNum + ",\nPrecincts: " + precincts + "\n";
+    }
 }

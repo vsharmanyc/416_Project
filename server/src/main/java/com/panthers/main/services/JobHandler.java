@@ -3,14 +3,17 @@ package com.panthers.main.services;
 import com.panthers.main.jobModel.DistrictingPlans;
 import com.panthers.main.jobModel.Job;
 import com.panthers.main.jobModel.JobStatus;
-import com.panthers.main.mapModel.Demographic;
-import com.panthers.main.mapModel.District;
-import com.panthers.main.mapModel.Precinct;
-import com.panthers.main.mapModel.State;
+import com.panthers.main.mapModel.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,12 +27,16 @@ public class JobHandler {
     private State state;
     private List<District> currentDistrictings;
     private List<Job> jobHistory;
+    private List<Precinct> precincts;
+    private List<District> districts;
 
     @Autowired
     public JobHandler(DispatcherHandler dispatcherHandler) {
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
+        loadPrecincts();
+        loadDistricts();
     }
 
     /*GETTERS/SETTERS*/
@@ -192,8 +199,6 @@ public class JobHandler {
         return jobHistory;
     }
 
-
-
     /**
      * function finds index of job in job history list.
      * @param jobId job to search for
@@ -206,4 +211,80 @@ public class JobHandler {
         }
         return -1;
     }
+
+    private void loadPrecincts(){
+        List<Precinct> precincts = new ArrayList<>();
+        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precincts_data.json";
+        try{
+            path = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
+        JSONObject obj = new JSONObject(path);
+        JSONArray features = obj.getJSONArray("precincts");
+        for(int i = 0; i < features.length(); i++){
+            JSONObject precinct = features.getJSONObject(i);
+            String name = precinct.getString("PRECINCT");
+            int population = precinct.getInt("TOTAL");
+            int vap = precinct.getInt("TOTVAP");
+            HashMap<Demographic, Integer> mpop = new HashMap<>();
+            mpop.put(Demographic.WHITE, precinct.getInt("WTOT"));
+            mpop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BTOT"));
+            mpop.put(Demographic.ASIAN, precinct.getInt("ATOT"));
+            mpop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AIANTOT"));
+            mpop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HTOT"));
+            mpop.put(Demographic.NH_OR_OPI, precinct.getInt("NHOPTOT"));
+
+            HashMap<Demographic, Integer> mvappop = new HashMap<>();
+            mvappop.put(Demographic.WHITE, precinct.getInt("WVAP"));
+            mvappop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BVAP"));
+            mvappop.put(Demographic.ASIAN, precinct.getInt("AVAP"));
+            mvappop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AIANVAP"));
+            mvappop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HVAP"));
+            mvappop.put(Demographic.NH_OR_OPI, precinct.getInt("NHOPVAP"));
+
+            String precinctID = precinct.getString("PRECINCTID");
+
+
+            Population pop = new Population(population, vap, mpop, mvappop, precinctID);
+            Precinct p = new Precinct(precinct.getString("PRECINCT"), new ArrayList<Precinct>(), precinctID,
+                    pop, population, vap, mpop, mvappop, null, precinct.getInt("DISTRICTID"));
+            precincts.add(p);
+        }
+        this.precincts = precincts;
+    }
+
+    private void loadDistricts(){
+        List<District> districts = new ArrayList<>();
+        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Districts_data.json";
+        try{
+            path = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
+        JSONObject obj = new JSONObject(path);
+        JSONArray features = obj.getJSONArray("districts");
+
+        for(int i = 0; i < features.length(); i++) {
+            JSONObject district = features.getJSONObject(i);
+            int id = district.getInt("DISTRICTID");
+            String state = district.getString("STATE");
+            District d = new District(state, id, null, null);
+            districts.add(d);
+        }
+
+        //Set precincts to a district
+        for (District district : districts) {
+            List<Precinct> precincts = new ArrayList<>();
+            int did = district.getDistrictNum();
+            for (Precinct precinct : this.precincts) {
+                if (precinct.getDistrictID() == did)
+                    precincts.add(precinct);
+            }
+            district.setPrecincts(precincts);
+        }
+        this.districts = districts;
+        System.out.println(districts);
+    }
+
 }

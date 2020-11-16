@@ -5,9 +5,9 @@ import java.util.List;
 public class State {
     private State name;
     private List<District> districts;
-    private ElectionData electionData;
+    private Population electionData;
 
-    public State(State name, List<District> districts, ElectionData electionData) {
+    public State(State name, List<District> districts, Population electionData) {
         this.name = name;
         this.districts = districts;
         this.electionData = electionData;
@@ -29,11 +29,11 @@ public class State {
         this.districts = districts;
     }
 
-    public ElectionData getElectionData() {
+    public Population getElectionData() {
         return electionData;
     }
 
-    public void setElectionData(ElectionData electionData) {
+    public void setElectionData(Population electionData) {
         this.electionData = electionData;
     }
 }

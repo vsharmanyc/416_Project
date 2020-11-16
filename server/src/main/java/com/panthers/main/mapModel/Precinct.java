@@ -1,5 +1,6 @@
 package com.panthers.main.mapModel;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,17 +11,19 @@ import java.util.List;
 public class Precinct {
     private String name;
     private List<Precinct> neighbors;
-    private int precinctNum;
-    private ElectionData electionData;
+    private String precinctNum;
+    private Population electionData;
+    private List<List<Double>> boundaryData;
 
     private int population;
     private int votingAgePopulation;
     private HashMap<Demographic, Integer> minorityPopulations;
     private HashMap<Demographic, Integer> minorityVAPopulations;
+    private int districtID;
 
-    public Precinct(String name, List<Precinct> neighbors, int precinctNum, ElectionData electionData, int population,
+    public Precinct(String name, List<Precinct> neighbors, String precinctNum, Population electionData, int population,
                     int votingAgePopulation, HashMap<Demographic, Integer> minorityPopulations,
-                    HashMap<Demographic, Integer> minorityVAPopulations) {
+                    HashMap<Demographic, Integer> minorityVAPopulations, List<List<Double>> boundaryData, int districtID) {
         this.name = name;
         this.neighbors = neighbors;
         this.precinctNum = precinctNum;
@@ -29,6 +32,16 @@ public class Precinct {
         this.votingAgePopulation = votingAgePopulation;
         this.minorityPopulations = minorityPopulations;
         this.minorityVAPopulations = minorityVAPopulations;
+        this.boundaryData = boundaryData;
+        this.districtID = districtID;
+    }
+
+    public int getDistrictID() {
+        return districtID;
+    }
+
+    public void setDistrictID(int districtID) {
+        this.districtID = districtID;
     }
 
     public String getName() {
@@ -39,6 +52,14 @@ public class Precinct {
         this.name = name;
     }
 
+    public List<List<Double>> getBoundaryData() {
+        return boundaryData;
+    }
+
+    public void setBoundaryData(List<List<Double>> boundaryData) {
+        this.boundaryData = boundaryData;
+    }
+
     public List<Precinct> getNeighbors() {
         return neighbors;
     }
@@ -47,20 +68,26 @@ public class Precinct {
         this.neighbors = neighbors;
     }
 
-    public int getPrecinctNum() {
+    public String getPrecinctNum() {
         return precinctNum;
     }
 
-    public void setPrecinctNum(int precinctNum) {
+    public void setPrecinctNum(String precinctNum) {
         this.precinctNum = precinctNum;
     }
 
-    public ElectionData getElectionData() {
+    public Population getElectionData() {
         return electionData;
     }
 
-    public void setElectionData(ElectionData electionData) {
+    public void setElectionData(Population electionData) {
         this.electionData = electionData;
+    }
+
+    public String toString(){
+        return "{\nPopulation: " + population + ",\nVotingAgePopulation: " + votingAgePopulation +
+                ",\nMinorityPopulationData: " + minorityPopulations + ",\nMinorityVAPPopulations: " + minorityVAPopulations
+                 + "\nPrecinctID: " + precinctNum;
     }
 
 }

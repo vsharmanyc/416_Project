@@ -1,0 +1,43 @@
+{
+  "districts": [
+  {
+    "DISTRICTID": 8,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 4,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 5,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 6,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 7,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 1,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 2,
+    "STATE": "MD",
+    "STATEID": 24
+  },
+  {
+    "DISTRICTID": 3,
+    "STATE": "MD",
+    "STATEID": 24
+  }
+]}

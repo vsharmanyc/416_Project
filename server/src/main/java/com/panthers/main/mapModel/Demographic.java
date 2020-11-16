@@ -5,6 +5,7 @@ public enum Demographic {
     AFRICAN_AMERICAN,
     ASIAN,
     HISPANIC_LATINO,
-    AM_INDIAN_AK_NATIVE
+    AM_INDIAN_AK_NATIVE,
+    NH_OR_OPI
 }
 
