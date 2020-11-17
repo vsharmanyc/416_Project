@@ -3,11 +3,7 @@ package com.panthers.main.handler;
 import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.mapModel.Population;
 import com.panthers.main.mapModel.Precinct;
-<<<<<<< HEAD:server/src/main/java/com/panthers/main/handler/EntityManagerLoad.java
-=======
 import com.panthers.main.mapModel.States;
-
->>>>>>> 57a37da3e074be1969f038e66f1608b08fae23a3:server/src/main/java/com/panthers/main/services/EntityManagerLoad.java
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
