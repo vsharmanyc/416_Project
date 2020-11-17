@@ -67,21 +67,21 @@ class Map extends Component {
     }
 
     stateInitials = (stateName) => {
-        if (stateName == 'Maryland')
+        if (stateName === 'Maryland')
             return 'MD';
-        else if (stateName == 'New York')
+        else if (stateName === 'New York')
             return 'NY';
-        else if (stateName == 'Pennsylvania')
+        else if (stateName === 'Pennsylvania')
             return 'PA';
         return stateName;
     }
 
     stateName = (stateInitials) => {
-        if (stateInitials == 'MD')
+        if (stateInitials === 'MD')
             return 'Maryland';
-        else if (stateInitials == 'NY')
+        else if (stateInitials === 'NY')
             return 'New York';
-        else if (stateInitials == 'PA')
+        else if (stateInitials === 'PA')
             return 'Pennsylvania';
         return stateInitials;
     }
@@ -147,7 +147,7 @@ class Map extends Component {
 
         this.map.on('click', sourceName + ' state-fills', (e) => {
             let stateName = this.stateFromGeoProps(e.features[0].properties);
-            if (this.props.state != stateName) {
+            if (this.props.state !== stateName) {
                 this.props.onStateSelect(stateName);
             }
         });
@@ -228,7 +228,7 @@ class Map extends Component {
             this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
         }
 
-        if(requestState != 'Select...'){
+        if(requestState !== 'Select...'){
             this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'));
             this.removeGeoJsonLayer(requestStateInitials + '_Districts');  
         }

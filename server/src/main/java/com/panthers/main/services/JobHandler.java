@@ -230,6 +230,7 @@ public class JobHandler {
     private void loadPrecincts() {
         List<Precinct> precincts = new ArrayList<>();
         String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precincts_data.json";
+        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precincts_data.json";
         try {
             path = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException ex) {
@@ -273,6 +274,7 @@ public class JobHandler {
     private void loadDistricts() {
         List<District> districts = new ArrayList<>();
         String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Districts_data.json";
+        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precincts_data.json";
         try {
             path = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException ex) {

@@ -5,6 +5,7 @@ import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.mapModel.Population;
 import com.panthers.main.mapModel.Precinct;
 import com.panthers.main.mapModel.States;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class EntityManagerLoad {
 
     public void loadEM(){
         String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precincts_data.json";
+        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precincts_data.json";
         try{
             path = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException ex){

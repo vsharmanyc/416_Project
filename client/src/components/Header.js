@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, ButtonGroup } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import panther from "./../rsrc/panther.png"
 import '../App.css';
 
