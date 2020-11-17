@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/em")
 public class TestController {
-    private EntityManagerLoad em;
-
-    @Autowired
-    public TestController(EntityManagerLoad em) {
-        this.em = em;
-    }
-
-    @GetMapping("/getPrecincts")
-    public void getPrecinct(){
-        em.loadEM();
-    }
+//    private EntityManagerLoad em;
+//
+//    @Autowired
+//    public TestController(EntityManagerLoad em) {
+//        this.em = em;
+//    }
+//
+//    @GetMapping("/getPrecincts")
+//    public void getPrecinct(){
+//        em.loadEM();
+//    }
 }

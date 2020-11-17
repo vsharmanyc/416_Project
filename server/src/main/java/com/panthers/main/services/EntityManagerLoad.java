@@ -66,7 +66,7 @@ public class EntityManagerLoad {
 
             Population pop = new Population(population, vap, mpop, mvappop, precinctID);
             Precinct p = new Precinct(precinct.getString("PRECINCTNAME"), new ArrayList<Precinct>(), precinctID,
-                     pop, population, vap, mpop, mvappop, null, precinct.getInt("DISTRICTID"));
+                     pop, population, vap, mpop, mvappop, null, precinct.getInt("DISTRICTID"), precinct.getString("COUNTIES"));
             precincts.add(p);
         }
 
