@@ -3,10 +3,15 @@ package com.panthers.main.jobModel;
 import com.panthers.main.mapModel.District;
 import com.panthers.main.mapModel.Precinct;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Data pulled from results of one algorithm run, either on seawulf or server.
+ * Contains the job that initiated this run, as well as the districting plans generated as per the user requested params
+ */
 public class RunResults {
     private Job job;
     private List<DistrictingPlan> plans;
@@ -16,7 +21,7 @@ public class RunResults {
     private List<Precinct> precinctGeometry;
     private List<List<List<District>>> districtingGraph;
     private int counties;
-    //private List<BoxPlot> boxAndWhiskerData;
+    private List<BoxPlot> boxAndWhiskerData;
     //private Summary summary;
     private List<Double> averageDistrictingMVAP;
 
@@ -30,6 +35,7 @@ public class RunResults {
         this.districtingGraph = null;
         this.averageDistrictingMVAP = null;
         this.counties = 0;
+        this.boxAndWhiskerData = new ArrayList<>();
     }
 
     /*GETTERS/SETTERS*/
@@ -89,14 +95,7 @@ public class RunResults {
         for (DistrictingPlan dp : plans) {
             List<District> dpDistricts = dp.getDistricts();
             for (District d : dpDistricts) {
-                List<Precinct> precincts = d.getPrecincts();
-                for (Precinct precinct : precincts) {
-                    //If county isnt accounted for, add it to the district's list + increment the count
-                    if (!d.checkIfCountedCounty(precinct.getCounty())) {
-                        d.addCounty(precinct.getCounty());
-                        d.incrementCountyCount();
-                    }
-                }
+                d.calculateCounties();
             }
         }
     }
@@ -134,6 +133,63 @@ public class RunResults {
         }
     }
 
+    /**
+     * function adds given precincts to precinct geometry.
+     * @param geo the precincts we are to add to this runresults precinctgeometry.
+     */
+    public void addToPrecinctGeometry(List<Precinct> geo){
+        precinctGeometry.addAll(geo);
+    }
+
+    /**
+     * adds the given districts to this runresults districting graph (stored as adjacency list)
+     * @param graph list of districts to add
+     */
+    public void addToDistrictingGraphs(List<List<District>> graph){
+        districtingGraph.add(graph);
+    }
+
+    /**
+     * Function will add this boxplot to the runresults box plot graph
+     * @param bp boxplot to add
+     */
+    public void addToBoxPlotGraph(BoxPlot bp){
+
+    }
+
+    /**
+     * function will calculate average from sum of MVAPS and number of MVAPS, then add it to the
+     * @param sumMVAP sum MVAP calculated previous to this method
+     * @param length number of mvaps involved in sum, needed to determine average
+     */
+    public void addAverageToList(double sumMVAP, int length){
+        double avg = sumMVAP / length;
+        averageDistrictingMVAP.add(avg);
+    }
+
+    /**
+     * function determines statistical average MVAP throughout the districtings generated.
+     */
+    public void determineStatisticalAverage(){
+
+    }
+
+    /**
+     * function scores districting plans according to their deviation from the average districting, and stores this
+     * deviation in the specific districtingplan
+     */
+    public void scoreDistrictingPlans(){
+
+    }
+
+    /**
+     * function will sift through the districting plans and find the one with the lowest deviation from average
+     * districting. this will represent our 'average districting'
+     * @return returns the found-to-be average districting
+     */
+    public DistrictingPlan findLowestScoringDistricting(){
+        return null;
+    }
 
 
 }

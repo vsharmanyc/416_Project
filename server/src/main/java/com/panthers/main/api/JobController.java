@@ -1,13 +1,9 @@
 package com.panthers.main.api;
 
-import com.panthers.main.jobModel.DistrictingPlan;
 import com.panthers.main.jobModel.Job;
 import com.panthers.main.jobModel.RunResults;
-import com.panthers.main.mapModel.Demographic;
-import com.panthers.main.services.JobHandler;
-import com.panthers.main.services.MapHandler;
+import com.panthers.main.handler.JobHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +18,6 @@ public class JobController {
     public JobController(JobHandler jobHandler) {
         this.jobHandler = jobHandler;
     }
-
-    /*+ handleDataRequest(): int
-+ handleDeleteJob(int jobID): void
-+ handleDisplayJob(int jobID): JSON
-+ handleGetGraphData(int jobID): JSON*/
 
     /**
      * function takes parameters in to create a job on the server/seawulf. Returns id of the newly generated job.

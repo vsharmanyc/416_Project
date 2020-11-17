@@ -1,5 +1,6 @@
 package com.panthers.main.mapModel;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,19 +16,23 @@ public class District implements Comparable<District>{
     private List<District> neighbors;
     private List<Precinct> precincts;
     private Set<String> counties;
+    private List<Polygon> boundaryData;
     private int countCounties;
     private double percentVap;
 
-    public District(String state, int districtNum, List<District> neighbors, List<Precinct> precincts) {
+    public District(String state, int districtNum, List<District> neighbors, List<Precinct> precincts,
+                    List<Polygon> boundaryData) {
         this.state = state;
         this.districtNum = districtNum;
         this.neighbors = neighbors;
         this.precincts = precincts;
         this.counties = new HashSet<>();
+        this.boundaryData = boundaryData;
         this.countCounties = 0;
         this.percentVap = 0.0;
     }
 
+    /*GETTERS/SETTERS*/
     public int getCountCounties() {
         return countCounties;
     }
@@ -79,6 +84,8 @@ public class District implements Comparable<District>{
     public String toString(){
         return "District ID: " + districtNum +  ",\nCounties: " + countCounties + ",\nPercentVAP: " + percentVap;
     }
+
+    /* FUNCTIONS */
 
     /**
      * Function is used when we sort the districts in a districting plan by their percentVAP
@@ -150,5 +157,20 @@ public class District implements Comparable<District>{
         }
         // Calculates the percent val by selected minorty vap by overall minority val.
         this.percentVap = selectedMvap / totalVap;
+    }
+
+    /**
+     * Function calculates counties present in this specific district.
+     * Loops through precincts, adding counties to list and incrementing counter when a new county is discovered
+     */
+    public void calculateCounties(){
+        List<Precinct> ps = this.precincts;
+        for (Precinct precinct : ps) {
+            //If county isnt accounted for, add it to the district's list + increment the count
+            if (!checkIfCountedCounty(precinct.getCounty())) {
+                addCounty(precinct.getCounty());
+                incrementCountyCount();
+            }
+        }
     }
 }

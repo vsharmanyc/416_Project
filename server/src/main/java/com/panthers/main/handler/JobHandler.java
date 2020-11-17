@@ -1,4 +1,4 @@
-package com.panthers.main.services;
+package com.panthers.main.handler;
 
 import com.panthers.main.jobModel.*;
 import com.panthers.main.mapModel.*;
@@ -227,6 +227,10 @@ public class JobHandler {
         return -1;
     }
 
+
+
+    /* TESTING METHODS*/
+
     private void loadPrecincts() {
         List<Precinct> precincts = new ArrayList<>();
         String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precincts_data.json";
@@ -285,7 +289,7 @@ public class JobHandler {
             JSONObject district = features.getJSONObject(i);
             int id = district.getInt("DISTRICTID");
             String state = district.getString("STATE");
-            District d = new District(state, id, null, null);
+            District d = new District(state, id, null, null, null);
             districts.add(d);
         }
 
@@ -327,7 +331,7 @@ public class JobHandler {
                     int index = rand.nextInt(ps.size());
                     districtPrecincts.add(ps.remove(index));
                 }
-                District d = new District("MD", counter, null, districtPrecincts);
+                District d = new District("MD", counter, null, districtPrecincts, null);
                 d.calculatePercentMVAP(job.getDemographicGroups());
                 planDistricts.add(d);
                 counter++;

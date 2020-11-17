@@ -2,6 +2,10 @@ package com.panthers.main.mapModel;
 
 import java.util.HashMap;
 
+/**
+ * Object wraps population data metrics in an easily manageable/modular class
+ * Contains populations, vap, and minority vaps for each minority
+ */
 public class Population {
     private String precinctNum;
     private int population;

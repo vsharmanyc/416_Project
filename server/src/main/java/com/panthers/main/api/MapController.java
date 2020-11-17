@@ -1,13 +1,10 @@
 package com.panthers.main.api;
 
-import com.panthers.main.jobModel.DistrictingType;
 import com.panthers.main.mapModel.States;
 import com.panthers.main.requestDto.StateDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.panthers.main.services.MapHandler;
+import com.panthers.main.handler.MapHandler;
 
 /**
  * Class functions as controller for API/REST calls to get district/precint data, election data, etc etc (things

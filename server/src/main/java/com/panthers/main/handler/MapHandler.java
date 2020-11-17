@@ -1,17 +1,14 @@
-package com.panthers.main.services;
+package com.panthers.main.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.panthers.main.jobModel.DistrictingType;
-import com.panthers.main.mapModel.District;
 import com.panthers.main.mapModel.States;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 
 /**

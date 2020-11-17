@@ -1,8 +1,5 @@
 package com.panthers.main.api;
 
-import com.panthers.main.services.EntityManagerLoad;
-import com.panthers.main.services.MapHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)

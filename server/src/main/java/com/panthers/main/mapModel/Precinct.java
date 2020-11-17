@@ -39,6 +39,7 @@ public class Precinct {
         this.county = county;
     }
 
+    /* GETTERS/SETTERS */
     public String getCounty() {
         return county;
     }
