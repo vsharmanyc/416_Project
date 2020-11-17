@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
-import NY_Districts from './../geoJSON/NY_Districts.geojson'
-import PA_Districts from './../geoJSON/PA_Districts.geojson'
-import MD_Districts from './../geoJSON/MD_Districts.geojson'
-import NY_Precincts from './../geoJSON/NY_Precincts.geojson'
-import PA_Precincts from './../geoJSON/PA_Precincts.geojson'
-import MD_Precincts from './../geoJSON/MD_Precincts.geojson'
+import NY_Districts from './../geoJSON/NY_district.geojson'
+import PA_Districts from './../geoJSON/PA_district.geojson'
+import MD_Districts from './../geoJSON/MD_district.geojson'
+import NY_Precincts from './../geoJSON/NY_normalized.geojson'
+import PA_Precincts from './../geoJSON/PA_normalized.geojson'
+import MD_Precincts from './../geoJSON/MD_normalized.geojson'
 import '../App.css';
 
 
@@ -140,16 +140,13 @@ class Map extends Component {
                     { hover: true }
                 );
 
-                if (sourceName.includes("Districts") && this.props.state === e.features[0].properties.statename
-                    || sourceName.includes("Precincts") && this.stateInitials(this.props.state) === e.features[0].properties.STATE)
+                if (this.props.state  === this.stateFromGeoProps(e.features[0].properties))
                     this.props.onGeoDataUpdate(e.features[0].properties)
             }
         });
 
         this.map.on('click', sourceName + ' state-fills', (e) => {
-            let stateName = e.features[0].properties.statename;
-            if (sourceName.includes("Precincts"))
-                stateName = this.stateName(e.features[0].properties.STATE);
+            let stateName = this.stateFromGeoProps(e.features[0].properties);
             if (this.props.state != stateName) {
                 this.props.onStateSelect(stateName);
             }
@@ -227,16 +224,26 @@ class Map extends Component {
         let requestStateInitials = this.stateInitials(requestState);
 
         if(currentState !== 'Select...'){
-            this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
             this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'));
+            this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
         }
 
         if(requestState != 'Select...'){
-            this.removeGeoJsonLayer(requestStateInitials + '_Districts');
             this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'));
+            this.removeGeoJsonLayer(requestStateInitials + '_Districts');  
         }
         
         this.zoomTo(requestState);
+    }
+
+    stateFromGeoProps(properties){
+        let state = properties.statename;
+        if(state === undefined)
+            state = properties.STATE;
+        console.log(state);
+        if(state.length > 2)
+            return state;
+        return this.stateName(state);
     }
 
     render() {
