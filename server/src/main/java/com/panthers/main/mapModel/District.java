@@ -1,22 +1,47 @@
 package com.panthers.main.mapModel;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * District is the main unique area we interact with in our map, and in our congressional districtings.
  * Districts have some precincts, neighboring districts, election data and a number&name.
  */
-public class District {
+public class District implements Comparable<District>{
     private String state;
     private int districtNum;
     private List<District> neighbors;
     private List<Precinct> precincts;
+    private Set<String> counties;
+    private int countCounties;
+    private double percentVap;
 
     public District(String state, int districtNum, List<District> neighbors, List<Precinct> precincts) {
         this.state = state;
         this.districtNum = districtNum;
         this.neighbors = neighbors;
         this.precincts = precincts;
+        this.counties = new HashSet<>();
+        this.countCounties = 0;
+        this.percentVap = 0.0;
+    }
+
+    public int getCountCounties() {
+        return countCounties;
+    }
+
+    public void setCountCounties(int countCounties) {
+        this.countCounties = countCounties;
+    }
+
+    public double getPercentVap() {
+        return percentVap;
+    }
+
+    public void setPercentVap(double percentVap) {
+        this.percentVap = percentVap;
     }
 
     public String getState() {
@@ -52,6 +77,78 @@ public class District {
     }
 
     public String toString(){
-        return "District ID: " + districtNum + ",\nPrecincts: " + precincts + "\n";
+        return "District ID: " + districtNum +  ",\nCounties: " + countCounties + ",\nPercentVAP: " + percentVap;
+    }
+
+    /**
+     * Function is used when we sort the districts in a districting plan by their percentVAP
+     * @param d district we compare this to
+     * @return usual compareTo return values
+     */
+    @Override
+    public int compareTo(District d) {
+        return Double.compare(percentVap, d.getPercentVap());
+    }
+
+    /**
+     * function checks if the given county was already accounted for in district
+     * @return yes/no if county counted
+     */
+    public boolean checkIfCountedCounty(String county){
+        return counties.contains(county);
+    }
+
+    /**
+     * adds county to list of counties in district
+     * @param county county that is in district.
+     */
+    public void addCounty(String county){
+        counties.add(county);
+    }
+
+    /**
+     * simply increments counties count.
+     */
+    public void incrementCountyCount(){
+        this.countCounties++;
+    }
+
+    /**
+     * Calculates the percent mvap for this district. Utilizes
+     * @param minorities list of minorities we calculate the percent mvap for.
+     */
+    public void calculatePercentMVAP(List<Demographic> minorities){
+        double totalVap = 0.0;
+        double selectedMvap = 0.0;
+        for (Precinct p: precincts){
+            for (Demographic d: minorities){
+                totalVap += p.getElectionData().getVotingAgePopulation();
+                //Adding minority voting age populations.
+                switch(d){
+                    case ASIAN:
+                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.ASIAN);
+                        break;
+                    case AFRICAN_AMERICAN:
+                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.AFRICAN_AMERICAN);
+                        break;
+                    case AM_INDIAN_AK_NATIVE:
+                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.AM_INDIAN_AK_NATIVE);
+                        break;
+                    case HISPANIC_LATINO:
+                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.HISPANIC_LATINO);
+                        break;
+                    case WHITE:
+                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.WHITE);
+                        break;
+                    case NH_OR_OPI:
+                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.NH_OR_OPI);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        // Calculates the percent val by selected minorty vap by overall minority val.
+        this.percentVap = selectedMvap / totalVap;
     }
 }

@@ -21,9 +21,11 @@ public class Precinct {
     private HashMap<Demographic, Integer> minorityVAPopulations;
     private int districtID;
 
+    private String county;
+
     public Precinct(String name, List<Precinct> neighbors, String precinctNum, Population electionData, int population,
                     int votingAgePopulation, HashMap<Demographic, Integer> minorityPopulations,
-                    HashMap<Demographic, Integer> minorityVAPopulations, List<List<Double>> boundaryData, int districtID) {
+                    HashMap<Demographic, Integer> minorityVAPopulations, List<List<Double>> boundaryData, int districtID, String county) {
         this.name = name;
         this.neighbors = neighbors;
         this.precinctNum = precinctNum;
@@ -34,6 +36,15 @@ public class Precinct {
         this.minorityVAPopulations = minorityVAPopulations;
         this.boundaryData = boundaryData;
         this.districtID = districtID;
+        this.county = county;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
     }
 
     public int getDistrictID() {

@@ -4,6 +4,9 @@ import com.panthers.main.mapModel.District;
 import com.panthers.main.mapModel.State;
 import com.panthers.main.mapModel.States;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DistrictingPlan {
@@ -79,6 +82,14 @@ public class DistrictingPlan {
 
     public void setCounties(int counties) {
         this.counties = counties;
+    }
+
+    /**
+     * Sorts the districts in this districting plan by the mvapPercentage. Utilizes the collections.sort functionality,
+     * since District implements Comparable
+     */
+    public void sortDistrictsByMVAP(){
+        Collections.sort(districts);
     }
 
     public String toString(){

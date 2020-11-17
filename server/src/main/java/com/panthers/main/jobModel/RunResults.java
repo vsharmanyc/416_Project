@@ -3,7 +3,9 @@ package com.panthers.main.jobModel;
 import com.panthers.main.mapModel.District;
 import com.panthers.main.mapModel.Precinct;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RunResults {
     private Job job;
@@ -27,6 +29,7 @@ public class RunResults {
         this.precinctGeometry = null;
         this.districtingGraph = null;
         this.averageDistrictingMVAP = null;
+        this.counties = 0;
     }
 
     /*GETTERS/SETTERS*/
@@ -80,10 +83,22 @@ public class RunResults {
 
     /**
      * function calculates number of counties across our districting plans
-     * @return returns number of counties in our districing plan
      */
-    public int calculateCounties(){
-        return -1;
+    public void calculateCounties() {
+        // Idea: From each districting plan, we calculate number of counties in a district.
+        for (DistrictingPlan dp : plans) {
+            List<District> dpDistricts = dp.getDistricts();
+            for (District d : dpDistricts) {
+                List<Precinct> precincts = d.getPrecincts();
+                for (Precinct precinct : precincts) {
+                    //If county isnt accounted for, add it to the district's list + increment the count
+                    if (!d.checkIfCountedCounty(precinct.getCounty())) {
+                        d.addCounty(precinct.getCounty());
+                        d.incrementCountyCount();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -109,6 +124,16 @@ public class RunResults {
     public void calculateDistrictingAssociation(){
 
     }
+
+    /**
+     * Sorts resulting districtings by increasing percentage voter age population by user selected minority(s)
+     */
+    public void sortResultDistrictings(){
+        for (DistrictingPlan dp: plans){
+            dp.sortDistrictsByMVAP();
+        }
+    }
+
 
 
 }
