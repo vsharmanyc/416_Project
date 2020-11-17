@@ -3,6 +3,11 @@ package com.panthers.main.handler;
 import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.mapModel.Population;
 import com.panthers.main.mapModel.Precinct;
+<<<<<<< HEAD:server/src/main/java/com/panthers/main/handler/EntityManagerLoad.java
+=======
+import com.panthers.main.mapModel.States;
+
+>>>>>>> 57a37da3e074be1969f038e66f1608b08fae23a3:server/src/main/java/com/panthers/main/services/EntityManagerLoad.java
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,7 @@ public class EntityManagerLoad {
 
     public void loadEM(){
         String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precincts_data.json";
+        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precincts_data.json";
         try{
             path = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException ex){

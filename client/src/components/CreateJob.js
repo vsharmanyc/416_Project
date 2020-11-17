@@ -49,8 +49,6 @@ class CreateJob extends Component {
 
 
     postReqCreateJob = (variable) => {
-        console.log('good shit');
-
         fetch('http://localhost:8080/api/job/createJob',
             {
                 headers: {
@@ -71,6 +69,8 @@ class CreateJob extends Component {
             })
             .then(response => response.json())
             .then(response => console.log(response));
+
+            console.log("hello");
     }
 
     addJob = (job) =>{

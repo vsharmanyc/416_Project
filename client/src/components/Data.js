@@ -22,8 +22,9 @@ class Data extends Component {
 
         return (
             <div>
-                <h5>{this.props.geoData.COUNTY}</h5>
-                <h5>{this.props.geoData.PRECINCTNAME}</h5>
+                <h5>{this.props.geoData.COUNTY === undefined ? "" : "County: " + this.props.geoData.COUNTY}</h5>
+                <h5>{this.props.geoData.DISTRICTID === undefined || this.props.geoData.DISTRICTID === 'null' ? "" : "District: " + this.props.geoData.DISTRICTID}</h5>
+                <h5>{this.props.geoData.PRECINCT === undefined ? "" : "Precinct: " + this.props.geoData.PRECINCT}</h5>
                 <Table striped bordered hover size="sm">
                     <thead>
                         <tr>
@@ -50,8 +51,8 @@ class Data extends Component {
                         </tr>
                         <tr>
                             <td>Hispanic or Latino</td>
-                            <td>{this.props.geoData.HLTOT}</td>
-                            <td>{this.props.geoData.HLVAP}</td>
+                            <td>{this.props.geoData.HTOT}</td>
+                            <td>{this.props.geoData.HVAP}</td>
                         </tr>
                         <tr>
                             <td>American Indian or Alaska Native</td>
@@ -62,11 +63,6 @@ class Data extends Component {
                             <td>Native Hawaiian or Other Pacific Islander</td>
                             <td>{this.props.geoData.NHOPTOT}</td>
                             <td>{this.props.geoData.NHOPVAP}</td>
-                        </tr>
-                        <tr>
-                            <td>Two or More Races</td>
-                            <td>{this.props.geoData.TWOMORETOT}</td>
-                            <td>{this.props.geoData.TWOMOREVAP}</td>
                         </tr>
                         <tr>
                             <td>Other</td>
