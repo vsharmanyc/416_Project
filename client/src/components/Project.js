@@ -33,9 +33,10 @@ class Project extends Component {
 
 
     render() {
-        const headerStyle = { height: '10%', width: '100%', backgroundColor: '#63BEB6' };
-        const sidebarStyle = { position: 'absolute', top: '10%', height: '90%', width: '25%' }
-        const mapStyle = { position: 'absolute', left: '25%', top: '10%', height: '90%', width: '75%' };
+        const headerStyle = { height: '10%', width: '100%', backgroundColor: '#63BEB6', zIndex: 3 };
+        const sidebarStyle = { position: 'absolute', top: '10%', height: '90%', width: '25%', zIndex: 2 }
+        const mapStyle = { position: 'absolute', top: '10%', height: '90%', width: '100%', zIndex: 1 };
+
 
 
         return (
