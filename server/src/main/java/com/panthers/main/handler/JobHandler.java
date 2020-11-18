@@ -1,7 +1,7 @@
 package com.panthers.main.handler;
 
-import com.panthers.main.jobModel.*;
-import com.panthers.main.mapModel.*;
+import com.panthers.main.jobmodel.*;
+import com.panthers.main.mapmodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +89,6 @@ public class JobHandler {
      * @return returns true on successful job creation, false otherwise.
      */
     public List<Job> createJob(Job job) {
-        job.setState(state);
-
         if (jobHistory.size() == 0)
             job.setJobId(1);//If no other jobs, its job id is 1
         else
@@ -100,7 +98,7 @@ public class JobHandler {
         jobHistory.add(job);
         System.out.println("Created job:" + job.toString());
 
-        dispatcherHandler.dispatchJob(job, state);
+        dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
         return jobHistory;
     }
@@ -235,8 +233,8 @@ public class JobHandler {
 
     private void loadPrecincts() {
         List<Precinct> precincts = new ArrayList<>();
-        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precincts_data.json";
-        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precincts_data.json";
+        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precinct_data.json";
+        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precinct_data.json";
         try {
             path = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException ex) {
@@ -280,7 +278,7 @@ public class JobHandler {
     private void loadDistricts() {
         List<District> districts = new ArrayList<>();
         String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Districts_data.json";
-        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precincts_data.json";
+        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precinct_data.json";
         try {
             path = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException ex) {
@@ -318,7 +316,7 @@ public class JobHandler {
         dg.add(Demographic.AFRICAN_AMERICAN);
         dg.add(Demographic.ASIAN);
 
-        Job job = new Job(10, dg, 0.003, "Somewhat Compact");
+        Job job = new Job(States.MD, 10, dg, 0.003, "Somewhat Compact");
         job.setJobId(10);
         job.setJobStatus(JobStatus.COMPLETED);
         job.setName(24);

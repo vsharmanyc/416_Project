@@ -1,8 +1,8 @@
 package com.panthers.main.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.panthers.main.jobModel.DistrictingType;
-import com.panthers.main.mapModel.States;
+import com.panthers.main.jobmodel.DistrictingType;
+import com.panthers.main.mapmodel.States;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.panthers.main.api;
 
-import com.panthers.main.mapModel.States;
-import com.panthers.main.requestDto.StateDto;
+import com.panthers.main.mapmodel.States;
+import com.panthers.main.requestdto.StateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.panthers.main.handler.MapHandler;

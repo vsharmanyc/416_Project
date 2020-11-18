@@ -1,12 +1,9 @@
 package com.panthers.main.handler;
 
-import com.panthers.main.jobModel.RunResults;
-import com.panthers.main.jobModel.Job;
-import com.panthers.main.mapModel.States;
+import com.panthers.main.jobmodel.RunResults;
+import com.panthers.main.jobmodel.Job;
+import com.panthers.main.mapmodel.States;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Dispatcher controls where the job will be run, and performs that run depending!
@@ -22,14 +19,6 @@ public class DispatcherHandler {
     }
 
     /*GETTERS/SETTERS*/
-//    public Job getJob() {
-//        return job;
-//    }
-//
-//    public void setJob(Job job) {
-//        this.job = job;
-//    }
-
     public RunResults getRunResults() {
         return runResults;
     }
@@ -80,18 +69,15 @@ public class DispatcherHandler {
      * function dispatches job to determined environment.
      * @param job job to be dispatched
      */
-    public void dispatchJob(Job job, States state){
+    public void dispatchJob(Job job){
         computeBestEnvironment(job);
 
-        //Route execution to a separate thread, which will begin execution.
         if (runOnSeaWulf){
-            new Thread(new Runnable() {
-                public void run(){
-                    SeaWulfHandler swh = new SeaWulfHandler(job);
-                    System.out.println("Mapping execution for job " + job.getJobId() + " to SeaWulf");
-                    swh.executeJob();
+            new Thread(() -> {
+                SeaWulfHandler swh = new SeaWulfHandler(job);
+                System.out.println("Mapping execution for job " + job.getJobId() + " to SeaWulf");
+                swh.executeJob();
 
-                }
             }).start();
         }
         else{

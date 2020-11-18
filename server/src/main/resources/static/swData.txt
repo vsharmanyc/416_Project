@@ -1,4 +1,4 @@
-{"numDistrictings":20000,"state":null,"demographicGroups":["AFRICAN_AMERICAN"],"popEqThreshold":0.007,"compactness":"Somewhat Compact","jobId":1,"jobStatus":"QUEUED","name":20000}
+{"numDistrictings":20000,"state":"MD","demographicGroups":["AFRICAN_AMERICAN"],"popEqThreshold":0.007,"compactness":"Somewhat Compact","jobId":1,"jobStatus":"QUEUED","name":20000}
 
 DATA:
 {

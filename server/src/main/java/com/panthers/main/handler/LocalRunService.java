@@ -1,9 +1,9 @@
 package com.panthers.main.handler;
 
-import com.panthers.main.jobModel.RunResults;
-import com.panthers.main.jobModel.Job;
-import com.panthers.main.mapModel.District;
-import com.panthers.main.mapModel.State;
+import com.panthers.main.jobmodel.RunResults;
+import com.panthers.main.jobmodel.Job;
+import com.panthers.main.mapmodel.District;
+import com.panthers.main.mapmodel.State;
 
 import java.util.List;
 

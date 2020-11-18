@@ -1,7 +1,7 @@
 package com.panthers.main.api;
 
-import com.panthers.main.jobModel.Job;
-import com.panthers.main.jobModel.RunResults;
+import com.panthers.main.jobmodel.Job;
+import com.panthers.main.jobmodel.RunResults;
 import com.panthers.main.handler.JobHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
