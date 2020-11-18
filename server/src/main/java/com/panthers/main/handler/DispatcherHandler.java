@@ -2,7 +2,11 @@ package com.panthers.main.handler;
 
 import com.panthers.main.jobModel.RunResults;
 import com.panthers.main.jobModel.Job;
+import com.panthers.main.mapModel.States;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Dispatcher controls where the job will be run, and performs that run depending!
@@ -42,6 +46,8 @@ public class DispatcherHandler {
         //If we are to generate more than 5000 districtings, well send it to the seawulf
         if (job.getNumDistrictings() > 5000)
             runOnSeaWulf = true;
+        else
+            runOnSeaWulf = false;
     }
 
     /**
@@ -74,22 +80,17 @@ public class DispatcherHandler {
      * function dispatches job to determined environment.
      * @param job job to be dispatched
      */
-    public void dispatchJob(Job job){
+    public void dispatchJob(Job job, States state){
         computeBestEnvironment(job);
 
         //Route execution to a separate thread, which will begin execution.
         if (runOnSeaWulf){
             new Thread(new Runnable() {
                 public void run(){
+                    SeaWulfHandler swh = new SeaWulfHandler(job);
                     System.out.println("Mapping execution for job " + job.getJobId() + " to SeaWulf");
-                    for (int i = 0; i < 5; i++){
-                        System.out.println("Work" + i);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    swh.executeJob();
+
                 }
             }).start();
         }

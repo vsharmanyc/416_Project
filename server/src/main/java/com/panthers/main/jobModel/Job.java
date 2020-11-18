@@ -2,6 +2,7 @@ package com.panthers.main.jobModel;
 
 import com.panthers.main.mapModel.Demographic;
 import com.panthers.main.mapModel.State;
+import com.panthers.main.mapModel.States;
 
 import javax.swing.*;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class Job {
     private int numDistrictings;
+    private States state;
     private List<Demographic> demographicGroups;
     private double popEqThreshold;
     private String compactness;
@@ -32,6 +34,14 @@ public class Job {
     }
 
     /*GETTERS/SETTERS*/
+    public States getState() {
+        return state;
+    }
+
+    public void setState(States state) {
+        this.state = state;
+    }
+
     public int getName() {
         return numDistrictings;
     }

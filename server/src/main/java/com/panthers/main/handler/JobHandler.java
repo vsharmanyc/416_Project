@@ -23,7 +23,7 @@ import java.util.Random;
 @Service
 public class JobHandler {
     private DispatcherHandler dispatcherHandler;
-    private State state;
+    private States state;
     private List<District> currentDistrictings;
     private List<Job> jobHistory;
     private List<Precinct> precincts;
@@ -43,11 +43,11 @@ public class JobHandler {
     }
 
     /*GETTERS/SETTERS*/
-    public State getState() {
+    public States getState() {
         return state;
     }
 
-    public void setState(State state) {
+    public void setState(States state) {
         this.state = state;
     }
 
@@ -89,16 +89,18 @@ public class JobHandler {
      * @return returns true on successful job creation, false otherwise.
      */
     public List<Job> createJob(Job job) {
+        job.setState(state);
+
         if (jobHistory.size() == 0)
             job.setJobId(1);//If no other jobs, its job id is 1
         else
             job.setJobId(getNextJobId());//Sets the jobs id
-        //Attaching the job to the job history!
+
         job.setJobStatus(JobStatus.QUEUED);
         jobHistory.add(job);
         System.out.println("Created job:" + job.toString());
-        //Dispatch the job
-        dispatcherHandler.dispatchJob(job);
+
+        dispatcherHandler.dispatchJob(job, state);
         System.out.println("Dispatched job #" + job.getJobId());
         return jobHistory;
     }
