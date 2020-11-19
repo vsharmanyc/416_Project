@@ -10,15 +10,11 @@ import java.util.List;
 /**
  * Main branch of program that will run/extract results from algorithm run on SERVER.
  */
-public class LocalRunService {
+public class ServerHandler {
     private Job job;
-    private RunResults algorithmResults;
-    private List<District> currentDistricting;
 
-    public LocalRunService(Job job) {
+    public ServerHandler(Job job) {
         this.job = job;
-        this.algorithmResults = null;
-        this.currentDistricting = null;
     }
 
     /*GETTERS/SETTERS*/
@@ -39,26 +35,6 @@ public class LocalRunService {
     }
 
     /**
-     * function is the main, overarching function for the congressional districting generation/analysis on server.
-     * will run algorithm and compile results.
-     * @param job job that will be worked on
-     * @return
-     */
-    public RunResults executeJob(Job job){
-        return null;
-    }
-
-    /**
-     * function will start the main algorithm to create the specified districtings.
-     * @param job job to be performed on
-     * @param currentDistricting data from database, utilized in algorithm
-     * @return results of the algorithm
-     */
-    public RunResults startAlgorithm(Job job, List<District> currentDistricting){
-        return null;
-    }
-
-    /**
      * Method writes our results to storage
      * @param results results to be written to storage
      * @return returns true if writing was successful, false otherwise.
@@ -71,7 +47,11 @@ public class LocalRunService {
      * function will compile results and generate data required to show the box and whisker plot.
      * @param results results to compile the box and whisker plot from
      */
-    public void generateDistrictingPlot(RunResults results){
+    public void generateSummary(RunResults results){
+
+    }
+
+    public void executeJob(){
 
     }
 

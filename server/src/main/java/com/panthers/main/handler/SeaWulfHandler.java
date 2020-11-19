@@ -85,7 +85,7 @@ public class SeaWulfHandler {
     }
 
     private void buildDataFiles(String path){
-        File swData = new File(path + properties.getSwDataPrefix() + job.getJobId() + ".txt");
+        File swData = new File(path + properties.getSwDataPrefix() + job.getJobId() + ".json");
         FileWriter swDataOutput;
         try {
             swDataOutput = new FileWriter(swData);

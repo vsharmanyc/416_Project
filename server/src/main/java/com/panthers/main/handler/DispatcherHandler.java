@@ -35,7 +35,7 @@ public class DispatcherHandler {
     /**
      * function will simply compute best environment for the job to be processed; SeaWulf or Server
      */
-    public void computeBestEnvironment(Job job){
+    public void computeBestEnvironment(Job job) {
         //If we are to generate more than 5000 districtings, well send it to the seawulf
         if (job.getNumDistrictings() > properties.getSeaWulfDistrictingThreshold())
             runOnSeaWulf = true;
@@ -45,58 +45,53 @@ public class DispatcherHandler {
 
     /**
      * function proceeds to start the job on the server.
+     *
      * @param job job to be started on server
      * @return returns run results from the algorithm
      */
-    public RunResults runAlgorithmOnServer(Job job){
+    public RunResults runAlgorithmOnServer(Job job) {
         return null;
     }
 
     /**
      * function proceeds to start the job on the seawulf.
+     *
      * @param job job to be started on seawulf
      * @return returns run results from the algorithm
      */
-    public RunResults runAlgorithmOnSeaWulf(Job job){
+    public RunResults runAlgorithmOnSeaWulf(Job job) {
         return null;
     }
 
     /**
      * function writes results of algorithm run to our database
+     *
      * @return returns true if writing was successful, false otherwise.
      */
-    public boolean writeResultsToFileSystem(){
+    public boolean writeResultsToFileSystem() {
         return false;
     }
 
     /**
      * function dispatches job to determined environment.
+     *
      * @param job job to be dispatched
      */
-    public void dispatchJob(Job job){
+    public void dispatchJob(Job job) {
         computeBestEnvironment(job);
 
-        if (runOnSeaWulf){
+        if (runOnSeaWulf) {
             new Thread(() -> {
                 SeaWulfHandler swh = new SeaWulfHandler(job);
                 System.out.println("Mapping execution for job " + job.getJobId() + " to SeaWulf");
                 swh.executeJob();
 
             }).start();
-        }
-        else{
-            new Thread(new Runnable() {
-                public void run(){
-                    System.out.println("Mapping execution for job " + job.getJobId() + " to Server");
-                    for (int i = 0; i < 5; i++){
-                        System.out.println("Work" + i);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+        } else {
+            new Thread(() -> {
+                ServerHandler svh = new ServerHandler(job);
+                System.out.println("Mapping execution for job " + job.getJobId() + " to Server");
+                svh.executeJob();
             }).start();
         }
     }

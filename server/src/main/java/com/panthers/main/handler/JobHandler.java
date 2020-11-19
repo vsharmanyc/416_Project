@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Functions as the main point of the running process.
@@ -24,7 +21,7 @@ import java.util.Random;
 public class JobHandler {
     private DispatcherHandler dispatcherHandler;
     private States state;
-    private List<District> currentDistrictings;
+    private Set<District> currentDistrictings;
     private List<Job> jobHistory;
     private List<Precinct> precincts;
     private List<District> districts;
@@ -51,11 +48,11 @@ public class JobHandler {
         this.state = state;
     }
 
-    public List<District> getCurrentDistrictings() {
+    public Set<District> getCurrentDistrictings() {
         return currentDistrictings;
     }
 
-    public void setCurrentDistrictings(List<District> currentDistrictings) {
+    public void setCurrentDistrictings(Set<District> currentDistrictings) {
         this.currentDistrictings = currentDistrictings;
     }
 
