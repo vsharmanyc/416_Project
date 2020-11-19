@@ -1,5 +1,6 @@
 package com.panthers.main.handler;
 
+import com.panthers.main.dataaccess.SeaWulfProperties;
 import com.panthers.main.jobmodel.RunResults;
 import com.panthers.main.jobmodel.Job;
 import com.panthers.main.mapmodel.States;
@@ -12,10 +13,13 @@ import org.springframework.stereotype.Service;
 public class DispatcherHandler {
     private RunResults runResults;
     private boolean runOnSeaWulf;
+    private SeaWulfProperties properties;
 
     public DispatcherHandler() {
         this.runResults = null;
         this.runOnSeaWulf = false;//Assume we don't run on seawulf
+        this.properties = new SeaWulfProperties();
+        this.properties.getProperties();
     }
 
     /*GETTERS/SETTERS*/
@@ -33,7 +37,7 @@ public class DispatcherHandler {
      */
     public void computeBestEnvironment(Job job){
         //If we are to generate more than 5000 districtings, well send it to the seawulf
-        if (job.getNumDistrictings() > 5000)
+        if (job.getNumDistrictings() > properties.getSeaWulfDistrictingThreshold())
             runOnSeaWulf = true;
         else
             runOnSeaWulf = false;

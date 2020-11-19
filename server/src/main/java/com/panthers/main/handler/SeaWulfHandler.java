@@ -1,6 +1,7 @@
 package com.panthers.main.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.panthers.main.dataaccess.SeaWulfProperties;
 import com.panthers.main.jobmodel.Job;
 import com.panthers.main.mapmodel.District;
 
@@ -12,9 +13,12 @@ import java.util.List;
  */
 public class SeaWulfHandler {
     private Job job;
+    private SeaWulfProperties properties;
 
     public SeaWulfHandler(Job job) {
         this.job = job;
+        this.properties = new SeaWulfProperties();
+        this.properties.getProperties();
     }
 
     /*GETTERS/SETTERS*/
@@ -41,11 +45,10 @@ public class SeaWulfHandler {
      */
     public void aggregateSeawulfData(){
         System.out.println("Aggregating Data for SeaWulf");
-        String path = System.getProperty("java.class.path").split("server")[0] +
-                "server/src/main/resources/static";
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
         buildBashScript(path);
-        ProcessBuilder pb = new ProcessBuilder("expect", path + "/transferDataToSeaWulf.sh");
+        ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferDataBash());
 
         buildDataFiles(path);
 
@@ -82,14 +85,14 @@ public class SeaWulfHandler {
     }
 
     private void buildDataFiles(String path){
-        File swData = new File(path + "/swData_job" + job.getJobId() + ".txt");
+        File swData = new File(path + properties.getSwDataPrefix() + job.getJobId() + ".txt");
         FileWriter swDataOutput;
         try {
             swDataOutput = new FileWriter(swData);
             ObjectMapper objmp = new ObjectMapper();
             swDataOutput.write(objmp.writeValueAsString(job) +"\n\nDATA:\n");
 
-            FileReader fr = new FileReader(path + "/" + job.getState().name() + "_Precinct_data.json");
+            FileReader fr = new FileReader(path + "/" + job.getState().name() + properties.getPrecinctDataSuffix());
             int c = fr.read();
 
             while (c != -1){
@@ -108,14 +111,13 @@ public class SeaWulfHandler {
     }
 
     private void buildBashScript(String path){
-        File bash = new File(path + "/transferDataToSeaWulf.sh");
+        File bash = new File(path + properties.getTransferDataBash());
         FileWriter bashOut;
         try {
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
-            String bashScript = "#!/usr/bin/expect\n\nspawn scp swData_job%d.txt jlungu@login.seawulf.stonybrook.edu:/gpfs/scratch/jlungu\nexpect \"jlungu@login.seawulf.stonybrook.edu's password:\"\nsend \"Uranium12*\\r\"\ninteract\n";
-            String script = String.format(bashScript, job.getJobId());
+            String script = String.format(properties.getBashScript(), job.getJobId());
             bashOut.write(script);
 
             bashOut.close();

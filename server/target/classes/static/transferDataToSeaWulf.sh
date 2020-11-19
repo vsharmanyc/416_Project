@@ -1,1 +1,6 @@
-#!/usr/bin/expect\n\nspawn scp swData_job1.txt jlungu@login.seawulf.stonybrook.edu:/gpfs/scratch/jlungu\nexpect "jlungu@login.seawulf.stonybrook.edu's password:"\nsend "Uranium12*\r"\ninteract\n
+#!/usr/bin/expect
+
+spawn scp swData_job1.txt jlungu@login.seawulf.stonybrook.edu:/gpfs/scratch/jlungu
+expect "jlungu@login.seawulf.stonybrook.edu's password:"
+send "Uranium12*\r"
+interact
