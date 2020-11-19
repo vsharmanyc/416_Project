@@ -18,28 +18,24 @@ class CreateJob extends Component {
     onPopEqThresChange = (e) => { this.setState({ popEqThres: e.target.value }); }
     onNumDistrictingsChange = (e) => { this.setState({ numDistrictings: e.target.value }); }
     onCompactnessChange = (e) => { this.setState({ compactness: e.target.value }); }
-    onPopDiffChange = (e) => { this.setState({ popDiff: e.target.value }); }
     onDemographicsSelect = (selected) => { this.setState({ demographics: selected }); }
 
     onCreateJob = (e) => {
         e.preventDefault();
         let demographics = [];
-        this.state.demographics.map((option) => demographics.push(option.value) );
+        this.state.demographics.map((option) => demographics.push(this.getDemographicEnums(option.value)));
 
-        let compactness =  'low';
+        let compactness =  'Slightly Compact';
         if(this.state.compactness >=35 && this.state.compactness <=75)
-            compactness = 'somewhat';
+            compactness = 'Somewhat Compact';
         else if(this.state.compactness > 75)
-            compactness = 'high'; 
+            compactness = 'Highly Compact'; 
 
         let job = {
-            jobID: new Date().getTime(),
-            demographics: demographics,
             numDistrictings: this.state.numDistrictings,
+            demographicGroups: demographics,
+            popEqThreshold: this.state.popEqThres,
             compactness: compactness,
-            populationDifference:  this.state.popDiff,
-            popEqThres: this.state.popEqThres,
-            status: 'pending'
         };
 
         this.postReqCreateJob(job);
@@ -48,7 +44,7 @@ class CreateJob extends Component {
     }
 
 
-    postReqCreateJob = (variable) => {
+    postReqCreateJob = (job) => {
         fetch('http://localhost:8080/api/job/createJob',
             {
                 headers: {
@@ -56,27 +52,36 @@ class CreateJob extends Component {
                     "Access-Control-Allow-Origin": "*"
                 },
                 method: "POST",
-                body: JSON.stringify( {
-                    "numDistrictings": 20000,
-                    "demographicGroups": [
-                    "AFRICAN_AMERICAN",
-                    "ASIAN",
-                    "HISPANIC_LATINO"],
-                    "popEqThreshold": 0.98,
-                    "compactness": "Somewhat Compact"
-                } ),
+                body: JSON.stringify( job ),
                 mode: 'cors'
             })
             .then(response => response.json())
-            .then(response => console.log(response));
-
-            console.log("hello");
+            .then(response => this.props.updateJobs(response));
     }
 
     addJob = (job) =>{
         let jobs = this.props.jobs;
         jobs.push(job);
         this.props.updateJobs(jobs);
+    }
+
+    getDemographicEnums = (demographic) => {
+        switch(demographic){
+            case 'White':
+                return 'WHITE';
+            case 'Black':
+                return 'AFRICAN_AMERICAN';
+            case 'Asian':
+                return 'ASIAN';
+            case 'Hispanic or Latino':
+                return 'HISPANIC_LATINO';
+            case 'American Indian or Alaska Native':
+                return 'AM_INDIAN_AK_NATIVE';
+            case 'Native Hawaiian or Other Pacific Islander':
+                return 'NH_OR_OPI';
+            default:
+                return 'OTHER'
+        }
     }
 
     clearForm = () => {
@@ -97,7 +102,6 @@ class CreateJob extends Component {
             { value: 'Hispanic or Latino', label: 'Hispanic or Latino'},
             { value: 'American Indian or Alaska Native', label: 'American Indian or Alaska Native'},
             { value: 'Native Hawaiian or Other Pacific Islander', label: 'Native Hawaiian or Other Pacific Islander'},
-            { value: 'Two or More Races', label: 'Two or More Races'},
             { value: 'Other', label: 'Other'}
         ]
 
@@ -126,14 +130,6 @@ class CreateJob extends Component {
                                 Least Compact
                                 <input type="range" class="custom-range" id="customRange1" value={this.state.compactness} onChange={this.onCompactnessChange} />
                                 Most Compact
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="customRange2">Population Difference</label>
-                            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                Least Difference
-                                <input type="range" class="custom-range" id="customRange2" value={this.state.popDiff} onChange={this.onPopDiffChange} />
-                                Most Difference
                             </div>
                         </div>
                         <div class="form-group">

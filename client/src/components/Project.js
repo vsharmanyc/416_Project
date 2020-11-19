@@ -9,6 +9,11 @@ class Project extends Component {
         super(props);
         this.state = {
             state: 'Select...',
+            filter:  {
+                Districts: true, 
+                Precincts:  false,
+                Heatmap:  false,
+            },
             geoJSON: null,
             geoData: {},
             jobs: [],
@@ -30,6 +35,9 @@ class Project extends Component {
         this.setState({ jobs: jobs });
     }
 
+    updateFilter = (filter) =>{
+        this.setState({filter : filter});
+    }
 
 
     render() {
@@ -51,13 +59,19 @@ class Project extends Component {
                         jobs={this.state.jobs}
                         updateJobs={this.updateJobs}
                         state={this.state.state}
-                        geoData={this.state.geoData} />
+                        geoData={this.state.geoData} 
+                        updateFilter={this.updateFilter}
+                        filter={this.state.filter}
+                        />
                 </div>
                 <Map
                     style={mapStyle}
                     onGeoDataUpdate={this.onGeoDataUpdate}
                     onStateSelect={this.onStateSelect}
-                    state={this.state.state} />
+                    state={this.state.state} 
+                    updateFilter={this.updateFilter}
+                    filter={this.state.filter}
+                    />
             </div>
         );
     }

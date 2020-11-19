@@ -17,7 +17,8 @@ class Map extends Component {
         mapboxgl.accessToken = 'pk.eyJ1IjoidmFzZWdvZCIsImEiOiJja2ZiZXNnOHQxMXI1MnRvOG1yY25icHZrIn0.8eLTRoe92V02KENueM7PqQ';
         this.map = null;
         this.state = {
-            currentLayer: 'states',
+            geoLevel: 'Districts',
+            appliedLayers: [],
             lng: -95,
             lat: 39,
             zoom: 3.5,
@@ -44,9 +45,11 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.state !== prevProps.state) {
+        if (this.props.state !== prevProps.state)
             this.changeState(prevProps.state, this.props.state);
-        }
+
+        if (JSON.stringify(this.props.filter) !== JSON.stringify(prevProps.filter))
+            this.applyGeoFilter(this.props.filter)
     }
 
     postReqChangeState = (stateName) => {
@@ -63,7 +66,6 @@ class Map extends Component {
                 mode: 'cors'
             })
             .then(response => response.json())
-            .then(response => console.log(response));
     }
 
     stateInitials = (stateName) => {
@@ -87,6 +89,8 @@ class Map extends Component {
     }
 
     addGeoJsonLayer = (sourceName, geoJSON) => {
+        if (this.state.appliedLayers.includes(sourceName))
+            return;
         let hoveredStateId = null;
 
         this.map.addSource(sourceName, {
@@ -140,7 +144,7 @@ class Map extends Component {
                     { hover: true }
                 );
 
-                if (this.props.state  === this.stateFromGeoProps(e.features[0].properties))
+                if (this.props.state === this.stateFromGeoProps(e.features[0].properties))
                     this.props.onGeoDataUpdate(e.features[0].properties)
             }
         });
@@ -163,12 +167,22 @@ class Map extends Component {
             }
             hoveredStateId = null;
         });
+
+        let appliedLayers = this.state.appliedLayers;
+        appliedLayers.push(sourceName);
+        this.setState({ appliedLayers: appliedLayers });
     }
 
-    removeGeoJsonLayer(sourceName){
+    removeGeoJsonLayer(sourceName) {
+        if (!this.state.appliedLayers.includes(sourceName))
+            return;
         this.map.removeLayer(sourceName + ' state-fills');
         this.map.removeLayer(sourceName + ' state-borders');
         this.map.removeSource(sourceName);
+        let appliedLayers = this.state.appliedLayers;
+        appliedLayers.splice(appliedLayers.indexOf(sourceName), 1);
+        this.setState({ appliedLayers: appliedLayers });
+
     }
 
     zoomTo = (state) => {
@@ -198,8 +212,8 @@ class Map extends Component {
             });
     }
 
-    getGeoJsonFile = (fileName) =>{
-        switch(fileName) {
+    getGeoJsonFile = (fileName) => {
+        switch (fileName) {
             case 'MD_Districts':
                 return MD_Districts;
             case 'NY_Districts':
@@ -213,35 +227,161 @@ class Map extends Component {
             case 'PA_Precincts':
                 return PA_Precincts;
             default:
-              return;
-          }
+                return;
+        }
     }
 
-    changeState = (currentState, requestState) =>{
+    applyGeoFilter = (filter) => {
+        let appliedLayers = this.state.appliedLayers;
+        let stateInitials = this.stateInitials(this.props.state);
+        let districts = stateInitials + '_Districts';
+        let precincts = stateInitials + '_Precincts';
+        let heatmap = stateInitials + '_Heatmap';
+
+        if (!filter.Districts && appliedLayers.includes(districts))
+            this.removeGeoJsonLayer(districts);
+        else if (filter.Districts && !appliedLayers.includes(districts))
+            this.addGeoJsonLayer(districts, this.getGeoJsonFile(districts));
+        else if (!filter.Precincts && appliedLayers.includes(precincts))
+            this.removeGeoJsonLayer(precincts);
+        else if (filter.Precincts && !appliedLayers.includes(precincts))
+            this.addGeoJsonLayer(precincts, this.getGeoJsonFile(precincts));
+        else if (!filter.Heatmap && appliedLayers.includes(heatmap))
+            this.removeGeoJsonLayer(heatmap);
+        else if (filter.Heatmap && !appliedLayers.includes(heatmap))
+            this.addHeatMap(heatmap, this.getGeoJsonFile(precincts));
+    }
+
+    addHeatMap = (sourceName, geoJSON) => {
+        if (this.state.appliedLayers.includes(sourceName))
+            return;
+        let hoveredStateId = null;
+
+        this.map.addSource(sourceName, {
+            'type': 'geojson',
+            'data':
+                geoJSON
+        });
+
+        // The feature-state dependent fill-opacity expression will render the hover effect
+        // when a feature's hover state is set to true.
+        this.map.addLayer({
+            'id': sourceName + ' state-fills',
+            'type': 'fill',
+            'source': sourceName,
+            'layout': {},
+            'paint': {
+                'fill-color': [
+                    'let',
+                    'density',
+                    ['/', ['get', 'TOTVAP'], 1],
+                    [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        8,
+                        [
+                            'interpolate',
+                            ['linear'],
+                            ['var', 'density'],
+                            274,
+                            ['to-color', '#d0f2eb'],
+                            1551,
+                            ['to-color', '#006952']
+                        ],
+                    ]
+                ],
+                'fill-opacity': 0.75
+            },
+        });
+
+        this.map.addLayer({
+            'id': sourceName + ' state-borders',
+            'type': 'line',
+            'source': sourceName,
+            'layout': {},
+            'paint': {
+                'line-color': 'white',
+                'line-width': 0.2
+            }
+        });
+
+        // When the user moves their mouse over the state-fill layer, we'll update the
+        // feature state for the feature under the mouse.
+        this.map.on('mousemove', sourceName + ' state-fills', (e) => {
+            if (e.features.length > 0) {
+                if (hoveredStateId) {
+                    this.map.setFeatureState(
+                        { source: sourceName, id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = e.features[0].properties.GEOID10;
+                this.map.setFeatureState(
+                    { source: sourceName, id: hoveredStateId },
+                    { hover: true }
+                );
+
+                if (this.props.state === this.stateFromGeoProps(e.features[0].properties))
+                    this.props.onGeoDataUpdate(e.features[0].properties)
+            }
+        });
+
+        this.map.on('click', sourceName + ' state-fills', (e) => {
+            let stateName = this.stateFromGeoProps(e.features[0].properties);
+            if (this.props.state !== stateName) {
+                this.props.onStateSelect(stateName);
+            }
+        });
+
+        // When the mouse leaves the state-fill layer, update the feature state of the
+        // previously hovered feature.
+        this.map.on('mouseleave', sourceName + ' state-fills', () => {
+            if (hoveredStateId) {
+                this.map.setFeatureState(
+                    { source: sourceName, id: hoveredStateId },
+                    { hover: false }
+                );
+            }
+            hoveredStateId = null;
+        });
+
+        let appliedLayers = this.state.appliedLayers;
+        appliedLayers.push(sourceName);
+        this.setState({ appliedLayers: appliedLayers });
+    }
+
+    changeState = (currentState, requestState) => {
         this.postReqChangeState(requestState);
 
         let currentStateInitials = this.stateInitials(currentState);
         let requestStateInitials = this.stateInitials(requestState);
 
-        if(currentState !== 'Select...'){
+        if (currentState !== 'Select...') {
             this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'));
             this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
         }
 
-        if(requestState !== 'Select...'){
+        if (requestState !== 'Select...') {
             this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'));
-            this.removeGeoJsonLayer(requestStateInitials + '_Districts');  
+            this.removeGeoJsonLayer(requestStateInitials + '_Districts');
         }
-        
+
+        this.removeGeoJsonLayer(currentStateInitials + '_Heatmap')
+
+        this.props.updateFilter({
+            Districts: requestState === 'Select...',
+            Precincts: requestState !== 'Select...',
+            Heatmap: false,
+        })
         this.zoomTo(requestState);
     }
 
-    stateFromGeoProps(properties){
+    stateFromGeoProps(properties) {
         let state = properties.statename;
-        if(state === undefined)
+        if (state === undefined)
             state = properties.STATE;
-        console.log(state);
-        if(state.length > 2)
+        if (state.length > 2)
             return state;
         return this.stateName(state);
     }
