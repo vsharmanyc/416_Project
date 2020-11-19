@@ -2,6 +2,7 @@ class Node:
     def __init__(self, precinct):
         for attr in precinct:
             setattr(self, attr, precinct[attr])
+        self.visited = False
 
-    def __str__(self):
-        return self.PRECINCTID
+    def __repr__(self):
+        return str(self.NEIGHBORS)
