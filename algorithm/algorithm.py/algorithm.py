@@ -6,6 +6,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from Cluster import Cluster
 
+
 def parse_data_from_file():
     f = open("swData_job1.json")
     data = json.load(f)
@@ -23,8 +24,18 @@ def algorithm():
     request = data[1]
     # nodes = parse_neighbors(nodes)
 
-    determine_seed_districting(nodes)
-
+    print("Determining a Seed Districting...")
+    graph = determine_seed_districting(nodes)
+    print(graph)
+    i = 0
+    while i < 8:
+        print_cluster(graph[i].nodes)
+        i += 1
+    # while True:
+    clusters = combine_random_clusters(graph)
+    print("Combining random clusters...")
+    print("Clusters", clusters, " were combined into cluster 0")
+    print_graph(graph)
 
 
 def parse_job_from_json(job):
@@ -44,23 +55,6 @@ def parse_precincts_from_json(precincts):
     return nodes
 
 
-# def parse_neighbors(nodes):
-#     for node in nodes:
-#         node_neigh = []
-#         if type(node.NEIGHBORS) == int:
-#             neighbors = str(node.NEIGHBORS)
-#         else:
-#             neighbors = node.NEIGHBORS.split(",")
-#         for neighbor in neighbors:
-#             if neighbor == "NULL":
-#                 continue
-#             neigh = find_node(nodes, neighbor)
-#             if neigh is not None:
-#                 node_neigh.append(neigh)
-#         node.NEIGHBORS = node_neigh
-#     return nodes
-
-
 def determine_seed_districting(nodes):
     districts = determine_nodes_per_subgraph(nodes)
     k = int(len(nodes)/districts)
@@ -70,12 +64,18 @@ def determine_seed_districting(nodes):
     i = 1
     while i <= districts:
         clust = []
-        while len(clust) < k or (k > len(nodes) and len(clust) < k):
+        while ((len(clust) < k) or (k > len(nodes) and len(clust) < k)) and len(nodes) > 0:
             node = nodes[random.randrange(0, len(nodes))]
+            print("Top of recursive stack. Chose random node", node, ". Looking into its neighbors...")
             generate_cluster(nodes, node,  k, clust)
         graph.append(Cluster(clust, i))
         i += 1
     # set neighbors
+    graph = calculate_cluster_neighbors(graph)
+    return graph
+
+
+def calculate_cluster_neighbors(graph):
     i = 0
     j = 0
     while i < len(graph):
@@ -88,7 +88,7 @@ def determine_seed_districting(nodes):
                     clust1.neighbors.append(clust2.id)
             j += 1
         i += 1
-    print_graph(graph)
+    return graph
 
 
 def neighboring_cluster(clust1, clust2):
@@ -109,23 +109,36 @@ def neighboring_cluster(clust1, clust2):
     return False
 
 
-def generate_cluster(nodes, node,  k, clust):
+def contains_node(nodes, id):
+    for node in nodes:
+        if node.GEOID10 == id:
+            return node
+    return None
+
+
+def generate_cluster(nodes, node, k, clust):
     # pick random node
+    print("Removed Node", node, " from unvisited nodes.")
     clust.append(node)
     nodes.remove(node)
-
     neighbors = node.NEIGHBORS.copy()
-    node = neighbors[random.randrange(0, len(neighbors))]
+    node_id = neighbors[random.randrange(0, len(neighbors))]
+    print("Chose node", node, "next")
     # find a viable neighbor that isn't visited
-    while node not in nodes:
-        neighbors.remove(node)
+    node = contains_node(nodes, int(node_id))
+    while node is None:
+        print("Cant use this node as we already visited it.")
+        neighbors.remove(node_id)
         if len(neighbors) == 0:
             return
-        node = neighbors[random.randrange(0, len(neighbors))]
+        print("Found neighbor. Choosing this one as a part of the cluster...")
+        node_id = neighbors[random.randrange(0, len(neighbors))]
+        node = contains_node(nodes, int(node_id))
 
     # recursive call
     if k > 0 and len(nodes) > 0:
         k -= 1
+        print("Recursively visiting node", node)
         generate_cluster(nodes, node, k, clust)
 
 
@@ -162,13 +175,53 @@ def print_graph(clusters):
         G.add_node(node)
         for neighbor in neighbors:
             index = find_cluster_index(clusters, neighbor)
-            if not G.has_edge(clusters[index], node):
-                G.add_edge(node, clusters[index])
+            if index != None:
+                if not G.has_edge(clusters[index], node):
+                    G.add_edge(node, clusters[index])
+
+    nx.draw(G, with_labels=True, font_weight='light')
+    print(len(G.edges))
+    print(len(G.nodes))
+    plt.show()
+
+
+def print_cluster(graph):
+    G = nx.Graph()
+    for node in graph:
+        neighbors = node.NEIGHBORS
+        G.add_node(node)
+        for neighbor in neighbors:
+            index = find_node_index(graph, neighbor)
+            if index != None:
+                if not G.has_edge(graph[index], node):
+                    G.add_edge(node, graph[index])
 
     nx.draw(G, with_labels=False, font_weight='light')
     print(len(G.edges))
     print(len(G.nodes))
     plt.show()
+
+
+def combine_random_clusters(graph):
+    copied_graph = graph.copy()
+    clust1 = copied_graph[random.randrange(0, len(copied_graph)-1)]
+    copied_graph.remove(clust1)
+    clust2 = copied_graph[random.randrange(0, len(copied_graph)-1)]
+
+    graph.remove(clust1)
+    graph.remove(clust2)
+
+    nodes = clust1.nodes
+    nodes.extend(clust2.nodes)
+    combine_clust = Cluster(nodes, 0)
+    combine_clust.neighbors = clust1.neighbors
+    for neighbor in clust2.neighbors:
+        if neighbor not in combine_clust.neighbors:
+            combine_clust.neighbors.append(neighbor)
+    graph.append(combine_clust)
+    graph = calculate_cluster_neighbors(graph)
+
+    return [clust1, clust2]
 
 
 algorithm()

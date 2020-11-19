@@ -7,3 +7,6 @@ class Cluster:
 
     def reset_unvisited(self):
         self.unvisited = self.nodes
+
+    def __repr__(self):
+        return str(self.id)

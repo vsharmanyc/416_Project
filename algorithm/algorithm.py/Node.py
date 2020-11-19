@@ -5,4 +5,4 @@ class Node:
         self.visited = False
 
     def __repr__(self):
-        return str(self.NEIGHBORS)
+        return str(self.GEOID10)
