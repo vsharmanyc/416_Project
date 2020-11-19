@@ -64,7 +64,7 @@ class Sidebar extends Component {
                 }}>
                     <div>
                         <Tabs activeKey={this.state.tabNum} onSelect={this.changeTab} id="controlled-tab-example">
-                            <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData} /></Tab>
+                            <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData} stateIsSelected={this.props.state !== 'Select...'}/></Tab>
 
                             <Tab eventKey={1} title="Filter">
                                 <Filter updateFilter={this.props.updateFilter} filter={this.props.filter} stateIsSelected={this.props.state !== 'Select...'}/>

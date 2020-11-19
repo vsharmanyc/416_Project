@@ -45,6 +45,12 @@ class Job extends Component {
         this.setState({ toggle: !this.state.toggle })
     }
 
+    strNumWithCommas = (num) => {
+        if(num === undefined)
+            return "";
+        return parseInt(num).toLocaleString();
+    }
+
 
     render() {
 
@@ -66,7 +72,7 @@ class Job extends Component {
                     <div style={colStyle}>
                         <p style={{ color: '#63BEB6' }}>{'ID: ' + this.props.job.jobId}</p>
                         <p style={{ color: '#63BEB6' }}>Status: 
-                            <span style={{ color: 'red' }}>
+                            <span style={{ color: this.props.job.jobStatus === 'CANCELLED' ? "red" : "#63BEB6"}}>
                                 {" " + this.props.job.jobStatus}
                             </span>
                         </p>
@@ -89,8 +95,9 @@ class Job extends Component {
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={colStyle}>
                             <div></div>
-                            <p style={{ color: '#63BEB6' }}>{'Number of Districtings: ' + this.props.job.numDistrictings}</p>
-                            <p style={{ color: '#63BEB6' }}>{'Demographics: ' + this.props.job.demographicGroups}</p>
+                            <p style={{ color: '#63BEB6' }}>{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
+                            <p style={{ color: '#63BEB6', whiteSpace: 'pre' }}>Demographics:                                  </p>
+                            {this.props.job.demographicGroups.map((demoEnum) => <p style={{ color: '#63BEB6' }}>{demoEnum}</p> )}
                             <p style={{ color: '#63BEB6' }}>{'Compactness: ' + this.props.job.compactness}</p>
                             <p style={{ color: '#63BEB6' }}>{'Population Equation Threshold: ' + this.props.job.popEqThreshold}</p>
                         </div>
