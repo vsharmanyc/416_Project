@@ -90,7 +90,7 @@ public class SeaWulfHandler {
         try {
             swDataOutput = new FileWriter(swData);
             ObjectMapper objmp = new ObjectMapper();
-            swDataOutput.write(objmp.writeValueAsString(job) +"\n\nDATA:\n");
+            swDataOutput.write("{\"data\": [" + objmp.writeValueAsString(job) +",");
 
             FileReader fr = new FileReader(path + "/" + job.getState().name() + properties.getPrecinctDataSuffix());
             int c = fr.read();

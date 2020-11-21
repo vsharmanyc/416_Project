@@ -182,12 +182,11 @@ public class JobHandler {
         int index = findJob(jobId);
 
         if (index == -1)
-            return jobHistory;//Some error occurred, just ignore the call.
+            return jobHistory;
 
         jobHistory.get(index).setJobStatus(JobStatus.CANCELLED);
-        //Need to cancel the job on the server, or seawulf. That would be done here
         /*
-         * CANCELLING
+         * CANCELLING ON SERVER/SEAWULF
          */
         System.out.println("Cancelled execution of Job #" + jobId);
         return jobHistory;
