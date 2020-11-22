@@ -40,8 +40,8 @@ public class MapHandler {
      */
     public String requestDistricts(){
         // MODIFY PATH HERE TO FIT YOUR LOCAL MACHINE!!!
-        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/";
-        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/";
+        //String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/";
+        String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/";
         States s = getState();
 
         // Determines which precinct json to load
@@ -70,8 +70,8 @@ public class MapHandler {
      */
     public String requestPrecincts(){
         // MODIFY PATH HERE TO FIT YOUR LOCAL MACHINE!!!
-        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/";
-        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/";
+        //String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/";
+        String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/";
         States s = getState();
 
         // Determines which precinct json to load

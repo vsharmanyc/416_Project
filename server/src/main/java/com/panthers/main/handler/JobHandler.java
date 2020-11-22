@@ -32,11 +32,11 @@ public class JobHandler {
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
-        loadPrecincts();
+        /*loadPrecincts();
         loadDistricts();
         generateDummyRunResults();
         runResults.calculateCounties();
-        runResults.sortResultDistrictings();
+        runResults.sortResultDistrictings();*/
     }
 
     /*GETTERS/SETTERS*/

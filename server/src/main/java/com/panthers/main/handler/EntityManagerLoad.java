@@ -1,10 +1,13 @@
 package com.panthers.main.handler;
 
+import com.panthers.main.jobmodel.Job;
+import com.panthers.main.jpa.JobRepository;
 import com.panthers.main.mapmodel.Demographic;
 import com.panthers.main.mapmodel.Population;
 import com.panthers.main.mapmodel.Precinct;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,9 +16,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EntityManagerLoad {
+
     private List<Precinct> precincts;
 
     public EntityManagerLoad(List<Precinct> precincts) {
@@ -68,4 +73,5 @@ public class EntityManagerLoad {
 
 //        System.out.println(precincts.get(120).toString());
     }
+
 }

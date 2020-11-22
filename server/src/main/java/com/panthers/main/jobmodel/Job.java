@@ -3,15 +3,26 @@ package com.panthers.main.jobmodel;
 import com.panthers.main.mapmodel.Demographic;
 import com.panthers.main.mapmodel.States;
 
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
 public class Job {
     private int numDistrictings;
+
+    @Enumerated(EnumType.STRING)
     private States state;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = Demographic.class)
     private List<Demographic> demographicGroups;
     private double popEqThreshold;
     private String compactness;
+
+    @Id
     private int jobId;
+
+    @Enumerated(EnumType.ORDINAL)
     private JobStatus jobStatus;
     //private RunResults runResults;
 
