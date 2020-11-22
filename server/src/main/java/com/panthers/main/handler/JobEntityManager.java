@@ -1,4 +1,4 @@
-package com.panthers.main.jpa;
+package com.panthers.main.handler;
 import com.panthers.main.jobmodel.Job;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

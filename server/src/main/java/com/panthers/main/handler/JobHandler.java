@@ -1,7 +1,6 @@
 package com.panthers.main.handler;
 
 import com.panthers.main.jobmodel.*;
-import com.panthers.main.jpa.JobEntityManager;
 import com.panthers.main.mapmodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,6 +37,7 @@ public class JobHandler {
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
         EntityManagerFactory emf= Persistence.createEntityManagerFactory("Jobs");
         EntityManager em = emf.createEntityManager();
+        //em.getTransaction( ).begin( );
         JobEntityManager jobEM = new JobEntityManager(em);
         /*loadPrecincts();
         loadDistricts();
