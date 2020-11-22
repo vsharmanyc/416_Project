@@ -1,12 +1,16 @@
 package com.panthers.main.handler;
 
 import com.panthers.main.jobmodel.*;
+import com.panthers.main.jpa.JobEntityManager;
 import com.panthers.main.mapmodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,6 +36,9 @@ public class JobHandler {
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
+        EntityManagerFactory emf= Persistence.createEntityManagerFactory("Jobs");
+        EntityManager em = emf.createEntityManager();
+        JobEntityManager jobEM = new JobEntityManager(em);
         /*loadPrecincts();
         loadDistricts();
         generateDummyRunResults();
