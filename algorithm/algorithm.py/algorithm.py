@@ -5,6 +5,7 @@ from Request import Request
 import networkx as nx
 import matplotlib.pyplot as plt
 from Cluster import Cluster
+from Graph import Graph
 
 
 def parse_data_from_file():
@@ -22,20 +23,39 @@ def algorithm():
     data = parse_data_from_file()
     nodes = data[0]
     request = data[1]
-    # nodes = parse_neighbors(nodes)
+    # parsing nodes into clusters
+    clusts = []
+    for node in nodes:
+        clusts.append(Cluster([node], int(node.GEOID10)))
+    # find its neighbor clusters
+    for clust in clusts:
+        set_neighboring_clusts(clust)
 
+    # graph of clusters.
+    graph = Graph(clusts)
     print("Determining a Seed Districting...")
-    graph = determine_seed_districting(nodes)
-    print(graph)
-    i = 0
-    while i < 8:
-        print_cluster(graph[i].nodes)
-        i += 1
-    # while True:
-    clusters = combine_random_clusters(graph)
-    print("Combining random clusters...")
-    print("Clusters", clusters, " were combined into cluster 0")
-    print_graph(graph)
+    seed = determine_seed_districting(graph)
+
+    # print(graph)
+    # i = 0
+    # while i < 8:
+    #     print_cluster(graph[i].nodes)
+    #     i += 1
+    # # while True:
+    # clusters = combine_random_clusters(graph)
+    # print("Combining random clusters...")
+    # print("Clusters", clusters, " were combined into cluster 0")
+    # print_graph(graph)
+
+
+def set_neighboring_clusts(clust):
+    node = clust.nodes[0]
+    clust_neigh = []
+    for neighbor in node.NEIGHBORS:
+        if neighbor == "000000000":
+            continue
+        clust_neigh.append(int(neighbor))
+    clust.set_neighbors(clust_neigh)
 
 
 def parse_job_from_json(job):
@@ -55,24 +75,60 @@ def parse_precincts_from_json(precincts):
     return nodes
 
 
-def determine_seed_districting(nodes):
-    districts = determine_nodes_per_subgraph(nodes)
-    k = int(len(nodes)/districts)
-    # main seed algorithm
-    graph = []
-    nodes_copy = nodes.copy()
-    i = 1
-    while i <= districts:
-        clust = []
-        while ((len(clust) < k) or (k > len(nodes) and len(clust) < k)) and len(nodes) > 0:
-            node = nodes[random.randrange(0, len(nodes))]
-            print("Top of recursive stack. Chose random node", node, ". Looking into its neighbors...")
-            generate_cluster(nodes, node,  k, clust)
-        graph.append(Cluster(clust, i))
-        i += 1
-    # set neighbors
-    graph = calculate_cluster_neighbors(graph)
-    return graph
+# def determine_seed_districting(nodes):
+#     districts = determine_nodes_per_subgraph(nodes)
+#     k = int(len(nodes)/districts)
+#     # main seed algorithm
+#     graph = []
+#     nodes_copy = nodes.copy()
+#     i = 1
+#     while i <= districts:
+#         clust = []
+#         while ((len(clust) < k) or (k > len(nodes) and len(clust) < k)) and len(nodes) > 0:
+#             node = nodes[random.randrange(0, len(nodes))]
+#             print("Top of recursive stack. Chose random node", node, ". Looking into its neighbors...")
+#             generate_cluster(nodes, node,  k, clust)
+#         graph.append(Cluster(clust, i))
+#         i += 1
+#     # set neighbors
+#     graph = calculate_cluster_neighbors(graph)
+#     return graph
+
+def determine_seed_districting(graph):
+    # districts = determine_nodes_per_subgraph(graph.nodes)
+    # wrap node in cluster
+    nodes = graph.nodes.copy()
+    count = len(graph.nodes)
+    ext_clusts = []
+    # combine clusters randomly until we have target districts
+    while len(graph.nodes) != 8:
+        # print("Nodes", len(graph.nodes))
+        # print("Edges", len(graph.edges))
+        clust = graph.nodes[random.randrange(0, len(graph.nodes))]
+        neighs = graph.get_neighbors(clust)
+        # print("Neighbors", neighs)
+        if neighs == []:
+            graph.nodes.remove(clust)
+            ext_clusts.append(clust)
+            continue
+        neigh_clust = neighs[random.randrange(0, len(neighs))]
+        graph.combine_clusters(clust, neigh_clust)
+        # print("Count", count)
+        count -= 1
+    # re-build into cluster objects
+    # ids = []
+    # for node in graph.nodes:
+    #     if node.parent_cluster not in ids:
+    #         ids.append(node.parent_cluster)
+    # print(len(ids))
+    # nodes = []
+    # id = graph.nodes[0].parent_cluster
+    # for clust in graph.nodes:
+    #     if clust.parent_cluster == id:
+    #         nodes.append(clust.nodes[0])
+    #         graph.nodes.remove(clust)
+    for clust in graph.nodes:
+        print_cluster(clust.nodes)
 
 
 def calculate_cluster_neighbors(graph):
