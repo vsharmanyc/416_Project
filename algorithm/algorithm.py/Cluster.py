@@ -34,6 +34,15 @@ class Cluster:
                 neighbor_list.append(edge[0])
         return neighbor_list
 
+    def get_mst_neighbors(self, node):
+        neighbor_list = []
+        for edge in self.spanning_tree_edges:
+            if edge[0] == node:
+                neighbor_list.append(edge[1])
+            if edge[1] == node:
+                neighbor_list.append(edge[0])
+        return neighbor_list
+
     def set_spanning_tree(self, edges):
         self.spanning_tree_edges = edges
 
