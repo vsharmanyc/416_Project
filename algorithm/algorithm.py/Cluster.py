@@ -6,9 +6,15 @@ class Cluster:
         self.neighbors = []
         self.edges = []
         self.spanning_tree_edges = []
+        self.node_dict = {}
+        self.determine_node_dict()
 
     def set_neighbors(self, neighbors):
         self.neighbors = neighbors
+
+    def determine_node_dict(self):
+        for node in self.nodes:
+            self.node_dict[node.GEOID10] = node
 
     def determine_edges(self):
         edges = []
@@ -34,6 +40,13 @@ class Cluster:
                 neighbor_list.append(edge[0])
         return neighbor_list
 
+    def new_get_neighbors(self, node):
+        neighbor_list = []
+        for neighbor in node.NEIGHBORS:
+            if int(neighbor) in self.node_dict.keys():
+                neighbor_list.append(self.node_dict[int(neighbor)])
+        return neighbor_list
+
     def get_mst_neighbors(self, node):
         neighbor_list = []
         for edge in self.spanning_tree_edges:
@@ -45,6 +58,20 @@ class Cluster:
 
     def set_spanning_tree(self, edges):
         self.spanning_tree_edges = edges
+
+    def find_start_node(self):
+        # finds a leaf node in mst. Any leaf would do.
+        node_dict = {}
+        for node in self.nodes:
+            node_dict[node.GEOID10] = 0
+        for edge in self.spanning_tree_edges:
+            node_dict[edge[0].GEOID10] = node_dict[edge[0].GEOID10] + 1
+            node_dict[edge[1].GEOID10] = node_dict[edge[1].GEOID10] + 1
+
+        for key in node_dict.keys():
+            if node_dict[key] <= 1:
+                print("Found start node", key)
+                return self.node_dict[key]
 
     def __repr__(self):
         return "<Cluster " + str(self.id) + ">"

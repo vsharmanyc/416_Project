@@ -47,10 +47,41 @@ def algorithm():
 
     # algorithm begins. Find neighboring clusters to combine.
     print("Beginning algorithm loop")
-    clusts = combine_random_clusters(graph)
-    #print_graph(graph, "Plot: Combined graph of clusters " + str(clusts[0]) + " " + str(clusts[1]))
-    generate_spanning_tree(clusts[0], graph)
-    find_acceptable_edges(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district)
+    i = 1
+    one = 0
+    two = 0
+    no_edge = 0
+    while i <= 50:
+        print("================================================ITERATION", i, "========================================"
+                                                                              "========")
+        # print_graph(graph, ("Iteration " + str(i) + " Graph"))
+        clusts = combine_random_clusters(graph)
+        if len(clusts[1]) == 1 and len(clusts[2]) == 1:
+            two += 1
+        elif len(clusts[1]) == 1 or len(clusts[2]) == 1:
+            one += 1
+        #print_graph(graph, "Plot: Combined graph of clusters " + str(clusts[0]) + " " + str(clusts[1]))
+        generate_spanning_tree(clusts[0], graph)
+        # if len(clusts[0].spanning_tree_edges) < 50:
+        #     print_spanning_tree(clusts[0].nodes, clusts[0].spanning_tree_edges, "Spanning tree")
+        edge_list = find_acceptable_edges(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district)
+        if len(edge_list) == 0:
+            print("No edges found. Reverting to original two clusters...")
+            no_edge += 1
+            clust1 = create_cluster(clusts[1], clusts[3][0])
+            clust2 = create_cluster(clusts[2], clusts[3][1])
+            graph.split_cluster(clusts[0], clust1, clust2)
+            graph.determine_edges()
+            continue
+        cut_from_acceptable_edges(edge_list, clusts[0], clusts[3], graph)
+        graph.determine_edges()
+        i += 1
+
+    for cluster in graph.nodes:
+        print_cluster(cluster.nodes, "Graph of final cluster")
+    print("Number of times chosen two one nodes", two)
+    print("Number of times chosen one one nodes", one)
+    print("Number of times unable to find an edge", no_edge)
 
 
 def set_neighboring_clusts(clust):
@@ -94,6 +125,8 @@ def determine_seed_districting(graph):
             continue
         neigh_clust = neighs[random.randrange(0, len(neighs))]
         graph.combine_clusters(clust, neigh_clust)
+    for clust in graph.nodes:
+        graph.recalculate_cluster_neighbors(clust, False)
     return graph
 
 
@@ -262,14 +295,24 @@ def print_spanning_tree(nodes, edges, title):
 def combine_random_clusters(graph):
     print("Combining random clusters")
     clust1 = graph.nodes[random.randrange(0, len(graph.nodes))]
+    #print_cluster(clust1.nodes, "Graphed: Cluster 1 original")
+    clust1_id = clust1.id
     prev_clust1 = clust1.nodes.copy()
-    neighbors = graph.get_neighbors(clust1)
+    neighbors = graph.new_get_neighbors(clust1)
+    print(neighbors)
+    print(clust1.neighbors)
     clust2 = neighbors[random.randrange(0, len(neighbors))]
+    #print_cluster(clust2.nodes, "Graphed: Cluster 2 original")
+    clust2_id = clust2.id
     prev_clust2 = clust2.nodes.copy()
     print("Randomly chose clusters", clust1, clust2, "to be combined.")
+    # if len(clust1.nodes) < 50:
+    #     print_cluster(clust1.nodes, "Clust")
+    # if len(clust2.nodes) < 50:
+    #     print_cluster(clust2.nodes, ":Clust2")
     # combine these two in our graph.
     graph.combine_clusters(clust1, clust2)
-    return [clust1, prev_clust1, prev_clust2]
+    return [clust1, prev_clust1, prev_clust2, (clust1_id, clust2_id)]
 
 
 def generate_spanning_tree(clust, graph):
@@ -282,11 +325,11 @@ def generate_spanning_tree(clust, graph):
     first_node = clust.nodes[random.randrange(0, len(clust.nodes))]
     queue.append(first_node)
     visited.append(first_node)
-    clust.determine_edges()
+    # clust.determine_edges()
     while queue:
         node = queue.pop()
         visited.append(node)
-        neighbors = clust.get_neighbors(node)
+        neighbors = clust.new_get_neighbors(node)
         for neighbor in neighbors:
             if neighbor not in visited:
                 queue.append(neighbor)
@@ -297,45 +340,16 @@ def generate_spanning_tree(clust, graph):
     # print_spanning_tree(clust.nodes, edges, "Plot: Spanning tree for " + str(clust))
 
 
-def find_acceptable_edges(clust, prev_clusts, pop_diff, ideal_pop):
-    # loop through all its edges in spanning tree, and see if they work.
+def find_acceptable_edges(clust, prev_clusts, target_diff, ideal_pop):
     print("Looking for accepted or improved edges...")
-    find_pop_accepted_edges(clust, prev_clusts, pop_diff, ideal_pop)
-    # i = 0
-    # for edge in clust.spanning_tree_edges:
-    #     # creates bfs from each node in edge.
-    #     # print("Examining edge", edge)
-    #
-    #     node_set_1 = modified_bfs(clust, edge[0], edge[1])
-    #     node_set_2 = modified_bfs(clust, edge[1], edge[0])
-    #     # print(len(clust.nodes))
-    #     # print("Nodes 1", len(node_set_1))
-    #     # print("Nodes 2", len(node_set_2))
-    #     print(i)
-    #     i += 1
-
-
-def find_pop_accepted_edges(clust, prev_clusts, target_diff, ideal_pop):
-    # do a bfs, calculating acceptability of two subgraphs at each point.
-    # find a starting point (leaf node)
-    prev_clusts_diff = []
     # calculating the clusters' pop differences.
-    pop = 0
-    for node in prev_clusts[0]:
-        pop += node.TOTAL
-    diff = abs(pop - ideal_pop)/ideal_pop
-    prev_clusts_diff.append(diff)
-    pop = 0
-    for node in prev_clusts[1]:
-        pop += node.TOTAL
-    diff = abs(pop - ideal_pop) / ideal_pop
-    prev_clusts_diff.append(diff)
-    print("Prev clusters differance was", prev_clusts_diff)
-    start = None
-    for node in clust.nodes:
-        if len(node.NEIGHBORS) == 1:
-            start = node
-            break
+    prev_clusts_diff = calculate_previous_clusters_pop_diff(prev_clusts, ideal_pop)
+    # find start node to conduct bfs from
+    start = clust.find_start_node()
+    # for node in clust.nodes:
+    #     if len(node.NEIGHBORS) == 1:
+    #         start = node
+    #         break
     # conduct BFS from this node.
     visited_pop = 0
     unvisited_pop = 0
@@ -344,8 +358,9 @@ def find_pop_accepted_edges(clust, prev_clusts, target_diff, ideal_pop):
     # bfs
     queue = []
     visited = []
-    accepted_pop_edges = []
-    improved_pop_edges = []
+    # accepted_pop_edges = []
+    # improved_pop_edges = []
+    edge_list = []
     queue.append(start)
     visited.append(start)
     while queue:
@@ -357,23 +372,92 @@ def find_pop_accepted_edges(clust, prev_clusts, target_diff, ideal_pop):
 
         neighbors = clust.get_mst_neighbors(node)
         for neighbor in neighbors:
-            if neighbor not in visited:
+            if neighbor not in visited and neighbor is not None:
                 queue.append(neighbor)
                 visited.append(neighbor)
                 # check if such an edge is better/acceptable.
-                pop1_diff = abs(unvisited_pop-ideal_pop)/ideal_pop
-                pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
-                if pop1_diff < target_diff or pop2_diff < target_diff:
-                    # if acceptable
-                    print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
-                    accepted_pop_edges.append((node, neighbor))
-                elif (pop1_diff + pop2_diff) < (prev_clusts_diff[0] + prev_clusts_diff[1]):
-                    # if improvement
-                    print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
-                    improved_pop_edges.append((node, neighbor))
-    #print("Found some accepted edges", accepted_pop_edges)
-    #print("Found some improved edges", improved_pop_edges)
-    return [accepted_pop_edges, improved_pop_edges]
+                if check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
+                    edge_list.append((node, neighbor))
+    # print("Edges found:", edge_list)
+    return edge_list
+
+
+def check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
+    print("Checking cut population")
+    pop1_diff = abs(unvisited_pop - ideal_pop) / ideal_pop
+    pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
+    print("New populations determined to be", pop1_diff, pop2_diff)
+    if pop1_diff < target_diff or pop2_diff < target_diff:
+        # if acceptable
+        print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
+        return True
+    elif (pop1_diff + pop2_diff) <= (prev_clusts_diff[0] + prev_clusts_diff[1]):
+        # if improvement
+        print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
+        return True
+    return False
+
+
+def check_new_compactness(clust, visited, prev_clusts_diff):
+    print("Checking cut compactness...")
+    # calculate interior edges. Then exterior edges. Then take ratio.
+    vis_num_exterior_edges = 0
+    vis_edges = []
+    vis_num_edges = 0
+    unvis_num_edges = 0
+    unvis_num_exterior_edges = 0
+    # find nodes in each portion.
+    unvisited = []
+    unvis_edges = []
+    unvisited_ids = []
+    visited_ids = []
+    for node in clust.nodes:
+        if node not in visited:
+            unvisited.append(node)
+            unvisited_ids.append(node.GEOID10)
+        else:
+            visited_ids.append(node.GEOID10)
+    # first find interior edges, then exterior.
+    for node in clust.nodes:
+        if node in visited:
+            for neighbor in node.NEIGHBORS:
+                if (neighbor, node) not in vis_edges and (node, neighbor) not in vis_edges:
+                    vis_edges.append((node, neighbor))
+                    if neighbor not in visited_ids:
+                        vis_num_exterior_edges += 1
+                    vis_num_edges += 1
+        else:
+            for neighbor in node.NEIGHBORS:
+                if (neighbor, node) not in unvis_edges and (node, neighbor) not in unvis_edges:
+                    unvis_edges.append((node, neighbor))
+                    if neighbor not in unvisited_ids:
+                        unvis_num_exterior_edges += 1
+                    unvis_num_edges += 1
+
+    unvis_ratio = unvis_num_edges / unvis_num_exterior_edges
+    vis_ratio = vis_num_edges / vis_num_exterior_edges
+
+    print("Unvisited: ", unvis_num_edges, unvis_num_exterior_edges)
+    print("Visited: ", vis_num_edges, vis_num_exterior_edges)
+    print("New edge ratios", unvis_ratio, vis_ratio)
+
+    return True
+
+
+def calculate_previous_clusters_pop_diff(prev_clusts, ideal_pop):
+    prev_clusts_diff = []
+    pop = 0
+    for node in prev_clusts[0]:
+        pop += node.TOTAL
+    diff = abs(pop - ideal_pop) / ideal_pop
+    prev_clusts_diff.append(diff)
+    pop = 0
+    for node in prev_clusts[1]:
+        pop += node.TOTAL
+    diff = abs(pop - ideal_pop) / ideal_pop
+    prev_clusts_diff.append(diff)
+    print("Prev clusters differance was", prev_clusts_diff)
+    return prev_clusts_diff
 
 
 def modified_bfs(clust, start, avoid):
@@ -397,5 +481,49 @@ def modified_bfs(clust, start, avoid):
                 visited.append(neighbor)
     return nodes
 
+
+def cut_from_acceptable_edges(edge_list, clust, ids, graph):
+    print("Randomly choosing an edge to cut from the gathered list...")
+    edge = edge_list[random.randrange(0, len(edge_list))]
+    print("Randomly chose edge", edge, "to cut. Paritioning into two separate clusters now...")
+    # remove the edge.
+    if edge in clust.spanning_tree_edges:
+        clust.spanning_tree_edges.remove(edge)
+    else:
+        clust.spanning_tree_edges.remove((edge[1], edge[0]))
+    # 2 bfs' to get both of the node lists.
+    nodes_1 = accumulate_bfs(clust, edge[0])
+    nodes_2 = accumulate_bfs(clust, edge[1])
+
+    clust_1 = create_cluster(nodes_1, ids[0])
+    clust_2 = create_cluster(nodes_2, ids[1])
+    graph.split_cluster(clust, clust_1, clust_2)
+    print("Split into clusters", clust_1, clust_2)
+    #print_cluster(clust_1.nodes, "Graphed: Cluster 1")
+    #print_cluster(clust_2.nodes, "Graphed: Cluster 2")
+    print(clust_1.neighbors)
+    print(clust_2.neighbors)
+
+
+def create_cluster(nodes, id):
+    clust = Cluster(nodes, id)
+    for node in clust.nodes:
+        node.cluster_id = clust.id
+    return clust
+
+def accumulate_bfs(clust, start):
+    queue = []
+    visited = []
+    queue.append(start)
+    visited.append(start)
+    while queue:
+        node = queue.pop()
+        visited.append(node)
+        neighbors = clust.get_mst_neighbors(node)
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                queue.append(neighbor)
+                visited.append(neighbor)
+    return visited
 
 algorithm()
