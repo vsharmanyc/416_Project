@@ -6,7 +6,16 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from Cluster import Cluster
 from Graph import Graph
+import datetime
 
+
+seed_timer = 0
+combine_cluster_times = []
+spanning_tree_times = []
+acceptable_edge_times = []
+cut_edge_times = []
+recalculate_neighbor_timess = []
+calc_edge_time = []
 
 def parse_data_from_file():
     f = open("swData_job1.json")
@@ -38,11 +47,13 @@ def algorithm():
     # graph of clusters.
     graph = Graph(clusts)
     print("Determining a Seed Districting...")
+    start = datetime.datetime.utcnow()
     seed = determine_seed_districting(graph)
+    seed_timer = datetime.datetime.utcnow() - start
     # clean up neighboring clusters
     graph.clean_up_edges()
     # for clust in graph.nodes:
-    #     print_cluster(clust.nodes)
+    #     print_cluster(clust.nodes, "CLuster")
     # print_graph(graph)
 
     # algorithm begins. Find neighboring clusters to combine.
@@ -55,16 +66,22 @@ def algorithm():
         print("================================================ITERATION", i, "========================================"
                                                                               "========")
         # print_graph(graph, ("Iteration " + str(i) + " Graph"))
+        start = datetime.datetime.utcnow()
         clusts = combine_random_clusters(graph)
+        combine_cluster_times.append((datetime.datetime.utcnow() - start).microseconds)
         if len(clusts[1]) == 1 and len(clusts[2]) == 1:
             two += 1
         elif len(clusts[1]) == 1 or len(clusts[2]) == 1:
             one += 1
         #print_graph(graph, "Plot: Combined graph of clusters " + str(clusts[0]) + " " + str(clusts[1]))
+        start = datetime.datetime.utcnow()
         generate_spanning_tree(clusts[0], graph)
+        spanning_tree_times.append((datetime.datetime.utcnow() - start).microseconds)
         # if len(clusts[0].spanning_tree_edges) < 50:
         #     print_spanning_tree(clusts[0].nodes, clusts[0].spanning_tree_edges, "Spanning tree")
+        start = datetime.datetime.utcnow()
         edge_list = find_acceptable_edges(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district)
+        acceptable_edge_times.append((datetime.datetime.utcnow() - start).microseconds)
         if len(edge_list) == 0:
             print("No edges found. Reverting to original two clusters...")
             no_edge += 1
@@ -74,14 +91,23 @@ def algorithm():
             graph.determine_edges()
             continue
         cut_from_acceptable_edges(edge_list, clusts[0], clusts[3], graph)
+        start = datetime.datetime.utcnow()
         graph.determine_edges()
+        calc_edge_time.append((datetime.datetime.utcnow() - start).microseconds)
         i += 1
 
-    for cluster in graph.nodes:
-        print_cluster(cluster.nodes, "Graph of final cluster")
+    # for cluster in graph.nodes:
+    #     print_cluster(cluster.nodes, "Graph of final cluster")
     print("Number of times chosen two one nodes", two)
     print("Number of times chosen one one nodes", one)
     print("Number of times unable to find an edge", no_edge)
+    print("Seed time", seed_timer)
+    print("Avg combine cluster times", sum(combine_cluster_times)/len(combine_cluster_times))
+    print("Avg spanning tree times", sum(spanning_tree_times)/len(spanning_tree_times))
+    print("Avg acceptable edge times", sum(acceptable_edge_times)/len(acceptable_edge_times))
+    print("Avg cut edge times", sum(cut_edge_times)/len(cut_edge_times))
+    print("Avg calculate edge times", sum(calc_edge_time)/len(calc_edge_time))
+    print("Avg recalculate neighbor times", sum(recalculate_neighbor_timess) / len(recalculate_neighbor_timess))
 
 
 def set_neighboring_clusts(clust):
@@ -232,6 +258,7 @@ def print_graph(graph, title):
         for neighbor in neighbors:
             if not G.has_edge(neighbor, node):
                 G.add_edge(node, neighbor)
+
 
     nx.draw(G, with_labels=True, font_weight='light')
     print(len(G.edges))
@@ -387,12 +414,16 @@ def check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clust
     pop1_diff = abs(unvisited_pop - ideal_pop) / ideal_pop
     pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
     print("New populations determined to be", pop1_diff, pop2_diff)
-    if pop1_diff < target_diff or pop2_diff < target_diff:
+    if pop1_diff < target_diff and pop2_diff < target_diff:
         # if acceptable
         print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
         return True
-    elif (pop1_diff + pop2_diff) <= (prev_clusts_diff[0] + prev_clusts_diff[1]):
-        # if improvement
+    # elif (pop1_diff + pop2_diff) <= (prev_clusts_diff[0] + prev_clusts_diff[1]):
+    #     # if improvement
+    #     print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
+    #     return True
+    elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[0]-target_diff) and abs(pop2_diff-target_diff) <= abs(prev_clusts_diff[1]-target_diff) or \
+            abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[1]-target_diff) and abs(pop2_diff-target_diff) <= abs(prev_clusts_diff[0]-target_diff):
         print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
         return True
     return False
@@ -484,6 +515,7 @@ def modified_bfs(clust, start, avoid):
 
 def cut_from_acceptable_edges(edge_list, clust, ids, graph):
     print("Randomly choosing an edge to cut from the gathered list...")
+
     edge = edge_list[random.randrange(0, len(edge_list))]
     print("Randomly chose edge", edge, "to cut. Paritioning into two separate clusters now...")
     # remove the edge.
@@ -492,17 +524,20 @@ def cut_from_acceptable_edges(edge_list, clust, ids, graph):
     else:
         clust.spanning_tree_edges.remove((edge[1], edge[0]))
     # 2 bfs' to get both of the node lists.
+    start = datetime.datetime.utcnow()
     nodes_1 = accumulate_bfs(clust, edge[0])
     nodes_2 = accumulate_bfs(clust, edge[1])
-
+    cut_edge_times.append((datetime.datetime.utcnow() - start).microseconds)
     clust_1 = create_cluster(nodes_1, ids[0])
     clust_2 = create_cluster(nodes_2, ids[1])
+    start = datetime.datetime.utcnow()
     graph.split_cluster(clust, clust_1, clust_2)
     print("Split into clusters", clust_1, clust_2)
     #print_cluster(clust_1.nodes, "Graphed: Cluster 1")
     #print_cluster(clust_2.nodes, "Graphed: Cluster 2")
     print(clust_1.neighbors)
     print(clust_2.neighbors)
+    recalculate_neighbor_timess.append((datetime.datetime.utcnow() - start).microseconds)
 
 
 def create_cluster(nodes, id):
@@ -510,6 +545,7 @@ def create_cluster(nodes, id):
     for node in clust.nodes:
         node.cluster_id = clust.id
     return clust
+
 
 def accumulate_bfs(clust, start):
     queue = []

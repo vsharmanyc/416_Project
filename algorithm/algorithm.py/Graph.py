@@ -5,7 +5,9 @@ class Graph:
         self.edges = []
         self.determine_edges()
         self.cluster_dict = {}
+        self.node_dict = {}
         self.set_cluster_dict()
+        self.set_node_dict()
 
     def determine_edges(self):
         edges = []
@@ -21,6 +23,13 @@ class Graph:
         for node in self.nodes:
             cluster_dict[node.id] = node
         self.cluster_dict = cluster_dict
+
+    def set_node_dict(self):
+        node_dict = {}
+        for clust in self.nodes:
+            for node in clust.nodes:
+                node_dict[node.GEOID10] = node
+        self.node_dict = node_dict
 
     def find_node(self, neighbor):
         for node in self.nodes:
@@ -92,12 +101,14 @@ class Graph:
         if debug:
             print("Exterior neighbors in this clust:", neighbors)
         # find them in the overall graph.
-        for cluster in self.nodes:
-            for node in cluster.nodes:
-                for id in neighbors:
-                    if node.GEOID10 == int(id):
-                        if node.cluster_id not in clust_neighbors:
-                            clust_neighbors.append(node.cluster_id)
+        # for cluster in self.nodes:
+        #     for node in cluster.nodes:
+        #         for id in neighbors:
+        #             if node.GEOID10 == int(id):
+        #                 if node.cluster_id not in clust_neighbors:
+        #                     clust_neighbors.append(node.cluster_id)
+        for id in neighbors:
+            clust_neighbors.append(self.node_dict[int(id)].cluster_id)
         if debug:
             print("Neighbors determined to be", clust_neighbors)
         clust.neighbors = clust_neighbors
@@ -106,9 +117,6 @@ class Graph:
         self.nodes.remove(clust)
         self.nodes.append(clust1)
         self.nodes.append(clust2)
-        # self.recalculate_cluster_neighbors(clust1, True)
-        # # self.nodes.append(clust2)
-        # self.recalculate_cluster_neighbors(clust2, True)
         self.recalculate_all_neighbors(clust1.id, clust2.id)
         self.set_cluster_dict()
 
