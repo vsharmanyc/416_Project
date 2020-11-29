@@ -3,11 +3,15 @@ class Cluster:
         self.id = id
         self.parent_cluster = id
         self.nodes = nodes
-        self.neighbors = []
+        self.neighbors = set()
         self.edges = []
         self.spanning_tree_edges = []
         self.node_dict = {}
         self.determine_node_dict()
+        self.mst_neighbors_dict = {}
+        self.node_neighbor_dict = {}
+        self.determine_node_neighbor_dict()
+        self.node_status = {}
 
     def set_neighbors(self, neighbors):
         self.neighbors = neighbors
@@ -15,6 +19,40 @@ class Cluster:
     def determine_node_dict(self):
         for node in self.nodes:
             self.node_dict[node.GEOID10] = node
+
+    def determine_mst_neighbors_dict(self):
+        mst_dict = {}
+        for node in self.nodes:
+            mst_dict[node.GEOID10] = []
+        for edge in self.spanning_tree_edges:
+            array1 = mst_dict[edge[0].GEOID10]
+            array1.append(edge[1])
+            array2 = mst_dict[edge[1].GEOID10]
+            array2.append(edge[0])
+            mst_dict[edge[0].GEOID10] = array1
+            mst_dict[edge[1].GEOID10] = array2
+        self.mst_neighbors_dict = mst_dict
+
+    def determine_node_neighbor_dict(self):
+        node_neighbors = {}
+        node_status = {}
+        ext_node = False
+        for node in self.nodes:
+            node_neighbors[node.GEOID10] = []
+        for node in self.nodes:
+            for neighbor in node.NEIGHBORS:
+                if int(neighbor) in self.node_dict.keys():
+                    array = node_neighbors[node.GEOID10]
+                    array.append(self.node_dict[int(neighbor)])
+                    node_neighbors[node.GEOID10] = array
+                else:
+                    ext_node = True
+            if ext_node:
+                node_status[node.GEOID10] = True
+            else:
+                node_status[node.GEOID10] = False
+        self.node_neighbor_dict = node_neighbors
+        self.node_status = node_status
 
     def determine_edges(self):
         edges = []
@@ -70,7 +108,7 @@ class Cluster:
 
         for key in node_dict.keys():
             if node_dict[key] <= 1:
-                print("Found start node", key)
+                # print("Found start node", key)
                 return self.node_dict[key]
 
     def __repr__(self):

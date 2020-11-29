@@ -90,14 +90,14 @@ class Graph:
     def recalculate_cluster_neighbors(self, clust, debug):
         if debug:
             print("Recalculating neighbors for", clust)
-        neighbors = []
-        clust_neighbors = []
+        neighbors = set()
+        clust_neighbors = set()
         # find nodes that lie outside the cluster.
         for node in clust.nodes:
             for neighbor in node.NEIGHBORS:
                 if int(neighbor) not in clust.node_dict.keys():
                     if neighbor not in neighbors:
-                        neighbors.append(neighbor)
+                        neighbors.add(neighbor)
         if debug:
             print("Exterior neighbors in this clust:", neighbors)
         # find them in the overall graph.
@@ -108,7 +108,7 @@ class Graph:
         #                 if node.cluster_id not in clust_neighbors:
         #                     clust_neighbors.append(node.cluster_id)
         for id in neighbors:
-            clust_neighbors.append(self.node_dict[int(id)].cluster_id)
+            clust_neighbors.add(self.node_dict[int(id)].cluster_id)
         if debug:
             print("Neighbors determined to be", clust_neighbors)
         clust.neighbors = clust_neighbors
@@ -127,5 +127,7 @@ class Graph:
             elif id2 == node.id or id1 == node.id:
                 self.recalculate_cluster_neighbors(node, False)
 
-
+    def recalculate_literally_all_neighbors(self):
+        for node in self.nodes:
+            self.recalculate_cluster_neighbors(node, False)
 
