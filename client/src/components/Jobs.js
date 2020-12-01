@@ -20,7 +20,7 @@ class Jobs extends Component {
 
         return (
             <div style={style}>
-                {this.props.jobs.map((job) => <Job updateJobs={this.props.updateJobs} jobs={this.props.jobs} job={job}/>)}
+                {this.props.jobs.map((job) => <Job updateJobs={this.props.updateJobs} job={job} toggleModal={this.props.toggleModal}/>)}
             </div>
         );
     }

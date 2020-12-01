@@ -74,7 +74,7 @@ class Sidebar extends Component {
                                 <CreateJob jobs={this.props.jobs} updateJobs={this.props.updateJobs} />
                             </Tab>
 
-                            <Tab eventKey={3} title="Jobs"><Jobs updateJobs={this.props.updateJobs} jobs={this.props.jobs} /></Tab>
+                            <Tab eventKey={3} title="Jobs"><Jobs updateJobs={this.props.updateJobs} toggleModal={this.props.toggleModal} jobs={this.props.jobs} /></Tab>
                         </Tabs>
                     </div>
                     <div style={toggleStyle} onClick={this.toggle}>

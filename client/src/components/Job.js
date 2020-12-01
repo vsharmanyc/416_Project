@@ -82,12 +82,15 @@ class Job extends Component {
                     <div style={colStyle}>
                         <button style={{ marginTop: '3%' }} class='btn-primary' onClick={this.deleteJob}>
                             Delete
-                            </button>
+                        </button>
                         <button style={{ marginTop: '3%' }} 
                         disabled={this.props.job.jobStatus === 'CANCELLED'}
                         class={this.props.job.jobStatus === 'CANCELLED' ? 'btn-disabled' : 'btn-primary'}
                         onClick={this.cancelJob}>
                             Cancel
+                        </button>
+                        <button style={{ marginTop: '3%' }} class='btn-primary' onClick={this.props.toggleModal}>
+                            Graph
                         </button>
                     </div>
                 </div>
