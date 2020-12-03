@@ -96,4 +96,22 @@ public class DispatcherHandler {
         }
     }
 
+    public void cancelJob(Job job){
+        computeBestEnvironment(job);
+        if (runOnSeaWulf) {
+            new Thread(() -> {
+                SeaWulfHandler swh = new SeaWulfHandler(job);
+                System.out.println("Cancelling job " + job.getJobId() + " on SeaWulf");
+                swh.cancelJob();
+
+            }).start();
+        } else {
+            new Thread(() -> {
+                ServerHandler svh = new ServerHandler(job);
+                System.out.println("Cancelling job " + job.getJobId() + " on Server");
+                svh.cancelJob();
+            }).start();
+        }
+    }
+
 }

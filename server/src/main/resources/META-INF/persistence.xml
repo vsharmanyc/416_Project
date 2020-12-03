@@ -5,6 +5,7 @@
     <persistence-unit name="Jobs">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.panthers.main.handler.JobEntityManager</class>
+        <class>com.panthers.main.jobmodel.Job</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
@@ -12,7 +13,7 @@
             <property name="javax.persistence.jdbc.user" value="panthers"/>
             <property name="javax.persistence.jdbc.password" value="Panthers!416"/>
             <property name="eclipselink.logging.level" value="SEVERE"/>
-            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.ddl-generation" value="create"/>
         </properties>
 
     </persistence-unit>

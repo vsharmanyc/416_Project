@@ -81,8 +81,25 @@ public class RunResults {
     /**
      * function generates box plot; will generate data needed to generate a box plot on the client side.
      */
-    public String generateBoxPlot(){
-        return null;
+    public void generateBoxPlot(){
+        List<List<Double>> mvapList = new ArrayList<>();
+        for (int i = 0; i < plans.size(); i++){
+            List<Double> mvaps = new ArrayList<>();
+            for (DistrictingPlan plan: plans){
+                mvaps.add(plan.getNthDistrict(i).getPercentVap());
+            }
+            mvapList.add(mvaps);
+        }
+        List<BoxPlot> boxPlots = new ArrayList<>();
+        for (int i = 0; i < mvapList.size(); i++) {
+            BoxPlot bp = new BoxPlot(mvapList.get(i));
+            bp.findMaxMVAP();
+            bp.findMinMVAP();
+            bp.findFirstQuart();
+            bp.findMeanMVAP();
+            bp.findThirdQuart();
+            addToBoxPlotGraph(bp);
+        }
     }
 
     /**

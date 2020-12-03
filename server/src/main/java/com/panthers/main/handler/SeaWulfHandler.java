@@ -128,4 +128,8 @@ public class SeaWulfHandler {
             e.printStackTrace();
         }
     }
+
+    public void cancelJob(){
+
+    }
 }

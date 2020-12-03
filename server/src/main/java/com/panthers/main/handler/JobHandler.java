@@ -29,6 +29,7 @@ public class JobHandler {
     private List<Precinct> precincts;
     private List<District> districts;
     private RunResults runResults;
+    public JobEntityManager jobEM;
 
     @Autowired
     public JobHandler(DispatcherHandler dispatcherHandler) {
@@ -38,7 +39,7 @@ public class JobHandler {
         EntityManagerFactory emf= Persistence.createEntityManagerFactory("Jobs");
         EntityManager em = emf.createEntityManager();
         //em.getTransaction( ).begin( );
-        JobEntityManager jobEM = new JobEntityManager(em);
+        this.jobEM = new JobEntityManager(em);
         /*loadPrecincts();
         loadDistricts();
         generateDummyRunResults();
@@ -99,8 +100,9 @@ public class JobHandler {
             job.setJobId(getNextJobId());//Sets the jobs id
 
         job.setJobStatus(JobStatus.QUEUED);
+        System.out.println("Created job:" + job);
         jobHistory.add(job);
-        System.out.println("Created job:" + job.toString());
+        jobEM.addJob(job);
 
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
@@ -192,9 +194,7 @@ public class JobHandler {
             return jobHistory;
 
         jobHistory.get(index).setJobStatus(JobStatus.CANCELLED);
-        /*
-         * CANCELLING ON SERVER/SEAWULF
-         */
+        dispatcherHandler.cancelJob(jobHistory.get(index));
         System.out.println("Cancelled execution of Job #" + jobId);
         return jobHistory;
     }
@@ -313,41 +313,41 @@ public class JobHandler {
 
     }
 
-    private void generateDummyRunResults() {
-        // We need to generate dummy districting plans, well make 10.
-        List<Demographic> dg = new ArrayList<>();
-        dg.add(Demographic.AFRICAN_AMERICAN);
-        dg.add(Demographic.ASIAN);
-
-        Job job = new Job(States.MD, 10, dg, 0.003, "Somewhat Compact");
-        job.setJobId(10);
-        job.setJobStatus(JobStatus.COMPLETED);
-        job.setName(24);
-
-        List<DistrictingPlan> plans = new ArrayList<>();
-        List<Precinct> ps = new ArrayList<>(precincts);
-        int counter = 0;
-        Random rand = new Random();
-        for (int i = 0; i < 10; i++) {
-            List<District> planDistricts = new ArrayList<>();
-            for (int j = 0; j < districts.size(); j++) {
-                List<Precinct> districtPrecincts = new ArrayList<>();
-                for (int k = 0; k < 231; k++) {
-                    int index = rand.nextInt(ps.size());
-                    districtPrecincts.add(ps.remove(index));
-                }
-                District d = new District("MD", counter, null, districtPrecincts, null);
-                d.calculatePercentMVAP(job.getDemographicGroups());
-                planDistricts.add(d);
-                counter++;
-                ps = new ArrayList<>(precincts);
-            }
-
-            plans.add(new DistrictingPlan(States.MD, planDistricts, 0.003,
-                    "Somewhat Compact", DistrictingType.RANDOM, 0));
-        }
-        this.runResults = new RunResults(job, plans);
-    }
+//    private void generateDummyRunResults() {
+//        // We need to generate dummy districting plans, well make 10.
+//        List<Demographic> dg = new ArrayList<>();
+//        dg.add(Demographic.AFRICAN_AMERICAN);
+//        dg.add(Demographic.ASIAN);
+//
+//        Job job = new Job(States.MD, 10, "AA", 0.003, "Somewhat Compact", JobStatus.QUEUED);
+//        job.setJobId(10);
+//        job.setJobStatus(JobStatus.COMPLETED);
+//        job.setName(24);
+//
+//        List<DistrictingPlan> plans = new ArrayList<>();
+//        List<Precinct> ps = new ArrayList<>(precincts);
+//        int counter = 0;
+//        Random rand = new Random();
+//        for (int i = 0; i < 10; i++) {
+//            List<District> planDistricts = new ArrayList<>();
+//            for (int j = 0; j < districts.size(); j++) {
+//                List<Precinct> districtPrecincts = new ArrayList<>();
+//                for (int k = 0; k < 231; k++) {
+//                    int index = rand.nextInt(ps.size());
+//                    districtPrecincts.add(ps.remove(index));
+//                }
+//                District d = new District("MD", counter, null, districtPrecincts, null);
+//                d.calculatePercentMVAP(job.getDemographicGroups());
+//                planDistricts.add(d);
+//                counter++;
+//                ps = new ArrayList<>(precincts);
+//            }
+//
+//            plans.add(new DistrictingPlan(States.MD, planDistricts, 0.003,
+//                    "Somewhat Compact", DistrictingType.RANDOM, 0));
+//        }
+//        this.runResults = new RunResults(job, plans);
+//    }
 
     public RunResults getRunResults() {
         return runResults;
