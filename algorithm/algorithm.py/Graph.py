@@ -108,7 +108,8 @@ class Graph:
         #                 if node.cluster_id not in clust_neighbors:
         #                     clust_neighbors.append(node.cluster_id)
         for id in neighbors:
-            clust_neighbors.add(self.node_dict[int(id)].cluster_id)
+            if int(id) in self.node_dict.keys():
+                clust_neighbors.add(self.node_dict[int(id)].cluster_id)
         if debug:
             print("Neighbors determined to be", clust_neighbors)
         clust.neighbors = clust_neighbors
@@ -131,3 +132,9 @@ class Graph:
         for node in self.nodes:
             self.recalculate_cluster_neighbors(node, False)
 
+    def get_all_nodes(self):
+        nodes = []
+        for node in self.nodes:
+            for n in node.nodes:
+                nodes.append(n)
+        return nodes

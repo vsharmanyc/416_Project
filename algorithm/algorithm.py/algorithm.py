@@ -26,6 +26,7 @@ def parse_data_from_file():
     job = data["data"][0]
     precincts = data["data"][1]
     nodes = parse_precincts_from_json(precincts["precincts"])
+    nodes = nodes
     request = parse_job_from_json(job)
     return [nodes, request]
 
@@ -58,11 +59,12 @@ def set_neighboring_clusts(clust):
 
 
 def algorithm():
-    # data aggregation
-    alg_start = datetime.datetime.utcnow()
     data = parse_data_from_file()
     nodes = data[0]
     request = data[1]
+    # data aggregation
+    alg_start = datetime.datetime.utcnow()
+
     ideal_population_per_district = 0
     for node in nodes:
         ideal_population_per_district += node.TOTAL
@@ -86,18 +88,14 @@ def algorithm():
     # clean up neighboring clusters
     graph.clean_up_edges()
     graph.recalculate_literally_all_neighbors()
-    # for clust in graph.nodes:
-    #     print_cluster(clust.nodes, "CLuster")
-    # print_graph(graph)
 
     # algorithm begins. Find neighboring clusters to combine.
-    if debug:
-        print("Beginning algorithm loop")
     i = 1
     one = 0
     two = 0
     no_edge = 0
     one_member = False
+
     while i <= 100:
         if debug:
             print("================================================ITERATION", i,
@@ -116,20 +114,15 @@ def algorithm():
             one_member = True
         else:
             one_member = False
-        # print_graph(graph, "Plot: Combined graph of clusters " + str(clusts[0]) + " " + str(clusts[1]))
-        # if one_member:
-        #     print_cluster(clusts[1], "Clust1")
-        #     print_cluster(clusts[2], "Clust2")
-        generate_spanning_tree(clusts[0], graph)
+        dfs_generate_spanning_tree(clusts[0])
+        # NARAYAN - here is printing the spanning tree
+        # print_spanning_tree(clusts[0].nodes, clusts[0].spanning_tree_edges, "DFS")
         start = datetime.datetime.utcnow()
-        # fae_result = find_acceptable_edges(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district, clusts[4])
         fae_result = find_acceptable_edge(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district, clusts[4])
-        #edge_list = fae_result[0]
-        #starting_node = fae_result[1]
+
         edge = fae_result[0]
         node_lists = [fae_result[1], fae_result[2]]
         acceptable_edge_times.append((datetime.datetime.utcnow() - start).microseconds)
-        # if len(edge_list) == 0:
         if not edge:
             if debug:
                 print("No edges found. Reverting to original two clusters...")
@@ -138,37 +131,17 @@ def algorithm():
             clust2 = create_cluster(clusts[2], clusts[3][1])
             graph.split_cluster(clusts[0], clust1, clust2)
             graph.determine_edges()
-            # i+=1
             continue
-        #node_nums = cut_from_acceptable_edges(edge_list, clusts[0], clusts[3], graph, starting_node)
         node_nums = cut_from_acceptable_edges(edge, clusts[0], clusts[3], graph, node_lists)
-        # if len(node_nums[0]) == 1 or len(node_nums[1]) == 1:
-        #     if not one_member:
-        #         print("ERROR!!!!")
-        #         print_cluster(node_nums[0], "Clust1")
-        #         print_cluster(node_nums[1], "Clust2")
-        # if one_member:
-        #     print_cluster(node_nums[0], "Clust1")
-        #     print_cluster(node_nums[1], "Clust2")
         start = datetime.datetime.utcnow()
         graph.determine_edges()
         calc_edge_time.append((datetime.datetime.utcnow() - start).microseconds)
         i += 1
 
-    # for cluster in graph.nodes:
-    #     print_cluster(cluster.nodes, "Graph of final cluster")
-
     print("====================ALGORITHM RESULTS====================")
-    print("Iteations:", i)
+    print("Iterations:", i-1)
     print("Total algorithm runtime", datetime.datetime.utcnow() - alg_start)
     print("Seed time", seed_timer)
-    print("Avg combine cluster times", sum(combine_cluster_times) / len(combine_cluster_times))
-    print("Avg spanning tree times", sum(spanning_tree_times) / len(spanning_tree_times))
-    print("Avg spanning tree loop times", sum(acceptable_edge_loop_times) / len(acceptable_edge_loop_times))
-    print("Avg acceptable edge times", sum(acceptable_edge_times) / len(acceptable_edge_times))
-    print("Avg cut edge times", sum(cut_edge_times) / len(cut_edge_times))
-    print("Avg calculate edge times", sum(calc_edge_time) / len(calc_edge_time))
-    print("Avg recalculate neighbor times", sum(recalculate_neighbor_timess) / len(recalculate_neighbor_timess))
     print("Number of times alg chose a 1-node graph", one)
     print("Number of times chosen two one nodes", two)
     print("Number of times chosen one one nodes", one)
@@ -269,9 +242,29 @@ def generate_spanning_tree(clust, graph):
                     edges.append((node, neighbor))
     acceptable_edge_loop_times.append((datetime.datetime.utcnow() - start2).microseconds)
     clust.set_spanning_tree(edges)
-    #print_spanning_tree(clust.nodes, edges, "Plot: Spanning tree for " + str(clust))
+    # print_spanning_tree(clust.nodes, edges, "Plot: Spanning tree for " + str(clust))
     clust.determine_mst_neighbors_dict()
     # new_print_spanning_tree(clust)
+
+
+def dfs_generate_spanning_tree(clust):
+    clust.determine_node_neighbor_dict()
+    visited = set()
+    edges = []
+    first_node = clust.nodes[random.randrange(0, len(clust.nodes))]
+    dfs_spanning_tree_util(clust, first_node, visited, edges)
+    clust.set_spanning_tree(edges)
+    clust.determine_mst_neighbors_dict()
+
+
+def dfs_spanning_tree_util(clust, n, visited, edges):
+    visited.add(n)
+    neighbors = clust.node_neighbor_dict[n.GEOID10]
+    for neighbor in neighbors:
+        if neighbor not in visited:
+            if (neighbor, n) not in edges and (n, neighbor) not in edges:
+                edges.append((n, neighbor))
+            dfs_spanning_tree_util(clust, neighbor, visited, edges)
 
 
 def find_acceptable_edges(clust, prev_clusts, target_diff, ideal_pop, prev_compact):
@@ -320,8 +313,6 @@ def find_acceptable_edges(clust, prev_clusts, target_diff, ideal_pop, prev_compa
                 queue.append(neighbor)
                 visited.append(neighbor)
                 # check if such an edge is better/acceptable.
-                # if check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff) and \
-                #         check_new_compactness([num_vis_ext, num_vis], [num_unvis_ext, num_unvis], prev_compact):
                 if check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
                     print("FOR EDGE", (node, neighbor))
                     edge_list.append((node, neighbor))
@@ -339,7 +330,7 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
     while len(edges) > 0:
         edge = edges[random.randrange(0, len(edges))]
         edges.remove(edge)
-        print("Observing edge", edge)
+        # print("Observing edge", edge)
         # remove edge from spanning tree
         neighbors1 = clust.mst_neighbors_dict[edge[0].GEOID10]
         neighbors2 = clust.mst_neighbors_dict[edge[1].GEOID10]
@@ -354,12 +345,6 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
         pop1 = res1[1]
         pop2 = overall_pop - pop1
 
-        # res2 = bfs(clust, edge[1])
-        # nodes2 = res2[0]
-        # pop2 = res2[1]
-        # compact_info2 = res2[2]
-
-
         neighbors1 = clust.mst_neighbors_dict[edge[0].GEOID10]
         neighbors2 = clust.mst_neighbors_dict[edge[1].GEOID10]
         neighbors1.append(edge[1])
@@ -367,11 +352,7 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
         clust.mst_neighbors_dict[edge[0]] = neighbors1
         clust.mst_neighbors_dict[edge[1]] = neighbors2
 
-        print("Populations calculated to be", pop1, pop2)
-        # if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff) and \
-        #         check_new_compactness(compact_info1, compact_info2, prev_compact):
-        #     print("EDGE ACCEPTED:", edge)
-        #     return (edge, nodes1, nodes2)
+        #print("Populations calculated to be", pop1, pop2)
         if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff):
             # check if compactness is OK too
             compact_info1 = find_compactness(res1[2][0], res1[2][1])
@@ -443,24 +424,19 @@ def find_compactness(nodes, ids):
 
 
 def check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
-    # if debug:
-    #     print("Checking cut population")
     pop1_diff = abs(unvisited_pop - ideal_pop) / ideal_pop
     pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
     if (pop1_diff == prev_clusts_diff[0] and pop2_diff == prev_clusts_diff[1]) or (pop1_diff == prev_clusts_diff[1]
                                                                                   and pop2_diff == prev_clusts_diff[0]):
         print("SAME EDGE - TAKEN")
         return True
-    # if debug:
-    #     print("New populations determined to be", pop1_diff, pop2_diff)
+    # NARAYAN - debug the new populations
+    #if debug:
+        # print("New populations determined to be", pop1_diff, pop2_diff)
     if pop1_diff <= target_diff and pop2_diff <= target_diff:
         if debug:
             print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
         return True
-    # elif (pop1_diff + pop2_diff) <= (prev_clusts_diff[0] + prev_clusts_diff[1]):
-    #     # if improvement
-    #     print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
-    #     return True
     elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[0] - target_diff) and abs(pop2_diff - target_diff) <= abs(prev_clusts_diff[1] - target_diff):
         if debug:
             print("1) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
