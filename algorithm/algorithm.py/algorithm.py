@@ -2,13 +2,14 @@ import json
 import random
 from Node import Node
 from Request import Request
-import networkx as nx
-import matplotlib.pyplot as plt
+#import networkx as nx
+#import matplotlib.pyplot as plt
 from Cluster import Cluster
 from Graph import Graph
+from Subgraph import Subgraph
 import datetime
 
-debug = True
+debug = False
 
 seed_timer = 0
 combine_cluster_times = []
@@ -18,6 +19,37 @@ cut_edge_times = []
 recalculate_neighbor_timess = []
 calc_edge_time = []
 acceptable_edge_loop_times = []
+ideal_population_per_district = 0
+
+
+def entry_point():
+    # parse data
+    data = parse_data_from_file()
+    nodes = data[0]
+    request = data[1]
+    graph = prepare_seed(nodes)
+    algorithm(graph, request)
+    write_to_results_file(graph, request)
+
+
+def prepare_seed(nodes):
+    global ideal_population_per_district
+    for node in nodes:
+        ideal_population_per_district += node.TOTAL
+    ideal_population_per_district = ideal_population_per_district / 8
+    if debug:
+        print("Ideal population per district:", ideal_population_per_district)
+    # parsing nodes into clusters
+    clusts = []
+    for node in nodes:
+        clusts.append(Cluster([node], int(node.GEOID10)))
+    # find its neighbor clusters
+    for clust in clusts:
+        set_neighboring_clusts(clust)
+
+    # graph of clusters.
+    graph = Graph(clusts)
+    return graph
 
 
 def parse_data_from_file():
@@ -58,28 +90,8 @@ def set_neighboring_clusts(clust):
     clust.set_neighbors(clust_neigh)
 
 
-def algorithm():
-    data = parse_data_from_file()
-    nodes = data[0]
-    request = data[1]
-    # data aggregation
+def algorithm(graph, request):
     alg_start = datetime.datetime.utcnow()
-
-    ideal_population_per_district = 0
-    for node in nodes:
-        ideal_population_per_district += node.TOTAL
-    ideal_population_per_district = ideal_population_per_district / 8
-    print("Ideal population per district:", ideal_population_per_district)
-    # parsing nodes into clusters
-    clusts = []
-    for node in nodes:
-        clusts.append(Cluster([node], int(node.GEOID10)))
-    # find its neighbor clusters
-    for clust in clusts:
-        set_neighboring_clusts(clust)
-
-    # graph of clusters.
-    graph = Graph(clusts)
     if debug:
         print("Determining a Seed Districting...")
     start = datetime.datetime.utcnow()
@@ -88,6 +100,9 @@ def algorithm():
     # clean up neighboring clusters
     graph.clean_up_edges()
     graph.recalculate_literally_all_neighbors()
+    # for clust in graph.nodes:
+    #     print_cluster(clust.nodes, "CLuster")
+    # print_graph(graph)
 
     # algorithm begins. Find neighboring clusters to combine.
     i = 1
@@ -100,48 +115,24 @@ def algorithm():
         if debug:
             print("================================================ITERATION", i,
                   "================================================")
-        # print_graph(graph, ("Iteration " + str(i) + " Graph"))
-        start = datetime.datetime.utcnow()
-        clusts = combine_random_clusters(graph)
-        combine_cluster_times.append((datetime.datetime.utcnow() - start).microseconds)
-        if len(clusts[1]) == 1 and len(clusts[2]) == 1:
-            two += 1
-        if len(clusts[1]) == 1:
-            one += 1
-        if len(clusts[2]) == 1:
-            one += 1
-        if len(clusts[1]) == 1 or len(clusts[2]) == 1:
-            one_member = True
-        else:
-            one_member = False
-        dfs_generate_spanning_tree(clusts[0])
-        # NARAYAN - here is printing the spanning tree
-        # print_spanning_tree(clusts[0].nodes, clusts[0].spanning_tree_edges, "DFS")
-        start = datetime.datetime.utcnow()
-        fae_result = find_acceptable_edge(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district, clusts[4])
-
-        edge = fae_result[0]
-        node_lists = [fae_result[1], fae_result[2]]
-        acceptable_edge_times.append((datetime.datetime.utcnow() - start).microseconds)
-        if not edge:
-            if debug:
-                print("No edges found. Reverting to original two clusters...")
-            no_edge += 1
-            clust1 = create_cluster(clusts[1], clusts[3][0])
-            clust2 = create_cluster(clusts[2], clusts[3][1])
-            graph.split_cluster(clusts[0], clust1, clust2)
-            graph.determine_edges()
-            continue
-        node_nums = cut_from_acceptable_edges(edge, clusts[0], clusts[3], graph, node_lists)
-        start = datetime.datetime.utcnow()
+        main_algorithm_loop(graph)
         graph.determine_edges()
         calc_edge_time.append((datetime.datetime.utcnow() - start).microseconds)
         i += 1
 
+    # for cluster in graph.nodes:
+    #     print_cluster(cluster.nodes, "Graph of final cluster")
     print("====================ALGORITHM RESULTS====================")
     print("Iterations:", i-1)
     print("Total algorithm runtime", datetime.datetime.utcnow() - alg_start)
     print("Seed time", seed_timer)
+    # print("Avg combine cluster times", sum(combine_cluster_times) / len(combine_cluster_times))
+    # print("Avg spanning tree times", sum(spanning_tree_times) / len(spanning_tree_times))
+    # print("Avg spanning tree loop times", sum(acceptable_edge_loop_times) / len(acceptable_edge_loop_times))
+    # print("Avg acceptable edge times", sum(acceptable_edge_times) / len(acceptable_edge_times))
+    # print("Avg cut edge times", sum(cut_edge_times) / len(cut_edge_times))
+    # print("Avg calculate edge times", sum(calc_edge_time) / len(calc_edge_time))
+    # print("Avg recalculate neighbor times", sum(recalculate_neighbor_timess) / len(recalculate_neighbor_timess))
     print("Number of times alg chose a 1-node graph", one)
     print("Number of times chosen two one nodes", two)
     print("Number of times chosen one one nodes", one)
@@ -155,6 +146,61 @@ def algorithm():
             ids.append(node.GEOID10)
         compact = find_compactness(cluster.nodes, ids)
         print("- CLUSTER", str(cluster.id), "| POPULATION:", int(pop), "| COMPACTNESS:", compact[0]/compact[1])
+
+
+def main_algorithm_loop(graph):
+    # print_graph(graph, ("Iteration " + str(i) + " Graph"))
+    start = datetime.datetime.utcnow()
+    clusts = combine_random_clusters(graph)
+    combine_cluster_times.append((datetime.datetime.utcnow() - start).microseconds)
+    # if len(clusts[1]) == 1 and len(clusts[2]) == 1:
+    #     two += 1
+    # if len(clusts[1]) == 1:
+    #     one += 1
+    # if len(clusts[2]) == 1:
+    #     one += 1
+    # if len(clusts[1]) == 1 or len(clusts[2]) == 1:
+    #     one_member = True
+    # else:
+    #     one_member = False
+    # print_graph(graph, "Plot: Combined graph of clusters " + str(clusts[0]) + " " + str(clusts[1]))
+    # if one_member:
+    #     print_cluster(clusts[1], "Clust1")
+    #     print_cluster(clusts[2], "Clust2")
+    # generate_spanning_tree(clusts[0], graph)
+    dfs_generate_spanning_tree(clusts[0])
+    #print_spanning_tree(clusts[0].nodes, clusts[0].spanning_tree_edges, "DFS")
+    start = datetime.datetime.utcnow()
+    # fae_result = find_acceptable_edges(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district, clusts[4])
+    fae_result = find_acceptable_edge(clusts[0], [clusts[1], clusts[2]], 0.005, ideal_population_per_district,
+                                      clusts[4])
+    # edge_list = fae_result[0]
+    # starting_node = fae_result[1]
+    edge = fae_result[0]
+    node_lists = [fae_result[1], fae_result[2]]
+    acceptable_edge_times.append((datetime.datetime.utcnow() - start).microseconds)
+    # if len(edge_list) == 0:
+    if not edge:
+        if debug:
+            print("No edges found. Reverting to original two clusters...")
+        # no_edge += 1
+        clust1 = create_cluster(clusts[1], clusts[3][0])
+        clust2 = create_cluster(clusts[2], clusts[3][1])
+        graph.split_cluster(clusts[0], clust1, clust2)
+        graph.determine_edges()
+        # i+=1
+        return
+    # node_nums = cut_from_acceptable_edges(edge_list, clusts[0], clusts[3], graph, starting_node)
+    node_nums = cut_from_acceptable_edges(edge, clusts[0], clusts[3], graph, node_lists)
+    # if len(node_nums[0]) == 1 or len(node_nums[1]) == 1:
+    #     if not one_member:
+    #         print("ERROR!!!!")
+    #         print_cluster(node_nums[0], "Clust1")
+    #         print_cluster(node_nums[1], "Clust2")
+    # if one_member:
+    #     print_cluster(node_nums[0], "Clust1")
+    #     print_cluster(node_nums[1], "Clust2")
+    start = datetime.datetime.utcnow()
 
 
 def determine_seed_districting(graph):
@@ -195,7 +241,8 @@ def combine_random_clusters(graph):
     clust2_pop = 0
     for node in clust2.nodes:
         clust2_pop += node.TOTAL
-    print("Original populations:", clust1_pop, clust2_pop)
+    if debug:
+        print("Original populations:", clust1_pop, clust2_pop)
     # print_cluster(clust2.nodes, "Graphed: Cluster 2 original")
     clust2_id = clust2.id
     prev_clust2 = clust2.nodes.copy()
@@ -313,6 +360,8 @@ def find_acceptable_edges(clust, prev_clusts, target_diff, ideal_pop, prev_compa
                 queue.append(neighbor)
                 visited.append(neighbor)
                 # check if such an edge is better/acceptable.
+                # if check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff) and \
+                #         check_new_compactness([num_vis_ext, num_vis], [num_unvis_ext, num_unvis], prev_compact):
                 if check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
                     print("FOR EDGE", (node, neighbor))
                     edge_list.append((node, neighbor))
@@ -345,6 +394,12 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
         pop1 = res1[1]
         pop2 = overall_pop - pop1
 
+        # res2 = bfs(clust, edge[1])
+        # nodes2 = res2[0]
+        # pop2 = res2[1]
+        # compact_info2 = res2[2]
+
+
         neighbors1 = clust.mst_neighbors_dict[edge[0].GEOID10]
         neighbors2 = clust.mst_neighbors_dict[edge[1].GEOID10]
         neighbors1.append(edge[1])
@@ -353,13 +408,18 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
         clust.mst_neighbors_dict[edge[1]] = neighbors2
 
         #print("Populations calculated to be", pop1, pop2)
+        # if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff) and \
+        #         check_new_compactness(compact_info1, compact_info2, prev_compact):
+        #     print("EDGE ACCEPTED:", edge)
+        #     return (edge, nodes1, nodes2)
         if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff):
             # check if compactness is OK too
             compact_info1 = find_compactness(res1[2][0], res1[2][1])
             other_nodes = get_other_side_nodes(clust.nodes, nodes1)
             compact_info2 = find_compactness(other_nodes[0], other_nodes[1])
             if check_new_compactness(compact_info1, compact_info2, prev_compact):
-                print("EDGE ACCEPTED:", edge)
+                if debug:
+                    print("EDGE ACCEPTED:", edge)
                 return (edge, nodes1, other_nodes[0])
 
     return (None, None, None)
@@ -424,19 +484,24 @@ def find_compactness(nodes, ids):
 
 
 def check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
+    # if debug:
+    #     print("Checking cut population")
     pop1_diff = abs(unvisited_pop - ideal_pop) / ideal_pop
     pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
     if (pop1_diff == prev_clusts_diff[0] and pop2_diff == prev_clusts_diff[1]) or (pop1_diff == prev_clusts_diff[1]
                                                                                   and pop2_diff == prev_clusts_diff[0]):
         print("SAME EDGE - TAKEN")
         return True
-    # NARAYAN - debug the new populations
-    #if debug:
-        # print("New populations determined to be", pop1_diff, pop2_diff)
+    if debug:
+        print("New populations determined to be", pop1_diff, pop2_diff)
     if pop1_diff <= target_diff and pop2_diff <= target_diff:
         if debug:
             print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
         return True
+    # elif (pop1_diff + pop2_diff) <= (prev_clusts_diff[0] + prev_clusts_diff[1]):
+    #     # if improvement
+    #     print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
+    #     return True
     elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[0] - target_diff) and abs(pop2_diff - target_diff) <= abs(prev_clusts_diff[1] - target_diff):
         if debug:
             print("1) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
@@ -568,7 +633,8 @@ def cut_from_acceptable_edges(edge_list, clust, ids, graph, start_node):
     clust2_pop = 0
     for node in clust_2.nodes:
         clust2_pop += node.TOTAL
-    print("New populations:", clust1_pop, clust2_pop)
+    if debug:
+        print("New populations:", clust1_pop, clust2_pop)
     start = datetime.datetime.utcnow()
     graph.split_cluster(clust, clust_1, clust_2)
     if debug:
@@ -675,65 +741,88 @@ def find_cluster_index(clusters, id):
     return None
 
 
-def print_graph(graph, title):
-    G = nx.Graph()
-    clusters = graph.nodes
-    for node in clusters:
-        neighbors = graph.new_get_neighbors(node)
-        G.add_node(node)
-        for neighbor in neighbors:
-            if not G.has_edge(neighbor, node):
-                G.add_edge(node, neighbor)
+# def print_graph(graph, title):
+#     G = nx.Graph()
+#     clusters = graph.nodes
+#     for node in clusters:
+#         neighbors = graph.new_get_neighbors(node)
+#         G.add_node(node)
+#         for neighbor in neighbors:
+#             if not G.has_edge(neighbor, node):
+#                 G.add_edge(node, neighbor)
+#
+#     nx.draw(G, with_labels=True, font_weight='light')
+#     print(len(G.edges))
+#     print(len(G.nodes))
+#     print(title)
+#     plt.show()
+#
+#
+# def print_cluster(graph, title):
+#     G = nx.Graph()
+#     for node in graph:
+#         neighbors = node.NEIGHBORS
+#         G.add_node(node)
+#         for neighbor in neighbors:
+#             index = find_node_index(graph, neighbor)
+#             if index != None:
+#                 if not G.has_edge(graph[index], node):
+#                     G.add_edge(node, graph[index])
+#
+#     nx.draw(G, with_labels=False, font_weight='light')
+#     print(len(G.edges))
+#     print(len(G.nodes))
+#     print(title)
+#     plt.show()
+#
+#
+# def print_spanning_tree(nodes, edges, title):
+#     G = nx.Graph()
+#     for node in nodes:
+#         G.add_node(node)
+#     for edge in edges:
+#         G.add_edge(edge[0], edge[1])
+#     nx.draw(G, with_labels=False, font_weight='light')
+#     print(len(G.edges))
+#     print(len(G.nodes))
+#     print(title)
+#     plt.show()
+#
+#
+# def new_print_spanning_tree(clust):
+#     G = nx.Graph()
+#     for node in clust.nodes:
+#         G.add_node(node)
+#     for node in clust.nodes:
+#         for node2 in clust.mst_neighbors_dict[node.GEOID10]:
+#             G.add_edge(node, node2)
+#     nx.draw(G, with_labels=False, font_weight='light')
+#     print(len(G.edges))
+#     print(len(G.nodes))
+#     plt.show()
 
-    nx.draw(G, with_labels=True, font_weight='light')
-    print(len(G.edges))
-    print(len(G.nodes))
-    print(title)
-    plt.show()
+
+def write_to_results_file(graph, request):
+    subgraphs = []
+    # s = "{\n\"data\": [\n"
+    # s += request.toJSON() + ",\n"
+    s = ",{\n\"subgraphs\": [\n"
+    for cluster in graph.nodes:
+        f = Subgraph(cluster.nodes)
+        subgraphs.append(f)
+
+    s += subgraphs[0].toJSON()
+    i = 1
+    while i < len(subgraphs):
+        s += ",\n" + subgraphs[i].toJSON()
+        i += 1
+    s += "\n]\n}"
+
+    results = open("result.json", "a")
+    results.write(s)
+    results.close()
 
 
-def print_cluster(graph, title):
-    G = nx.Graph()
-    for node in graph:
-        neighbors = node.NEIGHBORS
-        G.add_node(node)
-        for neighbor in neighbors:
-            index = find_node_index(graph, neighbor)
-            if index != None:
-                if not G.has_edge(graph[index], node):
-                    G.add_edge(node, graph[index])
-
-    nx.draw(G, with_labels=False, font_weight='light')
-    print(len(G.edges))
-    print(len(G.nodes))
-    print(title)
-    plt.show()
+entry_point()
 
 
-def print_spanning_tree(nodes, edges, title):
-    G = nx.Graph()
-    for node in nodes:
-        G.add_node(node)
-    for edge in edges:
-        G.add_edge(edge[0], edge[1])
-    nx.draw(G, with_labels=False, font_weight='light')
-    print(len(G.edges))
-    print(len(G.nodes))
-    print(title)
-    plt.show()
-
-
-def new_print_spanning_tree(clust):
-    G = nx.Graph()
-    for node in clust.nodes:
-        G.add_node(node)
-    for node in clust.nodes:
-        for node2 in clust.mst_neighbors_dict[node.GEOID10]:
-            G.add_edge(node, node2)
-    nx.draw(G, with_labels=False, font_weight='light')
-    print(len(G.edges))
-    print(len(G.nodes))
-    plt.show()
-
-
-algorithm()
