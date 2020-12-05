@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "jobs")
 public class Job {
     private int numDistrictings;
 
@@ -18,6 +19,10 @@ public class Job {
     private List<Demographic> demographicGroups;
     private double popEqThreshold;
     private String compactness;
+
+    //@Id
+   // @GeneratedValue(strategy = GenerationType.AUTO)
+    //private int id;
 
     @Id
     private int jobId;

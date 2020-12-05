@@ -1,7 +1,7 @@
 package com.panthers.main.handler;
 
 import com.panthers.main.jobmodel.Job;
-import com.panthers.main.jpa.JobRepository;
+//import com.panthers.main.jpa.JobRepository;
 import com.panthers.main.mapmodel.Demographic;
 import com.panthers.main.mapmodel.Population;
 import com.panthers.main.mapmodel.Precinct;
