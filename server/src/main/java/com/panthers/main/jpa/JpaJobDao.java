@@ -4,9 +4,11 @@ import com.panthers.main.jobmodel.Job;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Component
 public class JpaJobDao implements Dao<Job> {
@@ -25,8 +27,8 @@ public class JpaJobDao implements Dao<Job> {
 
     @Override
     public List<Job> getAll() {
-        Query query = entityManager.createQuery("SELECT e FROM Job e");
-        return query.getResultList();
+        Query query = entityManager.createQuery("SELECT a FROM Job a");
+        return new ArrayList<Job>(query.getResultList());
     }
 
     @Override
@@ -55,4 +57,5 @@ public class JpaJobDao implements Dao<Job> {
             throw e;
         }
     }
+
 }

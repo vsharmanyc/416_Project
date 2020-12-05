@@ -38,6 +38,7 @@ public class JobHandler{
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
+        System.out.println("Job His Length " + jobHistory.size());
         /*loadPrecincts();
         loadDistricts();
         generateDummyRunResults();
@@ -103,7 +104,13 @@ public class JobHandler{
 
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
+
         jpaUserDao.save(job);
+
+        /*Object[] jobs = jpaUserDao.getAll().toArray();
+        for(int i = 0; i < jobs.length; i++)
+            System.out.println(jobs[i].toString());*/
+
         return jobHistory;
     }
 
@@ -159,8 +166,7 @@ public class JobHandler{
      * @return returns the job history from the EM
      */
     private List<Job> getJobHistory() {
-        //Normally, we'd get this from the EM.
-        return new ArrayList<Job>();
+        return jpaUserDao.getAll();
     }
 
     /**

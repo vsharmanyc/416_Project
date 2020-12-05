@@ -1,4 +1,4 @@
-{"data": [{"numDistrictings":20000,"state":"MD","demographicGroups":["AFRICAN_AMERICAN"],"popEqThreshold":0.007,"compactness":"Somewhat Compact","jobId":2,"jobStatus":"QUEUED","name":20000},{
+{"data": [{"numDistrictings":20000,"state":"MD","demographicGroups":["AFRICAN_AMERICAN"],"popEqThreshold":0.007,"compactness":"Somewhat Compact","jobId":4,"jobStatus":"QUEUED","name":20000},{
   "precincts": [
   {
     "GEOID10": "2400301-004",

@@ -32,8 +32,8 @@ public class Job {
     //private int id;
 
     @Id
-    @Column(name = "jobId")
-    private Integer jobId;
+    @Column(name = "job_id")
+    private int jobId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "job_status")
