@@ -28,7 +28,6 @@ public class JobHandler{
     private List<Precinct> precincts;
     private List<District> districts;
     private RunResults runResults;
-    public JobEntityManager jobEM;
 
 
     private static Dao<Job> jpaUserDao = new JpaJobDao();
@@ -101,7 +100,6 @@ public class JobHandler{
         job.setJobStatus(JobStatus.QUEUED);
         System.out.println("Created job:" + job);
         jobHistory.add(job);
-        jobEM.addJob(job);
 
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
