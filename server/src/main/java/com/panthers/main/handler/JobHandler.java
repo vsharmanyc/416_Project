@@ -1,15 +1,13 @@
 package com.panthers.main.handler;
 
 import com.panthers.main.jobmodel.*;
+import com.panthers.main.jpa.Dao;
+import com.panthers.main.jpa.JpaJobDao;
 import com.panthers.main.mapmodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,8 +18,9 @@ import java.util.*;
  * First in command. After a RESTful service is tapped into regarding the job run,
  * program will go through this job service.
  */
+
 @Service
-public class JobHandler {
+public class JobHandler{
     private DispatcherHandler dispatcherHandler;
     private States state;
     private Set<District> currentDistrictings;
@@ -29,17 +28,16 @@ public class JobHandler {
     private List<Precinct> precincts;
     private List<District> districts;
     private RunResults runResults;
-    public JobEntityManager jobEM;
+
+
+    private static Dao<Job> jpaUserDao = new JpaJobDao();
+
 
     @Autowired
     public JobHandler(DispatcherHandler dispatcherHandler) {
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("Jobs");
-        EntityManager em = emf.createEntityManager();
-        //em.getTransaction( ).begin( );
-        this.jobEM = new JobEntityManager(em);
         /*loadPrecincts();
         loadDistricts();
         generateDummyRunResults();
@@ -102,10 +100,10 @@ public class JobHandler {
         job.setJobStatus(JobStatus.QUEUED);
         System.out.println("Created job:" + job);
         jobHistory.add(job);
-        jobEM.addJob(job);
 
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
+        jpaUserDao.save(job);
         return jobHistory;
     }
 

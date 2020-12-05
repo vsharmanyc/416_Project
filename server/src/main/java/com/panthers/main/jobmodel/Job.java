@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Entity
+@Table(name = "jobs")
 public class Job {
     @Column(name = "num_districtings")
     private int numDistrictings;
@@ -25,6 +26,10 @@ public class Job {
     private Double popEqThreshold;
     @Column(name = "compactness")
     private String compactness;
+
+    //@Id
+   // @GeneratedValue(strategy = GenerationType.AUTO)
+    //private int id;
 
     @Id
     @Column(name = "jobId")

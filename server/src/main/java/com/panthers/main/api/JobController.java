@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/job")
 public class JobController {
+    @Autowired
     private JobHandler jobHandler;
 
     @Autowired
