@@ -4,20 +4,27 @@ import com.panthers.main.mapmodel.Demographic;
 import com.panthers.main.mapmodel.States;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
 @Table(name = "jobs")
 public class Job {
+    @Column(name = "num_districtings")
     private int numDistrictings;
-
     @Enumerated(EnumType.STRING)
+    @Column(name="state")
     private States state;
-
-    @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Demographic.class)
+    @Column(name = "demographic_groups")
     private List<Demographic> demographicGroups;
-    private double popEqThreshold;
+//    @Column(name = "demographic_groups")
+//    private String demGroups;
+    @Column(name = "pop_eq_threshold")
+    private Double popEqThreshold;
+    @Column(name = "compactness")
     private String compactness;
 
     //@Id
@@ -25,14 +32,18 @@ public class Job {
     //private int id;
 
     @Id
-    private int jobId;
+    @Column(name = "jobId")
+    private Integer jobId;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "job_status")
     private JobStatus jobStatus;
     //private RunResults runResults;
 
 
-    public Job(States state, int numDistrictings, List<Demographic> demographicGroups, double popEqThreshold,
+    public Job(){}
+
+    public Job(States state, int numDistrictings, List<Demographic> demographicGroups, Double popEqThreshold,
                String compactness) {
         this.state = state;
         this.numDistrictings = numDistrictings;
@@ -43,9 +54,31 @@ public class Job {
         this.jobStatus = JobStatus.PENDING;
     }
 
-    public Job(int jobId){
-        this.jobId = jobId;
-    }
+//    public Job(Integer jobId, String state, Integer numDistrictings, String demographicGroups, String popEqThreshold,
+//               String compactness, String jobStatus) {
+//        this.jobId = jobId;
+//        this.state = States.valueOf(state);
+//        this.demGroups = demographicGroups;
+//        this.numDistrictings = numDistrictings;
+////        this.demographicGroups = new ArrayList<>();
+////        if (demographicGroups.contains(",")){
+////            String[] list = demographicGroups.split(", ");
+////            for (String s : list) {
+////                this.demographicGroups.add(Demographic.valueOf(s));
+////            }
+////        }
+////        else{
+////            this.demographicGroups.add(Demographic.valueOf(demographicGroups));
+////
+////        }
+//
+//        this.popEqThreshold = popEqThreshold.toString();
+//        this.compactness = compactness;
+//    }
+//
+//    public Job(Integer jobId){
+//        this.jobId = jobId;
+//    }
 
     /*GETTERS/SETTERS*/
     public States getState() {
@@ -72,11 +105,11 @@ public class Job {
         this.demographicGroups = demographicGroups;
     }
 
-    public double getPopEqThreshold() {
+    public Double getPopEqThreshold() {
         return popEqThreshold;
     }
 
-    public void setPopEqThreshold(double popEqThreshold) {
+    public void setPopEqThreshold(Double popEqThreshold) {
         this.popEqThreshold = popEqThreshold;
     }
 
@@ -112,6 +145,11 @@ public class Job {
         this.numDistrictings = numDistrictings;
     }
 
+//    public void setDemGroups(){
+//        demGroups = demographicGroups.toString();
+//        System.out.println(demGroups);
+//    }
+
     /*FUNCTIONS*/
 
     /**
@@ -129,6 +167,7 @@ public class Job {
     public String toString(){
         return "\n{\nJob #" + jobId + ",\n" + "Requested Districtings: " + numDistrictings + ",\n"+
                 "Demographic Groups: " + demographicGroups + ",\n" + "Population Equality Threshold: " +
-                popEqThreshold + ",\n" + "Requested Compactness: " + compactness + "\n}";
+                popEqThreshold + ",\n" + "Requested Compactness: " + compactness + "\n," + "State: " + state + ",\n"
+                + ",\nStatus: " + jobStatus  +  "}";
     }
 }

@@ -55,4 +55,8 @@ public class ServerHandler {
 
     }
 
+    public void cancelJob(){
+
+    }
+
 }

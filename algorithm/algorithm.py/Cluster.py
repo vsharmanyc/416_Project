@@ -111,5 +111,19 @@ class Cluster:
                 # print("Found start node", key)
                 return self.node_dict[key]
 
+    # def get_compactness(self):
+    #     self.determine_node_neighbor_dict()
+    #     edge_count = 0
+    #     ext_count = 0
+    #     for node in self.nodes:
+    #         for neighbor in self.node_neighbor_dict[node.GEOID10]:
+    #             if neighbor not in self.nodes:
+    #                 ext_count+=1
+    #             else:
+    #                 edge_count +=1
+    #     if edge_count == 0 and ext_count == 0:
+    #         return 0.0
+    #     return ext_count/((edge_count/2)+ext_count)
+
     def __repr__(self):
         return "<Cluster " + str(self.id) + ">"
