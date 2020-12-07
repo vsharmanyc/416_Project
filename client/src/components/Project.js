@@ -16,8 +16,8 @@ class Project extends Component {
                 Precincts: false,
                 Heatmap: { 
                     show: false,
-                    colorRange: {from:'#d0f2eb', to:'#006952'},
-                    popType: { value: 'NONE', label: 'No Population Filter' },
+                    colorRange: {low:'#e6f0ee', avg: '',  high:'#006952'},
+                    popType: { value: 'NONE', label: 'Select' },
                 },
             },
             geoJSON: null,

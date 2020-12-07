@@ -257,6 +257,22 @@ class Map extends Component {
 
     updateHeatMapCriteria = (sourceName, criteria) => {
         console.log("HABOBOBIBIBI");
+        let mapColorRange = [
+            'interpolate',
+            ['linear'],
+            ['var', 'density'],
+                274,
+                ['to-color', criteria.colorRange.low], // '#001769'
+                638,
+                ['to-color', criteria.colorRange.avg],
+                1551,
+                ['to-color', criteria.colorRange.high]
+        ];
+
+        if(criteria.colorRange.avg == ''){
+            mapColorRange.splice(5,2);
+        }
+
         this.map.setPaintProperty(sourceName + ' state-fills', 'fill-color',
             [
                 'let',
@@ -267,15 +283,7 @@ class Map extends Component {
                     ['linear'],
                     ['zoom'],
                     8,
-                    [
-                        'interpolate',
-                        ['linear'],
-                        ['var', 'density'],
-                        274,
-                        ['to-color', criteria.colorRange.from], // '#001769'
-                        1551,
-                        ['to-color', criteria.colorRange.to] // '#690000'
-                    ],
+                    mapColorRange
                 ]
             ]
         );
@@ -294,7 +302,21 @@ class Map extends Component {
                 geoJSON
         });
 
-        console.log(colorRange);
+        let mapColorRange = [
+            'interpolate',
+            ['linear'],
+            ['var', 'density'],
+                274,
+                ['to-color', colorRange.low], // '#001769'
+                638,
+                ['to-color', colorRange.avg],
+                1551,
+                ['to-color', colorRange.high]
+        ];
+
+        if(colorRange.avg == ''){
+            mapColorRange.splice(5,2);
+        }
 
         // The feature-state dependent fill-opacity expression will render the hover effect
         // when a feature's hover state is set to true.
@@ -313,15 +335,7 @@ class Map extends Component {
                         ['linear'],
                         ['zoom'],
                         8,
-                        [
-                            'interpolate',
-                            ['linear'],
-                            ['var', 'density'],
-                            274,
-                            ['to-color', colorRange.from], // '#001769'
-                            1551,
-                            ['to-color', colorRange.to] // '#690000'
-                        ],
+                        mapColorRange,
                     ]
                 ],
                 'fill-opacity': 0.75
@@ -407,8 +421,8 @@ class Map extends Component {
             Precincts: requestState !== 'Select...',
             Heatmap: {
                 show: false,
-                colorRange: { from: '#d0f2eb', to: '#006952' },
-                popType: { value: 'NONE', label: 'No Population Filter' }
+                colorRange: {low:'#e6f0ee', avg: '',  high:'#006952'},
+                popType: { value: 'NONE', label: 'Select' }
             }
         })
         this.zoomTo(requestState);

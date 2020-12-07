@@ -86,8 +86,8 @@ class Data extends Component {
                         </tr>
                         <tr>
                             <td>Total Minority</td>
-                            <td>{this.strNumWithCommas(this.props.geoData.TOTAL - this.props.geoData.WTOT)}</td>
-                            <td>{this.strNumWithCommas(this.props.geoData.TOTVAP - this.props.geoData.WVAP)}</td>
+                            <td>{this.strNumWithCommas(this.props.geoData.TOTAL !== undefined ?  this.props.geoData.TOTAL - this.props.geoData.WTOT : undefined)}</td>
+                            <td>{this.strNumWithCommas(this.props.geoData.TOTVAP !== undefined ? this.props.geoData.TOTVAP - this.props.geoData.WVAP : undefined)}</td>
                         </tr>
                     </tbody>
                 </Table>

@@ -26,17 +26,17 @@ class Filter extends Component {
         let filter = Object.assign({}, this.props.filter);
         filter.Heatmap.show = selected.value !== 'NONE';
         filter.Heatmap.popType = selected;
-        if (selected.value === 'TOTAL')
-            filter.Heatmap.colorRange = { from: '#d0f2eb', to: '#006952' };
+        if (selected.value === 'TOTVAP')
+            filter.Heatmap.colorRange = { low: '#e6f0ee', avg: '', high: '#006952' };
         else
-            filter.Heatmap.colorRange = { from: '#001769', to: '#690000' };
+            filter.Heatmap.colorRange = { low: '#0015d6', avg: 'white', high: '#d60000' };
         this.props.updateFilter(filter);
     }
 
     render() {
         const demographics = [
-            { value: 'NONE', label: 'No Population Filter' },
-            { value: 'TOTAL', label: 'Total' },
+            { value: 'NONE', label: 'Select' },
+            { value: 'TOTVAP', label: 'Total Voting Age Population' },
             { value: 'MTOT', label: 'Total Minority' },
             { value: 'WTOT', label: 'White' },
             { value: 'BTOT', label: 'Black' },
@@ -51,6 +51,8 @@ class Filter extends Component {
             height: '100%', width: '95%',
             backgroundColor: '#ebf3f5', padding: '5%', borderRadius: '3%', marginTop: '2%'
         };
+
+        const colorRange = this.props.filter.Heatmap.colorRange;
 
         return (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -107,7 +109,9 @@ class Filter extends Component {
                                             content: "",
                                             whiteSpace: "pre",
                                             opacity: "0.75",
-                                            background: "linear-gradient(to right," + this.props.filter.Heatmap.colorRange.from + "," + this.props.filter.Heatmap.colorRange.to,
+                                            background: "linear-gradient(to right," + colorRange.low 
+                                            + (colorRange.avg === '' ? '' : ("," + colorRange.avg))
+                                            + "," + colorRange.high,
                                         }}>   </div>
                                 Max
                                 </div>
