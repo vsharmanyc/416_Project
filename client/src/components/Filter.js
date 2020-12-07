@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { Form } from 'react-bootstrap';
+import Select from 'react-select';
 
 class Filter extends Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            demographics: [],
-        }
     }
 
     onDemographicsSelect = (selected) => { this.setState({ demographics: selected }); }
@@ -25,16 +22,29 @@ class Filter extends Component {
         this.props.updateFilter(filter);
     }
 
+    updateHeatMap = (selected) => {
+        let filter = Object.assign({}, this.props.filter);
+        filter.Heatmap.show = selected.value !== 'NONE';
+        filter.Heatmap.popType = selected;
+        if (selected.value === 'TOTAL')
+            filter.Heatmap.colorRange = { from: '#d0f2eb', to: '#006952' };
+        else
+            filter.Heatmap.colorRange = { from: '#001769', to: '#690000' };
+        this.props.updateFilter(filter);
+    }
+
     render() {
         const demographics = [
-            { value: 'White', label: 'White' },
-            { value: 'Black', label: 'Black' },
-            { value: 'Asian', label: 'Asian' },
-            { value: 'Hispanic or Latino', label: 'Hispanic or Latino' },
-            { value: 'American Indian or Alaska Native', label: 'American Indian or Alaska Native' },
-            { value: 'Native Hawaiian or Other Pacific Islander', label: 'Native Hawaiian or Other Pacific Islander' },
-            { value: 'Two or More Races', label: 'Two or More Races' },
-            { value: 'Other', label: 'Other' }
+            { value: 'NONE', label: 'No Population Filter' },
+            { value: 'TOTAL', label: 'Total' },
+            { value: 'MTOT', label: 'Total Minority' },
+            { value: 'WTOT', label: 'White' },
+            { value: 'BTOT', label: 'Black' },
+            { value: 'ATOT', label: 'Asian' },
+            { value: 'HTOT', label: 'Hispanic or Latino' },
+            { value: 'AIANTOT', label: 'American Indian or Alaska Native' },
+            { value: 'NHOPTOT', label: 'Native Hawaiian or Other Pacific Islander' },
+            { value: 'OTHERTOT', label: 'Other' }
         ]
 
         const formStyle = {
@@ -73,19 +83,44 @@ class Filter extends Component {
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: '5%' }}>
                         <div style={{ display: 'flex', flexGrow: 3, flexDirection: 'column', justifyContent: 'space-around' }}>
 
-                            <Form.Check
-                                onClick={() => this.updateFilter('Heatmap')}
-                                checked={this.props.filter.Heatmap}
-                                disabled={!this.props.stateIsSelected}
-                                type="checkbox"
-                                id="heatmap check"
-                                label="Heatmap"
-                            />
+                            <Select options={demographics} value={this.props.filter.Heatmap.popType}
+                                onChange={this.updateHeatMap} isDisabled={!this.props.stateIsSelected} />
+
+                            {this.props.filter.Heatmap.show ?
+                                <>
+                                    <div style={{ marginTop: '3%', fontFamily: 'sans-serif', fontSize: '75%' }}>Population Color Range</div>
+                                    <div style={{
+                                        marginTop: '1%',
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        fontFamily: 'monospace'
+                                    }}>
+                                        Zero
+                                <div style={{
+                                            marginLeft: '2%',
+                                            marginRight: '2%',
+                                            width: '100%',
+                                            height: '100%',
+                                            content: "",
+                                            whiteSpace: "pre",
+                                            opacity: "0.75",
+                                            background: "linear-gradient(to right," + this.props.filter.Heatmap.colorRange.from + "," + this.props.filter.Heatmap.colorRange.to,
+                                        }}>   </div>
+                                Max
+                                </div>
+                                    <div style={{ fontFamily: 'monospace' }}>Avg</div>
+                                </>
+                                : <></>
+                            }
+
                         </div>
                     </div>
 
-                    <div style={{color: 'green', fontFamily: 'Arial'}}>
-                                {!this.props.stateIsSelected ? "Must select a state first before selecting above" : ""}
+                    <div style={{ color: 'green', fontFamily: 'Arial' }}>
+                        {!this.props.stateIsSelected ? "Must select a state first before selecting above" : ""}
                     </div>
 
                 </div>

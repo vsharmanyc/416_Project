@@ -47,9 +47,8 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.state !== prevProps.state)
             this.changeState(prevProps.state, this.props.state);
-
-        if (JSON.stringify(this.props.filter) !== JSON.stringify(prevProps.filter))
-            this.applyGeoFilter(this.props.filter)
+        else
+            this.applyGeoFilter(this.props.filter);
     }
 
     postReqChangeState = (stateName) => {
@@ -238,6 +237,8 @@ class Map extends Component {
         let precincts = stateInitials + '_Precincts';
         let heatmap = stateInitials + '_Heatmap';
 
+        console.log(filter);
+
         if (!filter.Districts && appliedLayers.includes(districts))
             this.removeGeoJsonLayer(districts);
         else if (filter.Districts && !appliedLayers.includes(districts))
@@ -246,13 +247,43 @@ class Map extends Component {
             this.removeGeoJsonLayer(precincts);
         else if (filter.Precincts && !appliedLayers.includes(precincts))
             this.addGeoJsonLayer(precincts, this.getGeoJsonFile(precincts));
-        else if (!filter.Heatmap && appliedLayers.includes(heatmap))
+        else if (!filter.Heatmap.show && appliedLayers.includes(heatmap))
             this.removeGeoJsonLayer(heatmap);
-        else if (filter.Heatmap && !appliedLayers.includes(heatmap))
-            this.addHeatMap(heatmap, this.getGeoJsonFile(precincts));
+        else if (filter.Heatmap.show && !appliedLayers.includes(heatmap))
+            this.addHeatMap(heatmap, this.getGeoJsonFile(precincts), filter.Heatmap.colorRange, filter.Heatmap.popType);
+        else if (filter.Heatmap.show && appliedLayers.includes(heatmap))
+            this.updateHeatMapCriteria(heatmap, filter.Heatmap)
     }
 
-    addHeatMap = (sourceName, geoJSON) => {
+    updateHeatMapCriteria = (sourceName, criteria) => {
+        console.log("HABOBOBIBIBI");
+        this.map.setPaintProperty(sourceName + ' state-fills', 'fill-color',
+            [
+                'let',
+                'density',
+                criteria.popType.value != "MTOT" ? ['/', ['get', criteria.popType.value], 1] : ['-', ['get', 'TOTAL'], ['get', 'WTOT']],
+                [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    8,
+                    [
+                        'interpolate',
+                        ['linear'],
+                        ['var', 'density'],
+                        274,
+                        ['to-color', criteria.colorRange.from], // '#001769'
+                        1551,
+                        ['to-color', criteria.colorRange.to] // '#690000'
+                    ],
+                ]
+            ]
+        );
+    }
+
+    addHeatMap = (sourceName, geoJSON, colorRange, popType) => {
+        console.log("CHALLO");
+
         if (this.state.appliedLayers.includes(sourceName))
             return;
         let hoveredStateId = null;
@@ -262,6 +293,8 @@ class Map extends Component {
             'data':
                 geoJSON
         });
+
+        console.log(colorRange);
 
         // The feature-state dependent fill-opacity expression will render the hover effect
         // when a feature's hover state is set to true.
@@ -274,7 +307,7 @@ class Map extends Component {
                 'fill-color': [
                     'let',
                     'density',
-                    ['/', ['get', 'TOTVAP'], 1],
+                    popType.value != "MTOT" ? ['/', ['get', popType.value], 1] : ['-', ['get', 'TOTAL'], ['get', 'WTOT']],
                     [
                         'interpolate',
                         ['linear'],
@@ -285,9 +318,9 @@ class Map extends Component {
                             ['linear'],
                             ['var', 'density'],
                             274,
-                            ['to-color', '#d0f2eb'],
+                            ['to-color', colorRange.from], // '#001769'
                             1551,
-                            ['to-color', '#006952']
+                            ['to-color', colorRange.to] // '#690000'
                         ],
                     ]
                 ],
@@ -372,7 +405,11 @@ class Map extends Component {
         this.props.updateFilter({
             Districts: requestState === 'Select...',
             Precincts: requestState !== 'Select...',
-            Heatmap: false,
+            Heatmap: {
+                show: false,
+                colorRange: { from: '#d0f2eb', to: '#006952' },
+                popType: { value: 'NONE', label: 'No Population Filter' }
+            }
         })
         this.zoomTo(requestState);
     }

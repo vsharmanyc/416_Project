@@ -165,7 +165,7 @@ public class JobHandler{
      *
      * @return returns the job history from the EM
      */
-    private List<Job> getJobHistory() {
+    public List<Job> getJobHistory() {
         return jpaUserDao.getAll();
     }
 
@@ -199,6 +199,7 @@ public class JobHandler{
 
         jobHistory.get(index).setJobStatus(JobStatus.CANCELLED);
         dispatcherHandler.cancelJob(jobHistory.get(index));
+        jpaUserDao.update(jobHistory.get(index));
         System.out.println("Cancelled execution of Job #" + jobId);
         return jobHistory;
     }
@@ -215,6 +216,7 @@ public class JobHandler{
         if (index == -1)
             return jobHistory;//Some error occurred, just ignore the call.
 
+        jpaUserDao.delete(jobHistory.get(index));
         jobHistory.remove(index);
         System.out.println("Deleted Job #" + jobId + " from Job History.");
         return jobHistory;

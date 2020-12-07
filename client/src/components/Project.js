@@ -3,6 +3,7 @@ import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import GraphModal from './GraphModal'
+import FormCheckLabel from 'react-bootstrap/esm/FormCheckLabel';
 
 class Project extends Component {
 
@@ -13,7 +14,11 @@ class Project extends Component {
             filter: {
                 Districts: true,
                 Precincts: false,
-                Heatmap: false,
+                Heatmap: { 
+                    show: false,
+                    colorRange: {from:'#d0f2eb', to:'#006952'},
+                    popType: { value: 'NONE', label: 'No Population Filter' },
+                },
             },
             geoJSON: null,
             geoData: {},
@@ -22,7 +27,8 @@ class Project extends Component {
         }
     }
 
-    onComponentDidMount() {
+    componentDidMount() {
+        this.getJobHistoryAndUpdateJobs();
     }
 
     onGeoDataUpdate = (geoData) => {
@@ -38,12 +44,26 @@ class Project extends Component {
     }
 
     updateFilter = (filter) => {
+        console.log(filter);
         this.setState({ filter: filter });
     }
 
     toggleModal = () =>{
-        console.log("hello0fdsfsf00");
         this.setState({toggleModal: !this.state.toggleModal})
+    }
+
+    getJobHistoryAndUpdateJobs = () => {
+        fetch('http://localhost:8080/api/job/getJobHistory',
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                method: "POST",
+                mode: 'cors'
+            })
+        .then(response => response.json())
+        .then(response => this.updateJobs(response));
     }
 
     render() {

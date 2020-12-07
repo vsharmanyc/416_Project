@@ -63,4 +63,14 @@ public class JobController {
         return jobHandler.getRunResults();
     }
 
+    /**
+     * gets job history from the em
+     * @return returns the persisted job history
+     */
+    @PostMapping("/getJobHistory")
+    @ResponseBody
+    public List<Job> getJobHistory(){
+        return jobHandler.getJobHistory();
+    }
+
 }

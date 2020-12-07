@@ -37,7 +37,7 @@ public class JpaJobDao implements Dao<Job> {
     }
 
     @Override
-    public void update(Job job, String[] params) {
+    public void update(Job job) {
         executeInsideTransaction(entityManager -> entityManager.merge(job));
     }
 
