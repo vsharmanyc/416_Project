@@ -25,11 +25,11 @@ class CreateJob extends Component {
         let demographics = [];
         this.state.demographics.map((option) => demographics.push(this.getDemographicEnums(option.value)));
 
-        let compactness =  'Slightly Compact';
-        if(this.state.compactness >=35 && this.state.compactness <=75)
+        let compactness = 'Slightly Compact';
+        if (this.state.compactness >= 35 && this.state.compactness <= 75)
             compactness = 'Somewhat Compact';
-        else if(this.state.compactness > 75)
-            compactness = 'Highly Compact'; 
+        else if (this.state.compactness > 75)
+            compactness = 'Highly Compact';
 
         let job = {
             numDistrictings: this.state.numDistrictings,
@@ -52,21 +52,21 @@ class CreateJob extends Component {
                     "Access-Control-Allow-Origin": "*"
                 },
                 method: "POST",
-                body: JSON.stringify( job ),
+                body: JSON.stringify(job),
                 mode: 'cors'
             })
             .then(response => response.json())
             .then(response => this.props.updateJobs(response));
     }
 
-    addJob = (job) =>{
+    addJob = (job) => {
         let jobs = this.props.jobs;
         jobs.push(job);
         this.props.updateJobs(jobs);
     }
 
     getDemographicEnums = (demographic) => {
-        switch(demographic){
+        switch (demographic) {
             case 'White':
                 return 'WHITE';
             case 'Black':
@@ -99,10 +99,10 @@ class CreateJob extends Component {
             { value: 'White', label: 'White' },
             { value: 'Black', label: 'Black' },
             { value: 'Asian', label: 'Asian' },
-            { value: 'Hispanic or Latino', label: 'Hispanic or Latino'},
-            { value: 'American Indian or Alaska Native', label: 'American Indian or Alaska Native'},
-            { value: 'Native Hawaiian or Other Pacific Islander', label: 'Native Hawaiian or Other Pacific Islander'},
-            { value: 'Other', label: 'Other'}
+            { value: 'Hispanic or Latino', label: 'Hispanic or Latino' },
+            { value: 'American Indian or Alaska Native', label: 'American Indian or Alaska Native' },
+            { value: 'Native Hawaiian or Other Pacific Islander', label: 'Native Hawaiian or Other Pacific Islander' },
+            { value: 'Other', label: 'Other' }
         ]
 
         const formStyle = {
@@ -110,35 +110,43 @@ class CreateJob extends Component {
             backgroundColor: '#ebf3f5', padding: '5%', borderRadius: '3%', marginTop: '2%'
         };
 
+        let disableSubmit = this.state.demographics === null || this.state.demographics.length === 0 || this.numDistrictings <= 0.0 || this.state.popEqThres <= 0 || !this.props.stateIsSelected;
+
         return (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', }}>
                 <div style={formStyle}>
                     <form>
                         <div class="form-group">
                             <label for="number-input1 row">Number of Districtings</label>
                             <input class="form-control" type="number" defaultValue="0" value={this.state.numDistrictings}
-                            min="1" id="number-input1"
+                                min="1" id="number-input1" disabled={!this.props.stateIsSelected}
                                 onChange={this.onNumDistrictingsChange} />
                         </div>
                         <div class="form-group">
                             <label for="FormControlSelect2">Select Demographics</label>
-                            <MultiSelect  value={this.state.demographics} onChange={this.onDemographicsSelect} isMulti options={demographics}/>
+                            <div style={{ textAlign: 'start' }}>
+                                <MultiSelect value={this.state.demographics} onChange={this.onDemographicsSelect} isMulti options={demographics} isDisabled={!this.props.stateIsSelected} />
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="customRange1">Compactness</label>
                             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                Least Compact
-                                <input type="range" class="custom-range" id="customRange1" value={this.state.compactness} onChange={this.onCompactnessChange} />
-                                Most Compact
+                                <div style={{ fontFamily: 'monospace' }}>Slightly Compact</div>
+                                <input type="range" class="custom-range" id="customRange1" value={this.state.compactness} onChange={this.onCompactnessChange} disabled={!this.props.stateIsSelected} />
+                                <div style={{ fontFamily: 'monospace' }}>Highly Compact</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="number-input2 row">Population Equation Threshold</label>
-                            <input onChange={this.onPopEqThresChange} class="form-control" type="number" defaultValue="0" value={this.state.popEqThres}
+                            <input onChange={this.onPopEqThresChange} class="form-control" type="number" defaultValue="0" value={this.state.popEqThres} disabled={!this.props.stateIsSelected}
                                 step="0.01" min="0" id="number-input2" />
                         </div>
-                        <button onClick={this.onCreateJob} style={{ backgroundColor: '#63BEB6', color: '#ffffff' }} type="submit" class="btn">Submit</button>
+                        <button onClick={this.onCreateJob} style={{ backgroundColor: '#63BEB6', color: '#ffffff' }} type="submit" class="btn" disabled={disableSubmit}>Submit</button>
                     </form>
+
+                    <div style={{ color: 'green', fontFamily: 'Arial' }}>
+                        {!this.props.stateIsSelected ? "Must select a state before creating a job" : ""}
+                    </div>
                 </div>
             </div>
         );

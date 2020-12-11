@@ -3,23 +3,41 @@ import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import GraphModal from './GraphModal'
-import FormCheckLabel from 'react-bootstrap/esm/FormCheckLabel';
 
 class Project extends Component {
 
     constructor(props) {
         super(props);
+
+        this.initial_filter = {
+            Districts: true,
+            Precincts: false,
+            Heatmap: { 
+                show: false,
+                colorRange: {low:'#e6f0ee', avg: '',  high:'#006952'},
+                popType: { value: 'NONE', label: 'Select' },
+            },
+            Districting: {
+                job: { value: 'Select', label: 'Select...' },
+                random: false,
+                avg: false,
+                extreme: false,
+                file: {
+                    random: '',
+                    avg: '',
+                    extreme: ''
+                },
+                color: {
+                    random: 'yellow',
+                    avg: 'green',
+                    extreme: 'purple'
+                } 
+            }
+        };
+
         this.state = {
             state: 'Select...',
-            filter: {
-                Districts: true,
-                Precincts: false,
-                Heatmap: { 
-                    show: false,
-                    colorRange: {low:'#e6f0ee', avg: '',  high:'#006952'},
-                    popType: { value: 'NONE', label: 'Select' },
-                },
-            },
+            filter: this.initial_filter,
             geoJSON: null,
             geoData: {},
             jobs: [],
@@ -29,6 +47,11 @@ class Project extends Component {
 
     componentDidMount() {
         this.getJobHistoryAndUpdateJobs();
+        this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 5000);
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.interval);
     }
 
     onGeoDataUpdate = (geoData) => {
@@ -46,6 +69,13 @@ class Project extends Component {
     updateFilter = (filter) => {
         console.log(filter);
         this.setState({ filter: filter });
+    }
+
+    resetFilter = () =>{
+        let filter =  this.initial_filter;
+        filter.Districts = this.state.state === 'Select...';
+        filter.Precincts = this.state.state !== 'Select...';
+        this.setState({filter:  filter});
     }
 
     toggleModal = () =>{
@@ -100,6 +130,7 @@ class Project extends Component {
                     state={this.state.state}
                     updateFilter={this.updateFilter}
                     filter={this.state.filter}
+                    resetFilter={this.resetFilter}
                 />
                 {this.state.toggleModal ?
                     <div style={modalStyle} >

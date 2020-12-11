@@ -247,12 +247,28 @@ class Map extends Component {
             this.removeGeoJsonLayer(precincts);
         else if (filter.Precincts && !appliedLayers.includes(precincts))
             this.addGeoJsonLayer(precincts, this.getGeoJsonFile(precincts));
+
+        // Heatmap filter logic
         else if (!filter.Heatmap.show && appliedLayers.includes(heatmap))
             this.removeGeoJsonLayer(heatmap);
         else if (filter.Heatmap.show && !appliedLayers.includes(heatmap))
             this.addHeatMap(heatmap, this.getGeoJsonFile(precincts), filter.Heatmap.colorRange, filter.Heatmap.popType);
         else if (filter.Heatmap.show && appliedLayers.includes(heatmap))
             this.updateHeatMapCriteria(heatmap, filter.Heatmap)
+
+
+    }
+
+    applyDistrictingFilter = (districtingFilter, plan, appliedLayers) => {
+//if (!districtingFilter[plan] && appliedLayers.includes(districtingFilter.file[plan]))
+  //          this.removeGeoJsonLayer(heatmap);
+      //  else if (districtingFilter[plan] && !appliedLayers.includes(districtingFilter.file[plan]))
+           // this.addHeatMap(heatmap, this.getGeoJsonFile(precincts), filter.Heatmap.colorRange, filter.Heatmap.popType);
+       // else if (filter.Heatmap.show && appliedLayers.includes(heatmap))
+        //    this.updateHeatMapCriteria(heatmap, filter.Heatmap)
+        //else 
+          //  return false;
+        return true;
     }
 
     updateHeatMapCriteria = (sourceName, criteria) => {
@@ -261,16 +277,16 @@ class Map extends Component {
             'interpolate',
             ['linear'],
             ['var', 'density'],
-                274,
-                ['to-color', criteria.colorRange.low], // '#001769'
-                638,
-                ['to-color', criteria.colorRange.avg],
-                1551,
-                ['to-color', criteria.colorRange.high]
+            274,
+            ['to-color', criteria.colorRange.low], // '#001769'
+            638,
+            ['to-color', criteria.colorRange.avg],
+            1551,
+            ['to-color', criteria.colorRange.high]
         ];
 
-        if(criteria.colorRange.avg == ''){
-            mapColorRange.splice(5,2);
+        if (criteria.colorRange.avg == '') {
+            mapColorRange.splice(5, 2);
         }
 
         this.map.setPaintProperty(sourceName + ' state-fills', 'fill-color',
@@ -306,16 +322,16 @@ class Map extends Component {
             'interpolate',
             ['linear'],
             ['var', 'density'],
-                274,
-                ['to-color', colorRange.low], // '#001769'
-                638,
-                ['to-color', colorRange.avg],
-                1551,
-                ['to-color', colorRange.high]
+            274,
+            ['to-color', colorRange.low], // '#001769'
+            638,
+            ['to-color', colorRange.avg],
+            1551,
+            ['to-color', colorRange.high]
         ];
 
-        if(colorRange.avg == ''){
-            mapColorRange.splice(5,2);
+        if (colorRange.avg == '') {
+            mapColorRange.splice(5, 2);
         }
 
         // The feature-state dependent fill-opacity expression will render the hover effect
@@ -416,15 +432,7 @@ class Map extends Component {
 
         this.removeGeoJsonLayer(currentStateInitials + '_Heatmap')
 
-        this.props.updateFilter({
-            Districts: requestState === 'Select...',
-            Precincts: requestState !== 'Select...',
-            Heatmap: {
-                show: false,
-                colorRange: {low:'#e6f0ee', avg: '',  high:'#006952'},
-                popType: { value: 'NONE', label: 'Select' }
-            }
-        })
+        this.props.resetFilter();
         this.zoomTo(requestState);
     }
 

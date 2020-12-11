@@ -33,9 +33,15 @@ class Filter extends Component {
         this.props.updateFilter(filter);
     }
 
+    updateDistrictingFilter = (key, val) => {
+        let filter = Object.assign({}, this.props.filter);
+        filter.Districting[key] = val;
+        this.props.updateFilter(filter);
+    }
+
     render() {
         const demographics = [
-            { value: 'NONE', label: 'Select' },
+            { value: 'NONE', label: 'Select...' },
             { value: 'TOTVAP', label: 'Total Voting Age Population' },
             { value: 'MTOT', label: 'Total Minority' },
             { value: 'WTOT', label: 'White' },
@@ -52,7 +58,20 @@ class Filter extends Component {
             backgroundColor: '#ebf3f5', padding: '5%', borderRadius: '3%', marginTop: '2%'
         };
 
+        const boxStyle = { width: '8%', height: '100%', border: 'solid' };
+
         const colorRange = this.props.filter.Heatmap.colorRange;
+
+        const jobs = this.props.jobs.map((job) => ({ value: job.jobId, label: "Job " + job.jobId }));
+        jobs.unshift({ value: 'Select', label: 'Select...' });
+
+        let percentages = [];
+        for (let i = 0; i <= 100; i += 10)
+            percentages.push(<div style={{ fontFamily: 'monospace' }}>{i + '%'}</div>);
+        let normRange = [];
+        for (let i = 1; i <= 11; i++)
+            normRange.push(<div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: i / 11 * .75, background: colorRange.high }} /> {percentages[i - 1]}</div>);
+
 
         return (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -82,44 +101,97 @@ class Filter extends Component {
                     </div>
 
                     <h6>Display Heat Map</h6>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: '5%' }}>
-                        <div style={{ display: 'flex', flexGrow: 3, flexDirection: 'column', justifyContent: 'space-around' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: this.props.filter.Heatmap.show ? '10%' : '5%' }}>
+                        <div style={{ display: 'flex', flexGrow: 3, flexDirection: 'column' }}>
 
-                            <Select options={demographics} value={this.props.filter.Heatmap.popType}
-                                onChange={this.updateHeatMap} isDisabled={!this.props.stateIsSelected} />
-
+                            <div style={{ textAlign: 'start' }}>
+                                <Select options={demographics} value={this.props.filter.Heatmap.popType}
+                                    onChange={this.updateHeatMap} isDisabled={!this.props.stateIsSelected} />
+                            </div>
+                            
                             {this.props.filter.Heatmap.show ?
-                                <>
-                                    <div style={{ marginTop: '3%', fontFamily: 'sans-serif', fontSize: '75%' }}>Population Color Range</div>
+                                <div style={{ width: '100%', height: '25%' }}>
+                                    <div style={{ fontFamily: 'sans-serif', fontSize: '75%' }}>Population Color Range</div>
                                     <div style={{
                                         marginTop: '1%',
                                         width: '100%',
                                         height: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
                                         fontFamily: 'monospace'
                                     }}>
-                                        Zero
-                                <div style={{
-                                            marginLeft: '2%',
-                                            marginRight: '2%',
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
                                             width: '100%',
                                             height: '100%',
-                                            content: "",
-                                            whiteSpace: "pre",
-                                            opacity: "0.75",
-                                            background: "linear-gradient(to right," + colorRange.low 
-                                            + (colorRange.avg === '' ? '' : ("," + colorRange.avg))
-                                            + "," + colorRange.high,
-                                        }}>   </div>
-                                Max
+                                        }}>
+                                            {colorRange.avg !== '' ?
+                                                <>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.low }} /> {percentages[0]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.8 * .75, background: colorRange.low }} /> {percentages[1]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.6 * .75, background: colorRange.low }} /> {percentages[2]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.4 * .75, background: colorRange.low }} /> {percentages[3]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.2 * .75, background: colorRange.low }} /> {percentages[4]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.avg }} /> {percentages[5]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.2 * .75, background: colorRange.high }} /> {percentages[6]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.4 * .75, background: colorRange.high }} /> {percentages[7]}</div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.6 * .75, background: colorRange.high }} /> {percentages[8]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.8 * .75, background: colorRange.high }} /> {percentages[9]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.high }} /> {percentages[10]} </div>
+                                                </>
+                                                :
+                                                normRange
+                                            }
+                                        </div>
+                                    </div>
+
                                 </div>
-                                    <div style={{ fontFamily: 'monospace' }}>Avg</div>
-                                </>
                                 : <></>
                             }
 
+
+
+                        </div>
+                    </div>
+
+                    <h6>Display Districtings</h6>
+                    <div style={{ textAlign: 'start' }}>
+                        <Select options={jobs} value={this.props.filter.Districting.job} onChange={(selected) => this.updateDistrictingFilter('job', selected)}
+                            isDisabled={!this.props.stateIsSelected || jobs.length === 0} />
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <div>
+                                <Form.Check
+                                    onClick={() => this.updateDistrictingFilter('random', !this.props.filter.Districting.random)}
+                                    checked={this.props.filter.Districting.random}
+                                    disabled={!this.props.stateIsSelected}
+                                    type="checkbox"
+                                    id="random check"
+                                    label="Random"
+                                />
+                                <div style={{ background: this.props.filter.Districting.color.random, width: '100%', height: '20%', border: 'solid', opacity: this.props.stateIsSelected ? 1 : 0 }} />
+                            </div>
+                            <div>
+                                <Form.Check
+                                    onClick={() => this.updateDistrictingFilter('avg', !this.props.filter.Districting.avg)}
+                                    checked={this.props.filter.Districting.avg}
+                                    disabled={!this.props.stateIsSelected}
+                                    type="checkbox"
+                                    id="avg check"
+                                    label="Average"
+                                />
+                                <div style={{ background: this.props.filter.Districting.color.avg, width: '100%', height: '20%', border: 'solid', opacity: this.props.stateIsSelected ? 1 : 0 }} />
+                            </div>
+                            <div>
+                                <Form.Check
+                                    onClick={() => this.updateDistrictingFilter('extreme', !this.props.filter.Districting.extreme)}
+                                    checked={this.props.filter.Districting.extreme}
+                                    disabled={!this.props.stateIsSelected}
+                                    type="checkbox"
+                                    id="extreme check"
+                                    label="Extreme"
+                                />
+                                <div style={{ background: this.props.filter.Districting.color.extreme, width: '100%', height: '20%', border: 'solid', opacity: this.props.stateIsSelected ? 1 : 0 }} />
+                            </div>
                         </div>
                     </div>
 
