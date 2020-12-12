@@ -36,7 +36,23 @@ class GraphModal extends Component {
                 lowerBoxColor: "#494949",
                 yValueFormatString: "0.###",
                 dataPoints: dataPoints
-            }]
+            }, 
+            {
+                type: "scatter",
+                name: "Enacted Plan",
+                toolTipContent: `<span style="color:#C0504E">{name}</span>: {y} km/s`,
+                showInLegend: true,
+                dataPoints: [
+                    { x: 1, label: "1", y: 0.06540697158947842 },
+                    { x: 2, label: "2", y: 0.11233730618214743 },
+                    { x: 3, label: "3", y: 0.16391968780613606 },
+                    { x: 4, label: "4", y: 0.1901751650495369 },
+                    { x: 5, label: "5", y: 0.31135247686496165 },
+                    { x: 6, label: "6", y: 0.3601981608689068 },
+                    { x: 7, label: "7", y: 0.5504211717002624 },
+                    { x: 6, label: "8", y: 0.5601521279761627 }
+                ]
+            }],
         }
         return (
             <div style={{
