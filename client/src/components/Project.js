@@ -47,7 +47,7 @@ class Project extends Component {
 
     componentDidMount() {
         this.getJobHistoryAndUpdateJobs();
-        this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 5000);
+        this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 600000);
     }
 
     componentWillUnmount(){
@@ -63,7 +63,8 @@ class Project extends Component {
     }
 
     updateJobs = (jobs) => {
-        this.setState({ jobs: jobs });
+        if(Array.isArray(jobs))
+            this.setState({ jobs: jobs });
     }
 
     updateFilter = (filter) => {

@@ -53,7 +53,7 @@ class Job extends Component {
 
 
     render() {
-
+        const statusColor = { 'COMPLETED' : 'blue', 'CANCELLED' : 'red', 'QUEUED': 'black'};
         const colStyle = { display: 'flex', flexDirection: 'column', textAlign: 'left', };
         const style = {
             display: 'flex', flexDirection: 'column',
@@ -70,9 +70,9 @@ class Job extends Component {
             <div style={style}>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
                     <div style={colStyle}>
-                        <p style={{ color: '#63BEB6' }}>{'ID: ' + this.props.job.jobId}</p>
-                        <p style={{ color: '#63BEB6' }}>Status: 
-                            <span style={{ color: this.props.job.jobStatus === 'CANCELLED' ? "red" : "#63BEB6"}}>
+                        <p style={{  }}>{'ID: ' + this.props.job.jobId}</p>
+                        <p style={{  }}>Status: 
+                            <span style={{ color: statusColor[this.props.job.jobStatus] }}>
                                 {" " + this.props.job.jobStatus}
                             </span>
                         </p>
@@ -98,11 +98,11 @@ class Job extends Component {
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={colStyle}>
                             <div></div>
-                            <p style={{ color: '#63BEB6' }}>{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
-                            <p style={{ color: '#63BEB6', whiteSpace: 'pre' }}>Demographics:                                  </p>
-                            {this.props.job.demographicGroups.map((demoEnum) => <p style={{ color: '#63BEB6' }}>{demoEnum}</p> )}
-                            <p style={{ color: '#63BEB6' }}>{'Compactness: ' + this.props.job.compactness}</p>
-                            <p style={{ color: '#63BEB6' }}>{'Population Equation Threshold: ' + this.props.job.popEqThreshold}</p>
+                            <p >{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
+                            <p style={{ whiteSpace: 'pre' }}>Demographics:                                  </p>
+                            {this.props.job.demographicGroups.map((demoEnum) => <p style={{ color: '#438f88' }}>{demoEnum}</p> )}
+                            <p >{'Compactness: ' + this.props.job.compactness}</p>
+                            <p >{'Population Equation Threshold: ' + this.props.job.popEqThreshold}</p>
                         </div>
                     </div>
                     :

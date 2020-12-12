@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MultiSelect from 'react-select';
+import Select from 'react-select';
 
 class CreateJob extends Component {
 
@@ -17,7 +18,7 @@ class CreateJob extends Component {
 
     onPopEqThresChange = (e) => { this.setState({ popEqThres: e.target.value }); }
     onNumDistrictingsChange = (e) => { this.setState({ numDistrictings: e.target.value }); }
-    onCompactnessChange = (e) => { this.setState({ compactness: e.target.value }); }
+    onCompactnessChange = (selected) => { this.setState({ compactness: selected }); }
     onDemographicsSelect = (selected) => { this.setState({ demographics: selected }); }
 
     onCreateJob = (e) => {
@@ -25,17 +26,11 @@ class CreateJob extends Component {
         let demographics = [];
         this.state.demographics.map((option) => demographics.push(this.getDemographicEnums(option.value)));
 
-        let compactness = 'Slightly Compact';
-        if (this.state.compactness >= 35 && this.state.compactness <= 75)
-            compactness = 'Somewhat Compact';
-        else if (this.state.compactness > 75)
-            compactness = 'Highly Compact';
-
         let job = {
             numDistrictings: this.state.numDistrictings,
             demographicGroups: demographics,
             popEqThreshold: this.state.popEqThres,
-            compactness: compactness,
+            compactness: this.state.compactness.value,
         };
 
         this.postReqCreateJob(job);
@@ -103,7 +98,13 @@ class CreateJob extends Component {
             { value: 'American Indian or Alaska Native', label: 'American Indian or Alaska Native' },
             { value: 'Native Hawaiian or Other Pacific Islander', label: 'Native Hawaiian or Other Pacific Islander' },
             { value: 'Other', label: 'Other' }
-        ]
+        ];
+
+        const compactness = [
+            { value: 'Slightly Compact', label: 'Slightly Compact' },
+            { value: 'Somewhat Compact', label: 'Somewhat Compact' },
+            { value: 'Highly Compact', label: 'Highly Compact' },
+        ];
 
         const formStyle = {
             height: '100%', width: '95%',
@@ -113,7 +114,7 @@ class CreateJob extends Component {
         let disableSubmit = this.state.demographics === null || this.state.demographics.length === 0 || this.numDistrictings <= 0.0 || this.state.popEqThres <= 0 || !this.props.stateIsSelected;
 
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', }}>
+            <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'start'}}>
                 <div style={formStyle}>
                     <form>
                         <div class="form-group">
@@ -129,12 +130,8 @@ class CreateJob extends Component {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="customRange1">Compactness</label>
-                            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                <div style={{ fontFamily: 'monospace' }}>Slightly Compact</div>
-                                <input type="range" class="custom-range" id="customRange1" value={this.state.compactness} onChange={this.onCompactnessChange} disabled={!this.props.stateIsSelected} />
-                                <div style={{ fontFamily: 'monospace' }}>Highly Compact</div>
-                            </div>
+                            <label for="FormControlSelect2">Compactness</label>
+                            <Select options={compactness} value={this.state.compactness} onChange={this.onCompactnessChange} isDisabled={!this.props.stateIsSelected} />
                         </div>
                         <div class="form-group">
                             <label for="number-input2 row">Population Equation Threshold</label>

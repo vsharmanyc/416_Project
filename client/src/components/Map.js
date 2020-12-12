@@ -34,9 +34,9 @@ class Map extends Component {
         });
 
         this.map.on('load', () => {
-            this.addGeoJsonLayer('NY_Districts', NY_Districts);
-            this.addGeoJsonLayer('PA_Districts', PA_Districts);
-            this.addGeoJsonLayer('MD_Districts', MD_Districts);
+            this.addGeoJsonLayer('NY_Districts', NY_Districts, "orange");
+            this.addGeoJsonLayer('PA_Districts', PA_Districts, "orange");
+            this.addGeoJsonLayer('MD_Districts', MD_Districts, "orange");
         });
     }
 
@@ -87,7 +87,7 @@ class Map extends Component {
         return stateInitials;
     }
 
-    addGeoJsonLayer = (sourceName, geoJSON) => {
+    addGeoJsonLayer = (sourceName, geoJSON, boundaryColor) => {
         if (this.state.appliedLayers.includes(sourceName))
             return;
         let hoveredStateId = null;
@@ -122,7 +122,7 @@ class Map extends Component {
             'source': sourceName,
             'layout': {},
             'paint': {
-                'line-color': '#627BC1',
+                'line-color': boundaryColor,
                 'line-width': 2
             }
         });
@@ -242,11 +242,11 @@ class Map extends Component {
         if (!filter.Districts && appliedLayers.includes(districts))
             this.removeGeoJsonLayer(districts);
         else if (filter.Districts && !appliedLayers.includes(districts))
-            this.addGeoJsonLayer(districts, this.getGeoJsonFile(districts));
+            this.addGeoJsonLayer(districts, this.getGeoJsonFile(districts), "orange");
         else if (!filter.Precincts && appliedLayers.includes(precincts))
             this.removeGeoJsonLayer(precincts);
         else if (filter.Precincts && !appliedLayers.includes(precincts))
-            this.addGeoJsonLayer(precincts, this.getGeoJsonFile(precincts));
+            this.addGeoJsonLayer(precincts, this.getGeoJsonFile(precincts), "black");
 
         // Heatmap filter logic
         else if (!filter.Heatmap.show && appliedLayers.includes(heatmap))
@@ -272,7 +272,6 @@ class Map extends Component {
     }
 
     updateHeatMapCriteria = (sourceName, criteria) => {
-        console.log("HABOBOBIBIBI");
         let mapColorRange = [
             'interpolate',
             ['linear'],
@@ -421,12 +420,12 @@ class Map extends Component {
         let requestStateInitials = this.stateInitials(requestState);
 
         if (currentState !== 'Select...') {
-            this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'));
+            this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'), "orange");
             this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
         }
 
         if (requestState !== 'Select...') {
-            this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'));
+            this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'), "black");
             this.removeGeoJsonLayer(requestStateInitials + '_Districts');
         }
 

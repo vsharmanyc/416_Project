@@ -8,30 +8,34 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class GraphModal extends Component {
     render() {
+        let str = "[1-0.0644-0.0951-0.1238-0.1993-0.1103, 2-0.0935-0.1324-0.1782-0.2336-0.1513, 3-0.1303-0.1709-0.2147-0.2793-0.1931, 4-0.1672-0.209-0.26-0.3146-0.2328, 5-0.2077-0.2627-0.3144-0.3708-0.2874, 6-0.2606-0.3221-0.3824-0.4544-0.3579, 7-0.303-0.3845-0.4483-0.5187-0.4174, 8-0.3941-0.4822-0.5387-0.6437-0.5159]";
+        
+        str = str.substring(1, str.length - 1);
+        let dataPoints = str.split(',').map((points) => {
+            let stats = points.split('-').map((stat) => parseFloat(stat))
+            return { label: "District " + stats[0], y: [stats[1], stats[2], stats[3], stats[4], stats[5]] };
+        });
+
+        
         const options = {
             animationEnabled: true,
             theme: "light2",
             title: {
-                text: "Life Expectancy - Europe"
+                text: "Data"
+            },
+            axisX: {
+                title: "District Number"
             },
             axisY: {
-                title: "Age (in years)"
+                title: "Quartiles"
             },
             data: [{
                 type: "boxAndWhisker",
                 color: "black",
                 upperBoxColor: "#A3A3A3",
                 lowerBoxColor: "#494949",
-                yValueFormatString: "###.0# years",
-                dataPoints: [
-                    { label: "Germany", y: [67.5, 70.55, 76.705, 79.406, 73.15] },
-                    { label: "France", y: [67.41, 71.03, 78.05, 80.657, 74.36] },
-                    { label: "Spain", y: [64.94, 70.565, 78.17, 80.94, 75.345] },
-                    { label: "UK", y: [69.18, 71.06, 76.819, 79.425, 73.4] },
-                    { label: "Switzerland", y: [69.62, 72.045, 78.7, 81.70, 75.8] },
-                    { label: "Greece", y: [65.86, 70.255, 78.0625, 85, 75.24] },
-                    { label: "Poland", y: [61.31, 68.625, 72.035, 75.56, 70.915] }
-                ]
+                yValueFormatString: "0.###",
+                dataPoints: dataPoints
             }]
         }
         return (

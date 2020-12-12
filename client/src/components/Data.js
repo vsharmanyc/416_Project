@@ -30,7 +30,7 @@ class Data extends Component {
             geoData =  {};
 
         return (
-            <div>
+            <div style={{textAlign: 'start'}}>
                 <h5>{this.props.geoData.COUNTY === undefined ? "" : "County: " + this.props.geoData.COUNTY}</h5>
                 <h5>{this.props.geoData.DISTRICTID === undefined || this.props.geoData.DISTRICTID === 'null' ? "" : "District: " + this.props.geoData.DISTRICTID}</h5>
                 <h5>{this.props.geoData.district === undefined || this.props.geoData.district === 'null' ? "" : "District: " + this.props.geoData.district}</h5>

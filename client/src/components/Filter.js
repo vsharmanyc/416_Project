@@ -62,7 +62,7 @@ class Filter extends Component {
 
         const colorRange = this.props.filter.Heatmap.colorRange;
 
-        const jobs = this.props.jobs.map((job) => ({ value: job.jobId, label: "Job " + job.jobId }));
+        let jobs = this.props.jobs.map((job) => ({ value: job.jobId, label: "Job " + job.jobId }));
         jobs.unshift({ value: 'Select', label: 'Select...' });
 
         let percentages = [];
@@ -74,7 +74,7 @@ class Filter extends Component {
 
 
         return (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'start' }}>
                 <div style={formStyle}>
                     <h6>Show Boundaries</h6>
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: '5%' }}>
@@ -108,7 +108,7 @@ class Filter extends Component {
                                 <Select options={demographics} value={this.props.filter.Heatmap.popType}
                                     onChange={this.updateHeatMap} isDisabled={!this.props.stateIsSelected} />
                             </div>
-                            
+
                             {this.props.filter.Heatmap.show ?
                                 <div style={{ width: '100%', height: '25%' }}>
                                     <div style={{ fontFamily: 'sans-serif', fontSize: '75%' }}>Population Color Range</div>
