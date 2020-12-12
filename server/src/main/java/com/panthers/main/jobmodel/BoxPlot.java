@@ -3,6 +3,7 @@ package com.panthers.main.jobmodel;
 import com.panthers.main.mapmodel.District;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -116,14 +117,21 @@ public class BoxPlot {
      * Function determines first quartile of MVAP's from districts
      */
     public void findFirstQuart(){
-
+        setFirstQuarMVAP(Quartiles((Double[])this.mvaps.toArray())[0]);
     }
 
     /**
      * Function determines third quartile of MVAP's from districts
      */
     public void findThirdQuart(){
+        setThirdQuarMVAP(Quartiles((Double[])this.mvaps.toArray())[2]);
+    }
 
+    /**
+     * Function determines second quartile (meadian) of MVAP's from districts
+     */
+    public void findSecondQuart(){
+        setMedianMVAP(Quartiles((Double[])this.mvaps.toArray())[1]);
     }
 
     /**
@@ -131,6 +139,25 @@ public class BoxPlot {
      */
     public void findMeanMVAP(){
         setMinMVAP(mvaps.get(mvaps.size()/2));
+    }
+
+    public Double[] Quartiles(Double[] val) {
+        Double ans[] = new Double[3];
+
+        for (int quartileType = 1; quartileType < 4; quartileType++) {
+            float length = val.length + 1;
+            Double quartile;
+            float newArraySize = (length * ((float) (quartileType) * 25 / 100)) - 1;
+            Arrays.sort(val);
+            if (newArraySize % 1 == 0) {
+                quartile = val[(int) (newArraySize)];
+            } else {
+                int newArraySize1 = (int) (newArraySize);
+                quartile = (val[newArraySize1] + val[newArraySize1 + 1]) / 2;
+            }
+            ans[quartileType - 1] =  quartile;
+        }
+        return ans;
     }
 
     /**

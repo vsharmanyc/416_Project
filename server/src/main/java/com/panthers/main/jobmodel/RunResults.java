@@ -169,7 +169,11 @@ public class RunResults {
      * @param bp boxplot to add
      */
     public void addToBoxPlotGraph(BoxPlot bp){
+        this.boxAndWhiskerData.add(bp);
+    }
 
+    public List<BoxPlot> getBoxAndWhiskerData(){
+        return this.boxAndWhiskerData;
     }
 
     /**

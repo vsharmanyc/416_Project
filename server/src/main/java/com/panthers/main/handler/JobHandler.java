@@ -358,4 +358,9 @@ public class JobHandler{
     public RunResults getRunResults() {
         return runResults;
     }
+
+    public List<BoxPlot> generateBoxPlot(){
+        this.runResults.generateBoxPlot();
+        return runResults.getBoxAndWhiskerData();
+    }
 }
