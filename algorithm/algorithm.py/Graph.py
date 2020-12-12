@@ -2,7 +2,7 @@ class Graph:
     def __init__(self, nodes):
         # nodes are clusters, basically.
         self.nodes = nodes
-        self.edges = []
+        self.edges = set()
         self.determine_edges()
         self.cluster_dict = {}
         self.node_dict = {}
@@ -10,12 +10,12 @@ class Graph:
         self.set_node_dict()
 
     def determine_edges(self):
-        edges = []
+        edges = set()
         for node in self.nodes:
             for neighbor in node.neighbors:
                 node_neighbor = self.find_node(neighbor)
                 if node_neighbor is not None and (node_neighbor, node) not in edges:
-                    edges.append((node, node_neighbor))
+                    edges.add((node, node_neighbor))
         self.edges = edges
 
     def set_cluster_dict(self):
@@ -65,11 +65,11 @@ class Graph:
                 if (clust2, neigh) in self.edges:
                     self.edges.remove((clust2, neigh))
                     if neigh != clust1:
-                        self.edges.append((clust1, neigh))
+                        self.edges.add((clust1, neigh))
                 if (neigh, clust2) in self.edges:
                     self.edges.remove((neigh, clust2))
                     if neigh != clust1:
-                        self.edges.append((neigh, clust1))
+                        self.edges.add((neigh, clust1))
             neighbors = self.get_neighbors(clust2)
         for node in clust2.nodes:
             if node not in clust1.nodes:
@@ -80,10 +80,10 @@ class Graph:
         self.cluster_dict.pop(clust2.id)
 
     def clean_up_edges(self):
-        edges = []
+        edges = set()
         for edge in self.edges:
             if edge not in edges and (edge[1], edge[0]) not in edges:
-                edges.append(edge)
+                edges.add(edge)
 
         self.edges = edges
 

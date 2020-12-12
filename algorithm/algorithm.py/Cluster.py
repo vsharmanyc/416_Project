@@ -4,7 +4,7 @@ class Cluster:
         self.parent_cluster = id
         self.nodes = nodes
         self.neighbors = set()
-        self.edges = []
+        self.edges = set()
         self.spanning_tree_edges = []
         self.node_dict = {}
         self.determine_node_dict()
@@ -55,12 +55,12 @@ class Cluster:
         self.node_status = node_status
 
     def determine_edges(self):
-        edges = []
+        edges = set()
         for node in self.nodes:
             for neighbor in node.NEIGHBORS:
                 node_neighbor = self.find_node(neighbor)
                 if node_neighbor is not None and (node_neighbor, node) not in edges:
-                    edges.append((node, node_neighbor))
+                    edges.add((node, node_neighbor))
 
         self.edges = edges
 

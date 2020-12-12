@@ -1,5 +1,6 @@
 import json
 import random
+import sys
 from Node import Node
 from Request import Request
 # import networkx as nx
@@ -21,10 +22,10 @@ def entry_point():
     nodes = filter_nodes(n)
     request = data[1]
     graph = prepare_seed(nodes)
-    write_to_results_file(graph, request)
+    # write_to_results_file(graph, request)
     reset_avoid_list(graph)
     algorithm(graph, request)
-    # write_to_results_file(graph, request)
+    write_to_results_file(graph, request)
 
 
 def enter_after_seed():
@@ -34,7 +35,7 @@ def enter_after_seed():
     for clust in g.nodes:
         for node in clust.nodes:
             ideal_population_per_district += node.TOTAL
-    ideal_population_per_district = ideal_population_per_district / 8
+    ideal_population_per_district = ideal_population_per_district / 19
     if debug:
         print("Ideal population per district:", ideal_population_per_district)
     algorithm(g, request)
@@ -59,7 +60,7 @@ def prepare_seed(nodes):
     global ideal_population_per_district
     for node in nodes:
         ideal_population_per_district += node.TOTAL
-    ideal_population_per_district = ideal_population_per_district / 8
+    ideal_population_per_district = ideal_population_per_district / 19
     if debug:
         print("Ideal population per district:", ideal_population_per_district)
     # parsing nodes into clusters
@@ -156,11 +157,16 @@ def algorithm(graph, request):
     two = 0
     no_edge = 0
     not_found = 0
+    pop_diff_target = 0.2
     while i <= 100:
+        if i > 80:
+            pop_diff_target = 0.1
+        if i > 90:
+            pop_diff_target = 0.017
         if debug:
             print("================================================ITERATION", i,
                   "================================================")
-        res = main_algorithm_loop(graph)
+        res = main_algorithm_loop(graph, pop_diff_target)
         if res == 1:
             i += 1
             not_found = 0
@@ -171,14 +177,15 @@ def algorithm(graph, request):
         if not_found == 1000:
             break
 
-    print("====================ALGORITHM RESULTS====================")
-    print("Iterations:", i - 1)
-    print("Total algorithm runtime", datetime.datetime.utcnow() - alg_start)
+    output = ""
+    output += "====================ALGORITHM RESULTS====================\n"
+    output += "Iterations: " + str(i-1) + "\n"
+    output += "Total algorithm runtime " + str(datetime.datetime.utcnow() - alg_start) + "\n"
     # print("Number of times alg chose a 1-node graph", one)
     # print("Number of times chosen two one nodes", two)
     # print("Number of times chosen one one nodes", one)
-    print("Number of times unable to find an edge", no_edge)
-    print("Clusters:")
+    output += "Number of times unable to find an edge: " + str(no_edge) + "\n"
+    output += "Clusters:\n"
     for cluster in graph.nodes:
         pop = 0
         ids = []
@@ -191,18 +198,23 @@ def algorithm(graph, request):
         if compact2 == 0:
             compact1 = 0
             compact2 = 1
-        print("- CLUSTER", str(cluster.id), "| POPULATION:", int(pop), "| COMPACTNESS:", compact1/compact2)
+        compactness = compact1/compact2
+        output += "- CLUSTER " + str(cluster.id) + " | POPULATION: " + str(pop) + " | COMPACTNESS: " + str(compactness) + "\n"
+    fname = "output" + sys.argv[1] + ".txt"
+    f = open(fname, "a")
+    f.write(output + "\n")
+    f.close()
 
 
-def main_algorithm_loop(graph):
-    global avoid_clusters
+def main_algorithm_loop(graph, pop_diff_target):
+    # global avoid_clusters
     # print_graph(graph, ("Iteration " + str(i) + " Graph"))
     clusts = combine_random_clusters(graph)
     generate_spanning_tree(clusts[0], graph)
     # dfs_generate_spanning_tree(clusts[0])
     # NARAYAN - Print spanning tree
     # print_spanning_tree(clusts[0].nodes, clusts[0].spanning_tree_edges, "DFS")
-    fae_result = find_acceptable_edge(clusts[0], [clusts[1], clusts[2]], 0.007, ideal_population_per_district,
+    fae_result = find_acceptable_edge(clusts[0], [clusts[1], clusts[2]], pop_diff_target, ideal_population_per_district,
                                       clusts[4])
     edge = fae_result[0]
     node_lists = [fae_result[1], fae_result[2]]
@@ -236,7 +248,7 @@ def determine_seed_districting(graph):
     # wrap node in cluster
     ext_clusts = []
     # combine clusters randomly until we have target districts
-    while len(graph.nodes) != 8:
+    while len(graph.nodes) != 19:
         clust = graph.nodes[random.randrange(0, len(graph.nodes))]
         neighs = graph.get_neighbors(clust)
         if not neighs:
@@ -247,7 +259,7 @@ def determine_seed_districting(graph):
         graph.combine_clusters(clust, neigh_clust)
     for clust in graph.nodes:
         graph.recalculate_cluster_neighbors(clust, False)
-    print("Seed Time:", (datetime.datetime.utcnow()-start))
+    #print("Seed Time:", (datetime.datetime.utcnow()-start))
     return graph
 
 
@@ -277,7 +289,7 @@ def combine_random_clusters(graph):
     for node in clust2.nodes:
         clust2_pop += node.TOTAL
     if debug:
-        print("Original populations:", clust1_pop, clust2_pop)
+        print("Original populations:", '{:,}'.format(clust1_pop), '{:,}'.format(clust2_pop))
     # print_cluster(clust2.nodes, "Graphed: Cluster 2 original")
     clust2_id = clust2.id
     prev_clust2 = clust2.nodes.copy()
@@ -294,30 +306,29 @@ def combine_random_clusters(graph):
 
 
 def generate_spanning_tree(clust, graph):
-    start = datetime.datetime.utcnow()
     if debug:
         print("Generating a spanning tree of cluster", clust)
     # print_cluster(clust.nodes, "Plot: Combined cluster " + str(clust))
     # simply doing a bfs on the cluster.
     queue = []
-    visited = []
-    edges = []
+    visited = set()
+    edges = set()
     first_node = clust.nodes[random.randrange(0, len(clust.nodes))]
     queue.append(first_node)
-    visited.append(first_node)
+    visited.add(first_node)
     clust.determine_node_neighbor_dict()
     start2 = datetime.datetime.utcnow()
     while queue:
         node = queue.pop()
-        visited.append(node)
+        visited.add(node)
         neighbors = clust.node_neighbor_dict[node.GEOID10]
         for neighbor in neighbors:
             if neighbor not in visited:
                 queue.append(neighbor)
-                visited.append(neighbor)
+                visited.add(neighbor)
                 if (neighbor, node) not in edges:
-                    edges.append((node, neighbor))
-    clust.set_spanning_tree(edges)
+                    edges.add((node, neighbor))
+    clust.set_spanning_tree(list(edges))
     # print_spanning_tree(clust.nodes, edges, "Plot: Spanning tree for " + str(clust))
     clust.determine_mst_neighbors_dict()
 
@@ -403,6 +414,7 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
     prev_clusts_diff = calculate_previous_clusters_pop_diff(prev_clusts, ideal_pop)
     edge = None
     overall_pop = calculate_clusters_population(clust)
+    improved = {}
     while len(edges) > 0:
         edge = edges[random.randrange(0, len(edges))]
         edges.remove(edge)
@@ -433,16 +445,40 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
         #         check_new_compactness(compact_info1, compact_info2, prev_compact):
         #     print("EDGE ACCEPTED:", edge)
         #     return (edge, nodes1, nodes2)
-        if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff):
-            # check if compactness is OK too
+        check = check_new_pop_range(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff)
+        if check == "Accepted":
+            # print("AN ACCEPTED EDGE WAS FOUND")
             compact_info1 = find_compactness(res1[2][0], res1[2][1])
             other_nodes = get_other_side_nodes(clust.nodes, nodes1)
             compact_info2 = find_compactness(other_nodes[0], other_nodes[1])
             if check_new_compactness(compact_info1, compact_info2, prev_compact):
                 if debug:
                     print("EDGE ACCEPTED:", edge)
-                return edge, nodes1, other_nodes[0]
-
+                return edge, list(nodes1), other_nodes[0]
+        elif check == "Improved":
+            improved[edge] = res1
+            continue
+        # if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff):
+        #     # check if compactness is OK too
+        #     compact_info1 = find_compactness(res1[2][0], res1[2][1])
+        #     other_nodes = get_other_side_nodes(clust.nodes, nodes1)
+        #     compact_info2 = find_compactness(other_nodes[0], other_nodes[1])
+        #     if check_new_compactness(compact_info1, compact_info2, prev_compact):
+        #         if debug:
+        #             print("EDGE ACCEPTED:", edge)
+        #         return edge, list(nodes1), other_nodes[0]
+    while len(improved.keys()) > 0:
+        edge = list(improved.keys())[random.randrange(0, len(improved.keys()))]
+        res1 = improved[edge]
+        nodes1 = res1[0]
+        del improved[edge]
+        compact_info1 = find_compactness(res1[2][0], res1[2][1])
+        other_nodes = get_other_side_nodes(clust.nodes, nodes1)
+        compact_info2 = find_compactness(other_nodes[0], other_nodes[1])
+        if check_new_compactness(compact_info1, compact_info2, prev_compact):
+            if debug:
+                print("EDGE ACCEPTED:", edge)
+            return edge, list(nodes1), other_nodes[0]
     return None, None, None
 
 
@@ -455,33 +491,33 @@ def calculate_clusters_population(cluster):
 
 def get_other_side_nodes(nodes, nodes1):
     nodes2 = []
-    nodes2_ids = []
+    nodes2_ids = set()
     for node in nodes:
         if node not in nodes1:
             nodes2.append(node)
-            nodes2_ids.append(node.GEOID10)
+            nodes2_ids.add(node.GEOID10)
     return [nodes2, nodes2_ids]
 
 
 def bfs(clust, start):
     queue = []
-    visited = []
-    nodes = []
-    nodes_ids = []
+    visited = set()
+    nodes = set()
+    nodes_ids = set()
     queue.append(start)
-    visited.append(start)
+    visited.add(start)
     total_pop = 0
     while queue:
         node = queue.pop()
         total_pop += node.TOTAL
-        visited.append(node)
-        nodes.append(node)
-        nodes_ids.append(node.GEOID10)
+        visited.add(node)
+        nodes.add(node)
+        nodes_ids.add(node.GEOID10)
         neighbors = clust.mst_neighbors_dict[node.GEOID10]
         for neighbor in neighbors:
             if neighbor not in visited:
                 queue.append(neighbor)
-                visited.append(neighbor)
+                visited.add(neighbor)
     # compactness_info = find_compactness(nodes, nodes_ids)
     compactness_info = [nodes, nodes_ids]
     return nodes, total_pop, compactness_info
@@ -495,11 +531,11 @@ def check_external_node(node, ids):
 
 
 def find_compactness(nodes, ids):
-    ext_nodes = []
+    ext_nodes = set()
     for node in nodes:
         for neighbor in node.NEIGHBORS:
             if int(neighbor) not in ids and node.GEOID10 not in ext_nodes:
-                ext_nodes.append(node.GEOID10)
+                ext_nodes.add(node.GEOID10)
     # NARAYAN - Compactness check
     # print("Ext edge and total edge:", ext_edge_count, len(edges)/2+ext_edge_count)
     return len(ext_nodes), len(nodes)
@@ -518,30 +554,76 @@ def check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clust
         if debug:
             print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
         return True
-    elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[0] - target_diff) and abs(pop2_diff - target_diff) <= abs(
-            prev_clusts_diff[1] - target_diff):
-        if debug:
-            print("1) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
-        return True
-    elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[1] - target_diff) and abs(pop2_diff - target_diff) <= abs(
-            prev_clusts_diff[0] - target_diff):
-        if debug:
-            print("2) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
-        return True
+    # elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[0] - target_diff) and abs(pop2_diff - target_diff) <= abs(
+    #         prev_clusts_diff[1] - target_diff):
+    #     if debug:
+    #         print("1) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
+    #     return True
+    # elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[1] - target_diff) and abs(pop2_diff - target_diff) <= abs(
+    #         prev_clusts_diff[0] - target_diff):
+    #     if debug:
+    #         print("2) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
+    #     return True
     # if not acceptable, see if they are closer to being acceptable!
     elif abs((pop1_diff+pop2_diff)-target_diff) <= abs((prev_clusts_diff[1] + prev_clusts_diff[0])-target_diff):
         if debug:
             print("3) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
         return True
-    if (pop1_diff == prev_clusts_diff[0] and pop2_diff == prev_clusts_diff[1]) or (pop1_diff == prev_clusts_diff[1]
-                                                                                and pop2_diff == prev_clusts_diff[0]):
-        # print("SAME EDGE - TAKEN")
-        return True
+    # elif (pop1_diff == prev_clusts_diff[0] and pop2_diff == prev_clusts_diff[1]) or (pop1_diff == prev_clusts_diff[1]
+    #                                                                             and pop2_diff == prev_clusts_diff[0]):
+    #     # print("SAME EDGE - TAKEN")
+    #     return True
     return False
+
+
+def check_new_pop_range(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
+    pop1_diff = abs(unvisited_pop - ideal_pop) / ideal_pop
+    pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
+    # if debug:
+    #     print("New populations determined to be", '{:,}'.format(visited_pop), '{:,}'.format(unvisited_pop))
+    if pop1_diff <= target_diff and pop2_diff <= target_diff:
+        if debug:
+            print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
+        return "Accepted"
+    elif (abs(pop1_diff - target_diff) + abs(pop2_diff - target_diff)) <= (abs(prev_clusts_diff[0] - target_diff) + abs(prev_clusts_diff[1] - target_diff)):
+        if debug:
+            print("IMPROVED: Edge splits into", pop1_diff, pop2_diff)
+        return "Improved"
+    return "Bad"
+
+
+def alt_check_new_pop(unvisited_pop, visited_pop, ideal_pop, target_diff, prev_clusts_diff):
+    # if debug:
+    #     print("Checking cut population")
+    pop1_diff = abs(unvisited_pop - ideal_pop) / ideal_pop
+    pop2_diff = abs(visited_pop - ideal_pop) / ideal_pop
+    if debug:
+        print("New populations determined to be", '{:,}'.format(visited_pop), '{:,}'.format(unvisited_pop))
+    if pop1_diff <= target_diff and pop2_diff <= target_diff:
+        if debug:
+            print("ACCEPTED: Edge splits into", pop1_diff, pop2_diff)
+        return "Accepted"
+    elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[0] - target_diff) and abs(pop2_diff - target_diff) <= abs(
+            prev_clusts_diff[1] - target_diff):
+        if debug:
+            print("1) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
+        return "Improved"
+    elif abs(pop1_diff - target_diff) <= abs(prev_clusts_diff[1] - target_diff) and abs(pop2_diff - target_diff) <= abs(
+            prev_clusts_diff[0] - target_diff):
+        if debug:
+            print("2) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
+        return "Improved"
+    # if not acceptable, see if they are closer to being acceptable!
+    elif abs((pop1_diff+pop2_diff)-target_diff) <= abs((prev_clusts_diff[1] + prev_clusts_diff[0])-target_diff):
+        if debug:
+            print("3) IMPROVED: Edge splits into", pop1_diff, pop2_diff, unvisited_pop, visited_pop)
+        return "Improved"
+    return "Bad"
 
 
 def check_new_compactness(vis, unvis, prev_compact):
     user_compact = "Somewhat Compact"
+    #print("Checking compactness")
     # calculate interior edges. Then exterior edges. Then take ratio.
     vis_num_exterior_edges = vis[0]
     vis_num_edges = vis[1]
@@ -558,9 +640,9 @@ def check_new_compactness(vis, unvis, prev_compact):
     unvis_ratio = abs(1 - unvis_ratio)
     vis_ratio = abs(1 - vis_ratio)
 
-    if debug:
-        print("Unvisited: ", unvis_ratio)
-        print("Visited: ", vis_ratio)
+    # if debug:
+    #     print("Unvisited: ", unvis_ratio)
+    #     print("Visited: ", vis_ratio)
     if user_compact == "Somewhat Compact":
         if 0.3 <= unvis_ratio <= 0.6 and 0.3 <= vis_ratio <= 0.6:
             if debug:
@@ -568,17 +650,22 @@ def check_new_compactness(vis, unvis, prev_compact):
             return True
         elif abs(unvis_ratio - 0.6) <= abs(prev_compact[0] - 0.6) and abs(vis_ratio - 0.6) <= abs(
                 prev_compact[1] - 0.6) or \
-                abs(unvis_ratio - 0.6) <= abs(prev_compact[1] - 0.6) and abs(vis_ratio - 0.6) <= abs(
-            prev_compact[0] - 0.6) or \
-                abs(unvis_ratio - 0.3) <= abs(prev_compact[0] - 0.3) and abs(vis_ratio - 0.3) <= abs(
-            prev_compact[1] - 0.3) or \
+                abs(unvis_ratio - 0.99) <= abs(prev_compact[1] - 0.99) and abs(vis_ratio - 0.99) <= abs(
+            prev_compact[0] - 0.99) or \
+                abs(unvis_ratio - 0.99) <= abs(prev_compact[0] - 0.99) and abs(vis_ratio - 0.99) <= abs(
+            prev_compact[1] - 0.99) or \
                 abs(unvis_ratio - 0.6) <= abs(prev_compact[1] - 0.6) and abs(vis_ratio - 0.6) <= abs(
             prev_compact[0] - 0.6):
             if debug:
                 print("IMPROVED: Compactness is", unvis_ratio, vis_ratio)
             return True
-    if debug:
-        print("Compactness is", unvis_ratio, vis_ratio)
+        elif (unvis_ratio+vis_ratio-1.98) <= (prev_compact[0]+prev_compact[1]-1.98) and \
+            (unvis_ratio + vis_ratio - 1.2) <= (prev_compact[0] + prev_compact[1] - 1.2):
+            if debug:
+                print("IMPROVED: Compactness is", unvis_ratio, vis_ratio)
+            return True
+    # if debug:
+    #     print("Compactness is", unvis_ratio, vis_ratio)
     return False
 
 
@@ -588,7 +675,7 @@ def calculate_previous_clusters_compactness(clust):
     for node in clust.nodes:
         ids.append(node.GEOID10)
     compactness = find_compactness(clust.nodes, ids)
-    return compactness[0] / compactness[1]
+    return abs((compactness[0] / compactness[1])-1)
 
 
 def calculate_previous_clusters_pop_diff(prev_clusts, ideal_pop):
@@ -660,7 +747,7 @@ def cut_from_acceptable_edges(edge_list, clust, ids, graph, start_node):
     for node in clust_2.nodes:
         clust2_pop += node.TOTAL
     if debug:
-        print("New populations:", clust1_pop, clust2_pop)
+        print("New populations determined to be", '{:,}'.format(clust1_pop), '{:,}'.format(clust2_pop))
     start = datetime.datetime.utcnow()
     graph.split_cluster(clust, clust_1, clust_2)
     if debug:
@@ -827,14 +914,33 @@ def find_cluster_index(clusters, id):
 #     print(len(G.nodes))
 #     plt.show()
 
+def clean_district_numbers(graph):
+    graph.recalculate_literally_all_neighbors()
+    clust_mappings = {}
+    i = 1
+    for clust in graph.nodes:
+        clust_mappings[clust.id] = i
+        i += 1
+    for clust in graph.nodes:
+        new_neighbors = []
+        for neighbor in graph.new_get_neighbors(clust):
+            new_neighbors.append(clust_mappings[neighbor.id])
+        clust.neighbors = new_neighbors
+    i = 1
+    for clust in graph.nodes:
+        clust.id = i
+        i += 1
+    return clust_mappings
+
 
 def write_to_results_file(graph, request):
+    district_id_map = clean_district_numbers(graph)
     subgraphs = []
     s = "{\n\"data\": [\n"
-    s += request.toJSON() + ",\n"
-    s = ",{\n\"subgraphs\": [\n"
+    s += request.toJSON() + "\n"
+    s += ",{\n\"districting\": [\n"
     for cluster in graph.nodes:
-        f = Subgraph(cluster.nodes)
+        f = Subgraph(cluster, request, graph, district_id_map)
         subgraphs.append(f)
 
     s += subgraphs[0].toJSON()
@@ -843,8 +949,8 @@ def write_to_results_file(graph, request):
         s += ",\n" + subgraphs[i].toJSON()
         i += 1
     s += "\n]\n}"
-
-    results = open("result.json", "a")
+    fname = "result" + sys.argv[1] + ".json"
+    results = open(fname, "a")
     results.write(s)
     results.close()
 
