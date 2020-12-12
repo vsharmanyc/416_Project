@@ -1,5 +1,6 @@
 package com.panthers.main.jobmodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.panthers.main.mapmodel.District;
 import com.panthers.main.mapmodel.States;
 
@@ -10,29 +11,55 @@ import java.util.*;
  * district
  */
 public class DistrictingPlan {
+    @JsonIgnore
     private States state;
+    private int districtingPlanID;
     private List<District> districts;
+    @JsonIgnore
     private List<List<District>> districtGraph;
+    @JsonIgnore
     private CompactnessMeasure compactnessMeasure;
+    @JsonIgnore
     private double popEqThreshold;
+    @JsonIgnore
     private String compactnessRequested;
+    @JsonIgnore
     private DistrictingType type;
+    @JsonIgnore
     private int counties;
+    @JsonIgnore
     private double deviationFromAverage;// Utilized in the 'determine x districting' functions
 
     public DistrictingPlan(States state, List<District> districts,
-                           double popEqThreshold, String compactnessRequested, DistrictingType type, int counties) {
+                           double popEqThreshold, String compactnessRequested) {
         this.state = state;
         this.districts = districts;
         this.popEqThreshold = popEqThreshold;
         this.compactnessRequested = compactnessRequested;
-        this.type = type;
-        this.counties = counties;
+        this.type = null;
+        this.counties = -1;
         this.districtGraph = new ArrayList<>();
         this.deviationFromAverage = 0.0;
+        this.districtingPlanID = -1;
     }
 
+    public int getDistrictingPlanID() {
+        return districtingPlanID;
+    }
+
+    public void setDistrictingPlanID(int districtingPlanID) {
+        this.districtingPlanID = districtingPlanID;
+    }
+
+    public double getDeviationFromAverage() {
+        return deviationFromAverage;
+    }
+
+    public void setDeviationFromAverage(double deviationFromAverage) {
+        this.deviationFromAverage = deviationFromAverage;
+    }
     /* GETTERS/SETTERS */
+
     public States getState() {
         return state;
     }

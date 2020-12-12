@@ -5,6 +5,8 @@ public enum JobStatus {
     QUEUED,
     STARTING_ALGORITHM,
     GENERATING_DISTRICTS,
+    RUNNING,
+    POST_PROCESSING,
     COMPLETED,
     CANCELLED,
     ERROR

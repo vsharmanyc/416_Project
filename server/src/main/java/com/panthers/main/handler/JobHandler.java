@@ -105,7 +105,7 @@ public class JobHandler{
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
 
-        jpaUserDao.save(job);
+        //jpaUserDao.save(job);
 
         /*Object[] jobs = jpaUserDao.getAll().toArray();
         for(int i = 0; i < jobs.length; i++)
@@ -240,84 +240,84 @@ public class JobHandler{
 
     /* TESTING METHODS*/
 
-    private void loadPrecincts() {
-        List<Precinct> precincts = new ArrayList<>();
-        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precinct_data.json";
-        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precinct_data.json";
-        try {
-            path = new String(Files.readAllBytes(Paths.get(path)));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        JSONObject obj = new JSONObject(path);
-        JSONArray features = obj.getJSONArray("precincts");
-        for (int i = 0; i < features.length(); i++) {
-            JSONObject precinct = features.getJSONObject(i);
-            String name = precinct.getString("PRECINCT");
-            int population = precinct.getInt("TOTAL");
-            int vap = precinct.getInt("TOTVAP");
-            HashMap<Demographic, Integer> mpop = new HashMap<>();
-            mpop.put(Demographic.WHITE, precinct.getInt("WTOT"));
-            mpop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BTOT"));
-            mpop.put(Demographic.ASIAN, precinct.getInt("ATOT"));
-            mpop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AIANTOT"));
-            mpop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HTOT"));
-            mpop.put(Demographic.NH_OR_OPI, precinct.getInt("NHOPTOT"));
-
-            HashMap<Demographic, Integer> mvappop = new HashMap<>();
-            mvappop.put(Demographic.WHITE, precinct.getInt("WVAP"));
-            mvappop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BVAP"));
-            mvappop.put(Demographic.ASIAN, precinct.getInt("AVAP"));
-            mvappop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AIANVAP"));
-            mvappop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HVAP"));
-            mvappop.put(Demographic.NH_OR_OPI, precinct.getInt("NHOPVAP"));
-
-            String precinctID = precinct.getString("PRECINCTID");
-
-
-            Population pop = new Population(population, vap, mpop, mvappop, precinctID);
-            Precinct p = new Precinct(precinct.getString("PRECINCT"), new ArrayList<Precinct>(), precinctID,
-                    pop, population, vap, mpop, mvappop, null, precinct.getInt("DISTRICTID"),
-                    precinct.getString("COUNTY"));
-            precincts.add(p);
-        }
-        this.precincts = precincts;
-    }
-
-    private void loadDistricts() {
-        List<District> districts = new ArrayList<>();
-        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Districts_data.json";
-        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precinct_data.json";
-        try {
-            path = new String(Files.readAllBytes(Paths.get(path)));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        JSONObject obj = new JSONObject(path);
-        JSONArray features = obj.getJSONArray("districts");
-
-        for (int i = 0; i < features.length(); i++) {
-            JSONObject district = features.getJSONObject(i);
-            int id = district.getInt("DISTRICTID");
-            String state = district.getString("STATE");
-            District d = new District(state, id, null, null, null);
-            districts.add(d);
-        }
-
-        //Set precincts to a district
-        for (District district : districts) {
-            List<Precinct> precincts = new ArrayList<>();
-            int did = district.getDistrictNum();
-            for (Precinct precinct : this.precincts) {
-                if (precinct.getDistrictID() == did)
-                    precincts.add(precinct);
-            }
-            district.setPrecincts(precincts);
-        }
-        this.districts = districts;
-        //Want 231 precincts/district. 1849 precincts, 8 districts.
-
-    }
+//    private void loadPrecincts() {
+//        List<Precinct> precincts = new ArrayList<>();
+//        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Precinct_data.json";
+//        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precinct_data.json";
+//        try {
+//            path = new String(Files.readAllBytes(Paths.get(path)));
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//        JSONObject obj = new JSONObject(path);
+//        JSONArray features = obj.getJSONArray("precincts");
+//        for (int i = 0; i < features.length(); i++) {
+//            JSONObject precinct = features.getJSONObject(i);
+//            String name = precinct.getString("PRECINCT");
+//            int population = precinct.getInt("TOTAL");
+//            int vap = precinct.getInt("TOTVAP");
+//            HashMap<Demographic, Integer> mpop = new HashMap<>();
+//            mpop.put(Demographic.WHITE, precinct.getInt("WTOT"));
+//            mpop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BTOT"));
+//            mpop.put(Demographic.ASIAN, precinct.getInt("ATOT"));
+//            mpop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AIANTOT"));
+//            mpop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HTOT"));
+//            mpop.put(Demographic.NH_OR_OPI, precinct.getInt("NHOPTOT"));
+//
+//            HashMap<Demographic, Integer> mvappop = new HashMap<>();
+//            mvappop.put(Demographic.WHITE, precinct.getInt("WVAP"));
+//            mvappop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BVAP"));
+//            mvappop.put(Demographic.ASIAN, precinct.getInt("AVAP"));
+//            mvappop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AIANVAP"));
+//            mvappop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HVAP"));
+//            mvappop.put(Demographic.NH_OR_OPI, precinct.getInt("NHOPVAP"));
+//
+//            String precinctID = precinct.getString("PRECINCTID");
+//
+//
+//            Population pop = new Population(population, vap, mpop, mvappop, precinctID);
+//            Precinct p = new Precinct(precinct.getString("PRECINCT"), new ArrayList<Precinct>(), precinctID,
+//                    pop, population, vap, mpop, mvappop, null, precinct.getInt("DISTRICTID"),
+//                    precinct.getString("COUNTY"));
+//            precincts.add(p);
+//        }
+//        this.precincts = precincts;
+//    }
+//
+//    private void loadDistricts() {
+//        List<District> districts = new ArrayList<>();
+//        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_Districts_data.json";
+//        // String path = System.getProperty("java.class.path").split("server")[0] + "server/src/main/resources/static/MD_Precinct_data.json";
+//        try {
+//            path = new String(Files.readAllBytes(Paths.get(path)));
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//        JSONObject obj = new JSONObject(path);
+//        JSONArray features = obj.getJSONArray("districts");
+//
+//        for (int i = 0; i < features.length(); i++) {
+//            JSONObject district = features.getJSONObject(i);
+//            int id = district.getInt("DISTRICTID");
+//            String state = district.getString("STATE");
+//            District d = new District(state, id, null, null, null);
+//            districts.add(d);
+//        }
+//
+//        //Set precincts to a district
+//        for (District district : districts) {
+//            List<Precinct> precincts = new ArrayList<>();
+//            int did = district.getDistrictNum();
+//            for (Precinct precinct : this.precincts) {
+//                if (precinct.getDistrictID() == did)
+//                    precincts.add(precinct);
+//            }
+//            district.setPrecincts(precincts);
+//        }
+//        this.districts = districts;
+//        //Want 231 precincts/district. 1849 precincts, 8 districts.
+//
+//    }
 
 //    private void generateDummyRunResults() {
 //        // We need to generate dummy districting plans, well make 10.

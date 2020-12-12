@@ -26,6 +26,8 @@ public class Job {
     private Double popEqThreshold;
     @Column(name = "compactness")
     private String compactness;
+    @Column(name="box_plot_string")
+    private String boxPlotData;
 
     //@Id
    // @GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,6 +54,7 @@ public class Job {
         this.compactness = compactness;
         this.jobId = -1;
         this.jobStatus = JobStatus.PENDING;
+        this.boxPlotData = "NOT GENERATED";
     }
 
 //    public Job(Integer jobId, String state, Integer numDistrictings, String demographicGroups, String popEqThreshold,
@@ -81,20 +84,17 @@ public class Job {
 //    }
 
     /*GETTERS/SETTERS*/
+
+    public String getBoxPlotData() {
+        return boxPlotData;
+    }
+
     public States getState() {
         return state;
     }
 
     public void setState(States state) {
         this.state = state;
-    }
-
-    public int getName() {
-        return numDistrictings;
-    }
-
-    public void setName(int numDistrictings) {
-        this.numDistrictings = numDistrictings;
     }
 
     public List<Demographic> getDemographicGroups() {
@@ -143,6 +143,10 @@ public class Job {
 
     public void setNumDistrictings(int numDistrictings) {
         this.numDistrictings = numDistrictings;
+    }
+
+    public void setBoxPlotData(String boxPlotData){
+        this.boxPlotData = boxPlotData;
     }
 
 //    public void setDemGroups(){

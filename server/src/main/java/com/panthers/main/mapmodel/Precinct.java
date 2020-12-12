@@ -1,5 +1,7 @@
 package com.panthers.main.mapmodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,27 +10,41 @@ import java.util.List;
  * Precincts contain neighbors, election data, names, and a number.
  */
 public class Precinct {
+    @JsonIgnore
     private String name;
+    @JsonIgnore
     private List<Precinct> neighbors;
-    private String precinctNum;
-    private Population electionData;
+    private String geoid10;
+    private Population populationData;
+    @JsonIgnore
     private List<List<Double>> boundaryData;
 
     private int population;
     private int votingAgePopulation;
+    @JsonIgnore
     private HashMap<Demographic, Integer> minorityPopulations;
+    @JsonIgnore
     private HashMap<Demographic, Integer> minorityVAPopulations;
+    @JsonIgnore
     private int districtID;
-
+    @JsonIgnore
     private String county;
+    private int bvap;
+    private int btot;
+    private int hvap;
+    private int htot;
+    private int aianvap;
+    private int aiaintot;
+    private int avap;
+    private int atot;
+    private int nhopvap;
+    private int nhoptot;
 
-    public Precinct(String name, List<Precinct> neighbors, String precinctNum, Population electionData, int population,
-                    int votingAgePopulation, HashMap<Demographic, Integer> minorityPopulations,
-                    HashMap<Demographic, Integer> minorityVAPopulations, List<List<Double>> boundaryData, int districtID, String county) {
+    public Precinct(String name, List<Precinct> neighbors, String geoid10, Population populationData, List<List<Double>> boundaryData, int districtID, String county) {
         this.name = name;
         this.neighbors = neighbors;
-        this.precinctNum = precinctNum;
-        this.electionData = electionData;
+        this.geoid10 = geoid10;
+        this.populationData = populationData;
         this.population = population;
         this.votingAgePopulation = votingAgePopulation;
         this.minorityPopulations = minorityPopulations;
@@ -36,6 +52,7 @@ public class Precinct {
         this.boundaryData = boundaryData;
         this.districtID = districtID;
         this.county = county;
+        this.setDataForJson();
     }
 
     /* GETTERS/SETTERS */
@@ -79,26 +96,29 @@ public class Precinct {
         this.neighbors = neighbors;
     }
 
-    public String getPrecinctNum() {
-        return precinctNum;
+    public String getgeoid10() {
+        return geoid10;
     }
 
-    public void setPrecinctNum(String precinctNum) {
-        this.precinctNum = precinctNum;
+    public void setgeoid10(String geoid10) {
+        this.geoid10 = geoid10;
     }
 
-    public Population getElectionData() {
-        return electionData;
+    public Population getPopulationData() {
+        return populationData;
     }
 
-    public void setElectionData(Population electionData) {
-        this.electionData = electionData;
+    public void setPopulationData(Population populationData) {
+        this.populationData = populationData;
     }
 
+    private void setDataForJson(){
+        return;
+    }
     public String toString(){
         return "{\nPopulation: " + population + ",\nVotingAgePopulation: " + votingAgePopulation +
                 ",\nMinorityPopulationData: " + minorityPopulations + ",\nMinorityVAPPopulations: " + minorityVAPopulations
-                 + "\nPrecinctID: " + precinctNum;
+                 + "\nPrecinctID: " + geoid10 + "\nCounty: " + county;
     }
 
 }
