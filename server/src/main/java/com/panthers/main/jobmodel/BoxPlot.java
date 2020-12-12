@@ -2,6 +2,7 @@ package com.panthers.main.jobmodel;
 
 import com.panthers.main.mapmodel.District;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  */
 public class BoxPlot {
     private List<Double> mvaps;
+    private int num;
     private double maxMVAP;
     private double thirdQuarMVAP;
     private double firstQuarMVAP;
@@ -19,7 +21,7 @@ public class BoxPlot {
     private double minMVAP;
     private double resultingMVAP;
 
-    public BoxPlot(List<Double> mvaps) {
+    public BoxPlot(List<Double> mvaps, int num) {
         this.mvaps = mvaps;
         this.maxMVAP = 0.0;
         this.minMVAP = 0.0;
@@ -27,6 +29,7 @@ public class BoxPlot {
         this.firstQuarMVAP = 0.0;
         this.medianMVAP = 0.0;
         this.resultingMVAP = 0.0;
+        this.num = num;
     }
 
     /* GETTERS/SETTERS */
@@ -106,10 +109,12 @@ public class BoxPlot {
      */
     public void findMinMVAP(){
         double minMVAP = 1.0;
+        System.out.println(mvaps);
         for (Double d: mvaps){
             if (d < minMVAP)
                 minMVAP = d;
         }
+        System.out.println(minMVAP);
         setMinMVAP(minMVAP);
     }
 
@@ -117,31 +122,35 @@ public class BoxPlot {
      * Function determines first quartile of MVAP's from districts
      */
     public void findFirstQuart(){
-        setFirstQuarMVAP(Quartiles((Double[])this.mvaps.toArray())[0]);
+        setFirstQuarMVAP(quartiles(this.mvaps)[0]);
     }
 
     /**
      * Function determines third quartile of MVAP's from districts
      */
     public void findThirdQuart(){
-        setThirdQuarMVAP(Quartiles((Double[])this.mvaps.toArray())[2]);
+        setThirdQuarMVAP(quartiles(this.mvaps)[2]);
     }
 
     /**
      * Function determines second quartile (meadian) of MVAP's from districts
      */
     public void findSecondQuart(){
-        setMedianMVAP(Quartiles((Double[])this.mvaps.toArray())[1]);
+        setMedianMVAP(quartiles(this.mvaps)[1]);
     }
 
     /**
      * Function determines mean of MVAP's from districts
      */
-    public void findMeanMVAP(){
-        setMinMVAP(mvaps.get(mvaps.size()/2));
+    public void findMedianMVAP(){
+        setMedianMVAP(mvaps.get(mvaps.size()/2));
     }
 
-    public Double[] Quartiles(Double[] val) {
+    public Double[] quartiles(List<Double> valList) {
+        Double val[] = new Double[valList.size()];
+        for (int i = 0; i < valList.size(); i++){
+            val[i] = valList.get(i);
+        }
         Double ans[] = new Double[3];
 
         for (int quartileType = 1; quartileType < 4; quartileType++) {
@@ -166,8 +175,10 @@ public class BoxPlot {
      * @return returns the box plot data in canvas.js friendly format
      */
     public String compileToCanvasJSFormat(){
-        return "";
+        DecimalFormat df = new DecimalFormat("#.####");
+        return df.format(num) + "-" + df.format(minMVAP) + "-" + df.format(firstQuarMVAP) + "-" + df.format(thirdQuarMVAP) + "-" + df.format(maxMVAP) + "-" + df.format(medianMVAP);
     }
+
 
 
 }

@@ -1,5 +1,7 @@
 package com.panthers.main.mapmodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.HashMap;
 
 /**
@@ -7,6 +9,7 @@ import java.util.HashMap;
  * Contains populations, vap, and minority vaps for each minority
  */
 public class Population {
+    @JsonIgnore
     private String precinctNum;
     private int population;
     private int votingAgePopulation;

@@ -1,5 +1,7 @@
 package com.panthers.main.mapmodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
@@ -10,34 +12,37 @@ import java.util.Set;
  * Districts have some precincts, neighboring districts, election data and a number&name.
  */
 public class District implements Comparable<District>{
+    @JsonIgnore
     private String state;
     private int districtNum;
-    private List<District> neighbors;
+    private List<Integer> neighbors;
     private List<Precinct> precincts;
-    private Set<String> counties;
+    @JsonIgnore
+    private Set<String> countyNames;
+    @JsonIgnore
     private List<Polygon> boundaryData;
-    private int countCounties;
+    private int counties;
     private double percentVap;
 
-    public District(String state, int districtNum, List<District> neighbors, List<Precinct> precincts,
+    public District(String state, int districtNum, List<Integer> neighbors, List<Precinct> precincts,
                     List<Polygon> boundaryData) {
         this.state = state;
         this.districtNum = districtNum;
         this.neighbors = neighbors;
         this.precincts = precincts;
-        this.counties = new HashSet<>();
+        this.countyNames = new HashSet<>();
         this.boundaryData = boundaryData;
-        this.countCounties = 0;
+        this.counties = 0;
         this.percentVap = 0.0;
     }
 
     /*GETTERS/SETTERS*/
-    public int getCountCounties() {
-        return countCounties;
+    public int getCounties() {
+        return counties;
     }
 
-    public void setCountCounties(int countCounties) {
-        this.countCounties = countCounties;
+    public void setCounties(int counties) {
+        this.counties = counties;
     }
 
     public double getPercentVap() {
@@ -64,11 +69,11 @@ public class District implements Comparable<District>{
         this.districtNum = districtNum;
     }
 
-    public List<District> getNeighbors() {
+    public List<Integer> getNeighbors() {
         return neighbors;
     }
 
-    public void setNeighbors(List<District> neighbors) {
+    public void setNeighbors(List<Integer> neighbors) {
         this.neighbors = neighbors;
     }
 
@@ -81,7 +86,7 @@ public class District implements Comparable<District>{
     }
 
     public String toString(){
-        return "District ID: " + districtNum +  ",\nCounties: " + countCounties + ",\nPercentVAP: " + percentVap;
+        return "District ID: " + districtNum +  ",\nCounties: " + counties + ",\nPercentVAP: " + percentVap;
     }
 
     /* FUNCTIONS */
@@ -101,7 +106,7 @@ public class District implements Comparable<District>{
      * @return yes/no if county counted
      */
     public boolean checkIfCountedCounty(String county){
-        return counties.contains(county);
+        return countyNames.contains(county);
     }
 
     /**
@@ -109,14 +114,14 @@ public class District implements Comparable<District>{
      * @param county county that is in district.
      */
     public void addCounty(String county){
-        counties.add(county);
+        countyNames.add(county);
     }
 
     /**
      * simply increments counties count.
      */
     public void incrementCountyCount(){
-        this.countCounties++;
+        this.counties = this.counties + 1;
     }
 
     /**
@@ -128,26 +133,26 @@ public class District implements Comparable<District>{
         double selectedMvap = 0.0;
         for (Precinct p: precincts){
             for (Demographic d: minorities){
-                totalVap += p.getElectionData().getVotingAgePopulation();
+                totalVap += p.getPopulationData().getVotingAgePopulation();
                 //Adding minority voting age populations.
                 switch(d){
                     case ASIAN:
-                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.ASIAN);
+                        selectedMvap += p.getPopulationData().getMinorityVAPopulations().get(Demographic.ASIAN);
                         break;
                     case AFRICAN_AMERICAN:
-                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.AFRICAN_AMERICAN);
+                        selectedMvap += p.getPopulationData().getMinorityVAPopulations().get(Demographic.AFRICAN_AMERICAN);
                         break;
                     case AM_INDIAN_AK_NATIVE:
-                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.AM_INDIAN_AK_NATIVE);
+                        selectedMvap += p.getPopulationData().getMinorityVAPopulations().get(Demographic.AM_INDIAN_AK_NATIVE);
                         break;
                     case HISPANIC_LATINO:
-                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.HISPANIC_LATINO);
+                        selectedMvap += p.getPopulationData().getMinorityVAPopulations().get(Demographic.HISPANIC_LATINO);
                         break;
                     case WHITE:
-                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.WHITE);
+                        selectedMvap += p.getPopulationData().getMinorityVAPopulations().get(Demographic.WHITE);
                         break;
                     case NH_OR_OPI:
-                        selectedMvap += p.getElectionData().getMinorityVAPopulations().get(Demographic.NH_OR_OPI);
+                        selectedMvap += p.getPopulationData().getMinorityVAPopulations().get(Demographic.NH_OR_OPI);
                         break;
                     default:
                         break;
@@ -164,11 +169,14 @@ public class District implements Comparable<District>{
      */
     public void calculateCounties(){
         List<Precinct> ps = this.precincts;
+        int countyCount = 0;
         for (Precinct precinct : ps) {
             //If county isnt accounted for, add it to the district's list + increment the count
             if (!checkIfCountedCounty(precinct.getCounty())) {
                 addCounty(precinct.getCounty());
-                incrementCountyCount();
+                countyCount++;
+                System.out.println(countyCount);
+                setCounties(countyCount);
             }
         }
     }

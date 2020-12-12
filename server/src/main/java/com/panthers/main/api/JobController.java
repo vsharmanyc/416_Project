@@ -1,11 +1,15 @@
 package com.panthers.main.api;
 
+import com.panthers.main.handler.SeaWulfHandler;
 import com.panthers.main.jobmodel.Job;
 import com.panthers.main.jobmodel.RunResults;
 import com.panthers.main.handler.JobHandler;
+import com.panthers.main.mapmodel.Demographic;
+import com.panthers.main.mapmodel.States;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
@@ -28,6 +32,7 @@ public class JobController {
     @PostMapping("/createJob")
     @ResponseBody
     public List<Job> handleCreateJob(@RequestBody Job newJob){
+        System.out.println(newJob);
         return jobHandler.createJob(newJob);
     }
 
@@ -67,10 +72,20 @@ public class JobController {
      * gets job history from the em
      * @return returns the persisted job history
      */
-    @PostMapping("/getJobHistory")
+    @GetMapping("/getJobHistory")
     @ResponseBody
     public List<Job> getJobHistory(){
         return jobHandler.getJobHistory();
+    }
+
+    @PostMapping("/testParseJobData")
+    @ResponseBody
+    public void parseJobData(){
+        ArrayList<Demographic> dem = new ArrayList<>();
+        dem.add(Demographic.AFRICAN_AMERICAN);
+        SeaWulfHandler swh = new SeaWulfHandler(new Job(States.MD, 127, dem, 0.03,
+               "Somewhat Compact"));
+        swh.getJobFromSeaWulf(1);
     }
 
 }

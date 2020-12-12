@@ -10,6 +10,8 @@ public class SeaWulfProperties {
     private String precinctDataSuffix;
     private String bashScript;
     private String serverStaticWd;
+    private String slurmScript;
+    private String slurmScriptPath;
 
     private InputStream input;
 
@@ -32,11 +34,29 @@ public class SeaWulfProperties {
             precinctDataSuffix = properties.getProperty("precinctDataSuffix");
             bashScript = properties.getProperty("bashScript");
             serverStaticWd = properties.getProperty("serverStaticWd");
+            slurmScript = properties.getProperty("slurmScript");
+            slurmScriptPath = properties.getProperty("slurmScriptPath");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getSlurmScriptPath() {
+        return slurmScriptPath;
+    }
+
+    public void setSlurmScriptPath(String slurmScriptPath) {
+        this.slurmScriptPath = slurmScriptPath;
+    }
+
+    public String getSlurmScript() {
+        return slurmScript;
+    }
+
+    public void setSlurmScript(String slurmScript) {
+        this.slurmScript = slurmScript;
     }
 
     public int getSeaWulfDistrictingThreshold() {
