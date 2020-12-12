@@ -24,8 +24,8 @@ public class RunResults {
     private List<Double> averageDistrictingMVAP;
 
     public RunResults(Job job, List<DistrictingPlan> plans) {
-        this.job = job;
         this.plans = plans;
+        this.job = job;
         this.extremeDistricting = null;
         this.averageDistricting = null;
         this.randomDistricting = null;
