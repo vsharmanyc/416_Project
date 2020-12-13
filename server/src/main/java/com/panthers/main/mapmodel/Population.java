@@ -64,4 +64,9 @@ public class Population {
     public void setPrecinctNum(String precinctNum) {
         this.precinctNum = precinctNum;
     }
+
+    public String toString(){
+        return "MVAPS: " + minorityVAPopulations + ", MTOTS: " + minorityPopulations + ", Total:" +
+                population + ", VAP: " + votingAgePopulation;
+    }
 }

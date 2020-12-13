@@ -12,6 +12,10 @@ public class SeaWulfProperties {
     private String serverStaticWd;
     private String slurmScript;
     private String slurmScriptPath;
+    private String netID;
+    private String password;
+    private String swSummaryTransferFile;
+    private String transferSummaryBash;
 
     private InputStream input;
 
@@ -36,11 +40,35 @@ public class SeaWulfProperties {
             serverStaticWd = properties.getProperty("serverStaticWd");
             slurmScript = properties.getProperty("slurmScript");
             slurmScriptPath = properties.getProperty("slurmScriptPath");
+            netID = properties.getProperty("netID");
+            password = properties.getProperty("password");
+            swSummaryTransferFile = properties.getProperty("swSummaryTransferFile");
+            transferSummaryBash = properties.getProperty("transferSummaryBash");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getNetID() {
+        return netID;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getSwSummaryTransferFile() {
+        return swSummaryTransferFile;
+    }
+
+    public String getTransferSummaryBash() {
+        return transferSummaryBash;
+    }
+
+    public InputStream getInput() {
+        return input;
     }
 
     public String getSlurmScriptPath() {

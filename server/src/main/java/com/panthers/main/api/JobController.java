@@ -83,9 +83,16 @@ public class JobController {
     public void parseJobData(){
         ArrayList<Demographic> dem = new ArrayList<>();
         dem.add(Demographic.AFRICAN_AMERICAN);
-        SeaWulfHandler swh = new SeaWulfHandler(new Job(States.MD, 127, dem, 0.03,
-               "Somewhat Compact"));
+        dem.add(Demographic.HISPANIC_LATINO);
+        SeaWulfHandler swh = new SeaWulfHandler(new Job(States.NY, 127, dem, 0.034,
+               "Very Compact"));
         swh.getJobFromSeaWulf(1);
+    }
+
+    @PostMapping("/getSummaryFile")
+    @ResponseBody
+    public void getSummaryFile(@RequestBody Job job){
+        jobHandler.transferSummaryFiles(job.getJobId());
     }
 
 }

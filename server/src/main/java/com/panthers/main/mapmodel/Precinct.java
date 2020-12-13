@@ -116,9 +116,7 @@ public class Precinct {
         return;
     }
     public String toString(){
-        return "{\nPopulation: " + population + ",\nVotingAgePopulation: " + votingAgePopulation +
-                ",\nMinorityPopulationData: " + minorityPopulations + ",\nMinorityVAPPopulations: " + minorityVAPopulations
-                 + "\nPrecinctID: " + geoid10 + "\nCounty: " + county;
+        return "PrecinctID: " + geoid10 + "\nCounty: " + county + "Pop Data: " + populationData;
     }
 
 }

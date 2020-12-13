@@ -1,6 +1,9 @@
 package com.panthers.main.handler;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.panthers.main.dataaccess.SeaWulfProperties;
@@ -13,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -186,7 +190,7 @@ public class SeaWulfHandler {
     }
 
     public void getJobFromSeaWulf(int swjobID){
-        this.job.setJobId(10);
+        this.job.setJobId(11);
         this.job.setJobStatus(JobStatus.POST_PROCESSING);
         RunResults rr = parseDataIntoRunResult(this.job);
         postProcessSeaWulfJob(rr);
@@ -212,82 +216,234 @@ public class SeaWulfHandler {
         System.out.println("Run Results Processing Complete.");
     }
 
-    public RunResults parseDataIntoRunResult(Job job){
-        System.out.println("Aggregating data from SeaWulf run results.");
-        List<Precinct> districtPrecincts = new ArrayList<>();
-        List<Precinct> ps = new ArrayList<>();
-        HashMap<String, Precinct> precinctHash = new HashMap<>();
-        for (Precinct p: ps){
-            precinctHash.put(p.getgeoid10(), p);
-        }
-        String path = "/Users/james/Documents/Code/University/416_Project/server/src/main/resources/static/MD_result.json";
-        try {
-            path = new String(Files.readAllBytes(Paths.get(path)));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        List<DistrictingPlan> plans = new ArrayList<>();
-        JSONObject obj = new JSONObject(path);
-        JSONArray features = obj.getJSONArray("data");
-        JSONArray districtingPlansJSON = features.getJSONObject(1).getJSONArray("districtingPlans");
-        //for each such districting, parse the districts
-        for (int i = 0; i < districtingPlansJSON.length(); i++) {
-            System.out.println("Parsing Districting Plan #" + (i+1));
-            JSONArray districtsJSON = districtingPlansJSON.getJSONObject(i).getJSONArray("districting");
-            List<District> districts = new ArrayList<>();
-            for (int k = 0; k < districtsJSON.length(); k++){
-                JSONObject district = districtsJSON.getJSONObject(k);
-                int id = district.getInt("DISTRICTID");
-                String state = job.getState().toString();
-                JSONArray precincts = district.getJSONArray("precincts");
-                districtPrecincts = new ArrayList<>();
-                for (int j = 0; j < precincts.length(); j++){
-                    JSONObject precinct = precincts.getJSONObject(j);
-                    HashMap<Demographic, Integer> mpop = new HashMap<>();
-                    if (job.getDemographicGroups().contains(Demographic.AFRICAN_AMERICAN))
-                        mpop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BTOT"));
-                    if (job.getDemographicGroups().contains(Demographic.ASIAN))
-                        mpop.put(Demographic.ASIAN, precinct.getInt("AIANTOT"));
-                    if (job.getDemographicGroups().contains(Demographic.HISPANIC_LATINO))
-                        mpop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HTOT"));
-                    if (job.getDemographicGroups().contains(Demographic.AM_INDIAN_AK_NATIVE))
-                        mpop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("ATOT"));
-                    if (job.getDemographicGroups().contains(Demographic.NH_OR_OPI))
-                        mpop.put(Demographic.NH_OR_OPI, precinct.getInt("NHTOT"));
+//    public RunResults parseDataIntoRunResult(Job job){
+//        System.out.println("Aggregating data from SeaWulf run results.");
+//        List<Precinct> districtPrecincts = new ArrayList<>();
+//        List<Precinct> ps = new ArrayList<>();
+//        HashMap<String, Precinct> precinctHash = new HashMap<>();
+//        for (Precinct p: ps){
+//            precinctHash.put(p.getgeoid10(), p);
+//        }
+//        String path = "/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/NY_result.json";
+//        try {
+//            path = new String(Files.readAllBytes(Paths.get(path)));
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//        List<DistrictingPlan> plans = new ArrayList<>();
+//        JSONObject obj = new JSONObject(path);
+//        JSONArray features = obj.getJSONArray("data");
+//        JSONArray districtingPlansJSON = features.getJSONObject(1).getJSONArray("districtingPlans");
+//        //for each such districting, parse the districts
+//        for (int i = 0; i < districtingPlansJSON.length(); i++) {
+//            System.out.println("Parsing Districting Plan #" + (i+1));
+//            JSONArray districtsJSON = districtingPlansJSON.getJSONObject(i).getJSONArray("districting");
+//            List<District> districts = new ArrayList<>();
+//            for (int k = 0; k < districtsJSON.length(); k++){
+//                JSONObject district = districtsJSON.getJSONObject(k);
+//                int id = district.getInt("DISTRICTID");
+//                String state = job.getState().toString();
+//                JSONArray precincts = district.getJSONArray("precincts");
+//                districtPrecincts = new ArrayList<>();
+//                for (int j = 0; j < precincts.length(); j++){
+//                    JSONObject precinct = precincts.getJSONObject(j);
+//                    HashMap<Demographic, Integer> mpop = new HashMap<>();
+//                    if (job.getDemographicGroups().contains(Demographic.AFRICAN_AMERICAN))
+//                        mpop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BTOT"));
+//                    if (job.getDemographicGroups().contains(Demographic.ASIAN))
+//                        mpop.put(Demographic.ASIAN, precinct.getInt("AIANTOT"));
+//                    if (job.getDemographicGroups().contains(Demographic.HISPANIC_LATINO))
+//                        mpop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HTOT"));
+//                    if (job.getDemographicGroups().contains(Demographic.AM_INDIAN_AK_NATIVE))
+//                        mpop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("ATOT"));
+//                    if (job.getDemographicGroups().contains(Demographic.NH_OR_OPI))
+//                        mpop.put(Demographic.NH_OR_OPI, precinct.getInt("NHTOT"));
+//
+//                    HashMap<Demographic, Integer> mVapPop = new HashMap<>();
+//                    if (job.getDemographicGroups().contains(Demographic.AFRICAN_AMERICAN))
+//                        mVapPop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BVAP"));
+//                    if (job.getDemographicGroups().contains(Demographic.ASIAN))
+//                        mVapPop.put(Demographic.ASIAN, precinct.getInt("AIANVAP"));
+//                    if (job.getDemographicGroups().contains(Demographic.HISPANIC_LATINO))
+//                        mVapPop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HVAP"));
+//                    if (job.getDemographicGroups().contains(Demographic.AM_INDIAN_AK_NATIVE))
+//                        mVapPop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AVAP"));
+//                    if (job.getDemographicGroups().contains(Demographic.NH_OR_OPI))
+//                        mVapPop.put(Demographic.NH_OR_OPI, precinct.getInt("NHVAP"));
+//                    Population pop = new Population(precinct.getInt("TOTAL"), precinct.getInt("TOTVAP"), mpop, mVapPop,
+//                            String.valueOf(precinct.getInt("PRECINCTID")));
+//                    Precinct p = new Precinct("", null, String.valueOf(precinct.getInt("GEOID10")),
+//                            pop, null, id,  precinct.getString("COUNTY"));
+//                    districtPrecincts.add(p);
+//                }
+//                List<Integer> districtNeighbors = new ArrayList<>();
+//                JSONArray dNeigh = district.getJSONArray("DISTRICTNEIGHBORS");
+//                for (int l = 0; l < dNeigh.length(); l++){
+//                    districtNeighbors.add(dNeigh.getInt(l));
+//                }
+//                District d = new District(state, id, districtNeighbors, districtPrecincts, null);
+//                d.setPercentVap(district.getDouble("MVAP"));
+//                districts.add(d);
+//            }
+//            //District parsed. Put into DP
+//            plans.add(new DistrictingPlan(job.getState(), districts, job.getPopEqThreshold(), job.getCompactness()));
+//        }
+//        //Create the RunResults object here.
+//        System.out.println("Created Run Results Object");
+//        RunResults rr = new RunResults(job, plans);
+//        return rr;
+//    }
 
-                    HashMap<Demographic, Integer> mVapPop = new HashMap<>();
-                    if (job.getDemographicGroups().contains(Demographic.AFRICAN_AMERICAN))
-                        mVapPop.put(Demographic.AFRICAN_AMERICAN, precinct.getInt("BVAP"));
-                    if (job.getDemographicGroups().contains(Demographic.ASIAN))
-                        mVapPop.put(Demographic.ASIAN, precinct.getInt("AIANVAP"));
-                    if (job.getDemographicGroups().contains(Demographic.HISPANIC_LATINO))
-                        mVapPop.put(Demographic.HISPANIC_LATINO, precinct.getInt("HVAP"));
-                    if (job.getDemographicGroups().contains(Demographic.AM_INDIAN_AK_NATIVE))
-                        mVapPop.put(Demographic.AM_INDIAN_AK_NATIVE, precinct.getInt("AVAP"));
-                    if (job.getDemographicGroups().contains(Demographic.NH_OR_OPI))
-                        mVapPop.put(Demographic.NH_OR_OPI, precinct.getInt("NHVAP"));
-                    Population pop = new Population(precinct.getInt("TOTAL"), precinct.getInt("TOTVAP"), mpop, mVapPop,
-                            String.valueOf(precinct.getInt("PRECINCTID")));
-                    Precinct p = new Precinct("", null, String.valueOf(precinct.getInt("GEOID10")),
-                            pop, null, id,  precinct.getString("COUNTY"));
-                    districtPrecincts.add(p);
-                }
-                List<Integer> districtNeighbors = new ArrayList<>();
-                JSONArray dNeigh = district.getJSONArray("DISTRICTNEIGHBORS");
-                for (int l = 0; l < dNeigh.length(); l++){
-                    districtNeighbors.add(dNeigh.getInt(l));
-                }
-                District d = new District(state, id, districtNeighbors, districtPrecincts, null);
-                d.setPercentVap(district.getDouble("MVAP"));
-                districts.add(d);
+
+    public RunResults parseDataIntoRunResult(Job j){
+        System.out.println("Aggregating data from SeaWulf run results.");
+        JsonFactory jsonfactory = new JsonFactory();
+        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/NY_result.json");
+        List<DistrictingPlan> plans = new ArrayList<>();
+        try {
+            JsonParser parser = jsonfactory.createJsonParser(source);
+            while (parser.nextToken() != JsonToken.END_OBJECT) {
+                String token = parser.getCurrentName();
             }
-            //District parsed. Put into DP
-            plans.add(new DistrictingPlan(job.getState(), districts, job.getPopEqThreshold(), job.getCompactness()));
+            String token = parser.getCurrentName();
+
+            while (token != null && !token.equals("districtingPlans")){
+                token = parser.getCurrentName();
+            }
+
+            while (parser.getCurrentToken() != JsonToken.START_OBJECT){
+                parser.nextToken();
+            }
+            parser.nextToken();
+            while (parser.getCurrentToken() != JsonToken.END_ARRAY) {
+                while (parser.getCurrentToken() != JsonToken.START_OBJECT && parser.getCurrentToken() != null) {
+                    parser.nextToken();
+                }
+                if (parser.getCurrentToken() == null)
+                    break;
+                //'districting'
+                while (parser.nextToken() != JsonToken.END_OBJECT) {
+                    token = parser.getCurrentName();
+                    List<District> districts = new ArrayList<>();
+                    while (parser.nextToken() != JsonToken.END_ARRAY) {
+                        if (parser.nextToken() == JsonToken.END_ARRAY)
+                            break;
+                        parser.nextToken();
+                        parser.nextToken();
+
+                        //District ID
+                        int districtID = parser.getIntValue();
+                        parser.nextToken();
+                        parser.nextToken();
+                        List<Integer> districtNeighbors = new ArrayList<>();
+                        while (parser.nextToken() != JsonToken.END_ARRAY)
+                            districtNeighbors.add(parser.getIntValue());
+                        parser.nextToken();
+                        parser.nextToken();
+                        double mvap = parser.getDoubleValue();
+                        parser.nextToken();
+                        List<Precinct> precincts = new ArrayList<>();
+                        //PRECINCTS
+                        parser.nextToken();
+                        while (parser.nextToken() != JsonToken.END_ARRAY) {
+                            HashMap<Demographic, Integer> mtot = new HashMap<>();
+                            HashMap<Demographic, Integer> mvaps = new HashMap<>();
+                            parser.nextToken();//AIANTOT
+                            parser.nextToken();
+                            //For each minority, do this.
+                            if (job.getDemographicGroups().contains(Demographic.ASIAN)) {
+                                mtot.put(Demographic.ASIAN, parser.getIntValue());
+                                parser.nextToken();//AIANTVAP
+                                parser.nextToken();
+                                mvaps.put(Demographic.ASIAN, parser.getIntValue());
+                            } else {
+                                parser.nextToken();//AIANTVAP
+                                parser.nextToken();
+                            }
+                            parser.nextToken();//ATOT
+                            parser.nextToken();
+                            if (job.getDemographicGroups().contains(Demographic.AM_INDIAN_AK_NATIVE)) {
+                                mtot.put(Demographic.AM_INDIAN_AK_NATIVE, parser.getIntValue());
+                                parser.nextToken();//AVAP
+                                parser.nextToken();
+                                mvaps.put(Demographic.AM_INDIAN_AK_NATIVE, parser.getIntValue());
+                            } else {
+                                parser.nextToken();//ATVAP
+                                parser.nextToken();
+                            }
+                            parser.nextToken();//BTOT
+                            parser.nextToken();
+                            if (job.getDemographicGroups().contains(Demographic.AFRICAN_AMERICAN)) {
+                                mtot.put(Demographic.AFRICAN_AMERICAN, parser.getIntValue());
+                                parser.nextToken();//BVAP
+                                parser.nextToken();
+                                mvaps.put(Demographic.AFRICAN_AMERICAN, parser.getIntValue());
+                            } else {
+                                parser.nextToken();//BVAP
+                                parser.nextToken();
+                            }
+                            //COUNTY, COUNTYID, ID
+                            parser.nextToken();
+                            parser.nextToken();
+                            String county = parser.getText();
+                            parser.nextToken();
+                            parser.nextToken();
+                            parser.nextToken();
+                            parser.nextToken();
+                            int geoid10 = parser.getIntValue();
+                            parser.nextToken();
+                            parser.nextToken();
+                            if (job.getDemographicGroups().contains(Demographic.HISPANIC_LATINO)) {
+                                mtot.put(Demographic.HISPANIC_LATINO, parser.getIntValue());
+                                parser.nextToken();//hVAP
+                                parser.nextToken();
+                                mvaps.put(Demographic.HISPANIC_LATINO, parser.getIntValue());
+                            } else {
+                                parser.nextToken();//hVAP
+                                parser.nextToken();
+                            }
+                            parser.nextToken();//NHOPTOT
+                            parser.nextToken();
+                            if (job.getDemographicGroups().contains(Demographic.NH_OR_OPI)) {
+                                mtot.put(Demographic.NH_OR_OPI, parser.getIntValue());
+                                parser.nextToken();//NHOPVAP
+                                parser.nextToken();
+                                mvaps.put(Demographic.NH_OR_OPI, parser.getIntValue());
+                            } else {
+                                parser.nextToken();//NHOPVAP
+                                parser.nextToken();
+                            }
+                            parser.nextToken();
+                            parser.nextToken();
+                            int precinctID = parser.getIntValue();
+                            parser.nextToken();
+                            parser.nextToken();
+                            int totPop = parser.getIntValue();
+                            parser.nextToken();
+                            parser.nextToken();
+                            int totVap = parser.getIntValue();
+                            Population pop = new Population(totPop, totVap, mtot, mvaps,
+                                    String.valueOf(precinctID));
+                            Precinct p = new Precinct("", null, String.valueOf(geoid10),
+                                    pop, null, precinctID, county);
+                            precincts.add(p);
+                            parser.nextToken();
+                        }
+                        District d = new District(job.getState().toString(), districtID, districtNeighbors, precincts, null);
+                        d.setPercentVap(mvap);
+                        districts.add(d);
+                    }
+                    plans.add(new DistrictingPlan(job.getState(), districts, job.getPopEqThreshold(), job.getCompactness()));
+                }
+            }
+            parser.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         //Create the RunResults object here.
         System.out.println("Created Run Results Object");
-        RunResults rr = new RunResults(job, plans);
-        return rr;
+        return new RunResults(job, plans);
     }
 
     public void writeResultToFile(RunResults rr) {
