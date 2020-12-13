@@ -1,5 +1,7 @@
 package com.panthers.main.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.panthers.main.dataaccess.SeaWulfProperties;
 import com.panthers.main.jobmodel.*;
 import com.panthers.main.jpa.Dao;
 import com.panthers.main.jpa.JpaJobDao;
@@ -8,6 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,13 +33,15 @@ public class JobHandler{
     private List<Precinct> precincts;
     private List<District> districts;
     private RunResults runResults;
-
+    private SeaWulfProperties properties;
 
     private static Dao<Job> jpaUserDao = new JpaJobDao();
 
 
     @Autowired
     public JobHandler(DispatcherHandler dispatcherHandler) {
+        this.properties = new SeaWulfProperties();
+        this.properties.getProperties();
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
         this.jobHistory = getJobHistory();// Get job history from EM upon first load
@@ -236,6 +243,14 @@ public class JobHandler{
         return -1;
     }
 
+    private Job getJob(int jobId){
+        for (int i = 0; i < jobHistory.size(); i++) {
+            if (jobHistory.get(i).getJobId() == jobId)
+                return jobHistory.get(i);
+        }
+        return null;
+    }
+
 
 
     /* TESTING METHODS*/
@@ -362,5 +377,46 @@ public class JobHandler{
     public List<BoxPlot> generateBoxPlot(){
         this.runResults.generateBoxPlot();
         return runResults.getBoxAndWhiskerData();
+    }
+
+    public void transferSummaryFiles(int jobId){
+        Job job = getJob(jobId);
+        System.out.println("Transferring Summary from SeaWulf for Job#"+job.getJobId());
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+        ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferSummaryBash());
+
+        buildTransferScript(path, job);
+
+        System.out.println("Sending files to SeaWulf. Expect a DUO Push...unless your on VPN :)");
+        pb.directory(new File(path));
+        pb.redirectErrorStream(true);
+        try{
+            pb.start();
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+
+    private void buildTransferScript(String path, Job job){
+        File bash = new File(path + properties.getTransferSummaryBash());
+        FileWriter bashOut;
+        try {
+            bashOut = new FileWriter(bash);
+            ObjectMapper objmp = new ObjectMapper();
+            //grabbing script from system properties file.
+            String script = String.format(properties.getSwSummaryTransferFile(), properties.getNetID(), job.getJobId(), job.getJobId(),
+                    job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
+                    job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
+                    job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
+                    job.getState(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword());
+            bashOut.write(script);
+
+            bashOut.close();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
