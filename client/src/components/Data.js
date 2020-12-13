@@ -40,7 +40,7 @@ class Data extends Component {
                         <tr>
                             <th>Demographic</th>
                             <th>Population</th>
-                            <th>Voting Age Population</th>
+                            <th>VAP</th>
                         </tr>
                     </thead>
                     <tbody>

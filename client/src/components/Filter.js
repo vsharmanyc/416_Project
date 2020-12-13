@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
+const clonedeep = require('lodash/cloneDeep')
+
 
 class Filter extends Component {
 
@@ -17,13 +19,13 @@ class Filter extends Component {
     }
 
     updateFilter = (level) => {
-        let filter = Object.assign({}, this.props.filter);
+        let filter = clonedeep(this.props.filter);
         filter[level] = !filter[level];
         this.props.updateFilter(filter);
     }
 
     updateHeatMap = (selected) => {
-        let filter = Object.assign({}, this.props.filter);
+        let filter = clonedeep(this.props.filter);
         filter.Heatmap.show = selected.value !== 'NONE';
         filter.Heatmap.popType = selected;
         if (selected.value === 'TOTVAP')
@@ -34,8 +36,9 @@ class Filter extends Component {
     }
 
     updateDistrictingFilter = (key, val) => {
-        let filter = Object.assign({}, this.props.filter);
+        let filter = clonedeep(this.props.filter);
         filter.Districting[key] = val;
+        filter.Districting.file[key] = "";
         this.props.updateFilter(filter);
     }
 
@@ -63,7 +66,7 @@ class Filter extends Component {
         const colorRange = this.props.filter.Heatmap.colorRange;
 
         let jobs = this.props.jobs.map((job) => ({ value: job.jobId, label: "Job " + job.jobId }));
-        jobs.unshift({ value: 'Select', label: 'Select...' });
+        jobs.unshift({ value: 'Select...', label: 'Select...' });
 
         let percentages = [];
         for (let i = 0; i <= 100; i += 10)

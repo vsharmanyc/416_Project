@@ -18,7 +18,7 @@ class Project extends Component {
                 popType: { value: 'NONE', label: 'Select' },
             },
             Districting: {
-                job: { value: 'Select', label: 'Select...' },
+                job: { value: 'Select...', label: 'Select...' },
                 random: false,
                 avg: false,
                 extreme: false,
@@ -28,7 +28,7 @@ class Project extends Component {
                     extreme: ''
                 },
                 color: {
-                    random: 'yellow',
+                    random: 'red',
                     avg: 'green',
                     extreme: 'purple'
                 } 
@@ -68,7 +68,9 @@ class Project extends Component {
     }
 
     updateFilter = (filter) => {
-        console.log(filter);
+        console.log("WHY");
+        console.log("prev update: ", this.state.filter.Districting.job);
+        console.log("post update: ", filter.Districting.job);
         this.setState({ filter: filter });
     }
 
@@ -90,7 +92,7 @@ class Project extends Component {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*"
                 },
-                method: "POST",
+                method: "GET",
                 mode: 'cors'
             })
         .then(response => response.json())

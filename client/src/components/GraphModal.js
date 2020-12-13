@@ -13,7 +13,7 @@ class GraphModal extends Component {
         str = str.substring(1, str.length - 1);
         let dataPoints = str.split(',').map((points) => {
             let stats = points.split('-').map((stat) => parseFloat(stat))
-            return { label: "District " + stats[0], y: [stats[1], stats[2], stats[3], stats[4], stats[5]] };
+            return { label: "" + stats[0], y: [stats[1], stats[2], stats[3], stats[4], stats[5]] };
         });
 
         
@@ -21,13 +21,13 @@ class GraphModal extends Component {
             animationEnabled: true,
             theme: "light2",
             title: {
-                text: "Data"
+                text: "BVAP% By District in MD"
             },
             axisX: {
                 title: "District Number"
             },
             axisY: {
-                title: "Quartiles"
+                title: "BVAP%"
             },
             data: [{
                 type: "boxAndWhisker",
@@ -43,14 +43,14 @@ class GraphModal extends Component {
                 toolTipContent: `<span style="color:#C0504E">{name}</span>: {y} km/s`,
                 showInLegend: true,
                 dataPoints: [
-                    { x: 1, label: "1", y: 0.06540697158947842 },
-                    { x: 2, label: "2", y: 0.11233730618214743 },
-                    { x: 3, label: "3", y: 0.16391968780613606 },
-                    { x: 4, label: "4", y: 0.1901751650495369 },
-                    { x: 5, label: "5", y: 0.31135247686496165 },
-                    { x: 6, label: "6", y: 0.3601981608689068 },
-                    { x: 7, label: "7", y: 0.5504211717002624 },
-                    { x: 6, label: "8", y: 0.5601521279761627 }
+                    { x: 0, label: "1", y: 0.06540697158947842 },
+                    { x: 1, label: "2", y: 0.11233730618214743 },
+                    { x: 2, label: "3", y: 0.16391968780613606 },
+                    { x: 3, label: "4", y: 0.1901751650495369 },
+                    { x: 4, label: "5", y: 0.31135247686496165 },
+                    { x: 5, label: "6", y: 0.3601981608689068 },
+                    { x: 6, label: "7", y: 0.5504211717002624 },
+                    { x: 7, label: "8", y: 0.5601521279761627 }
                 ]
             }],
         }

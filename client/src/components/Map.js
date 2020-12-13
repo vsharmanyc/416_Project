@@ -6,6 +6,9 @@ import MD_Districts from './../geoJSON/MD_district.geojson'
 import NY_Precincts from './../geoJSON/NY_normalized.geojson'
 import PA_Precincts from './../geoJSON/PA_normalized.geojson'
 import MD_Precincts from './../geoJSON/MD_normalized.geojson'
+import average from './../geoJSON/jobID-1_MD_average_districting.geojson'
+import random from './../geoJSON/jobID-1_MD_random_districting.geojson'
+import extreme from './../geoJSON/jobID-1_MD_extreme_districting.geojson'
 import '../App.css';
 
 
@@ -34,9 +37,12 @@ class Map extends Component {
         });
 
         this.map.on('load', () => {
-            this.addGeoJsonLayer('NY_Districts', NY_Districts, "orange");
-            this.addGeoJsonLayer('PA_Districts', PA_Districts, "orange");
-            this.addGeoJsonLayer('MD_Districts', MD_Districts, "orange");
+            this.addGeoJsonLayer('NY_Precincts', NY_Precincts, "black", "none");
+            this.addGeoJsonLayer('PA_Precincts', PA_Precincts, "black", "none");
+            this.addGeoJsonLayer('MD_Precincts', MD_Precincts, "black", "none");
+            this.addGeoJsonLayer('NY_Districts', NY_Districts, "orange", "visible");
+            this.addGeoJsonLayer('PA_Districts', PA_Districts, "orange", "visible");
+            this.addGeoJsonLayer('MD_Districts', MD_Districts, "orange", "visible");
         });
     }
 
@@ -48,7 +54,10 @@ class Map extends Component {
         if (this.props.state !== prevProps.state)
             this.changeState(prevProps.state, this.props.state);
         else
-            this.applyGeoFilter(this.props.filter);
+            this.applyGeoFilter(this.props.filter, prevProps.filter);
+
+        console.log("prev : " + prevProps.filter.Districting.job.value);
+        console.log("this : " + this.props.filter.Districting.job.value);
     }
 
     postReqChangeState = (stateName) => {
@@ -87,7 +96,7 @@ class Map extends Component {
         return stateInitials;
     }
 
-    addGeoJsonLayer = (sourceName, geoJSON, boundaryColor) => {
+    addGeoJsonLayer = (sourceName, geoJSON, boundaryColor, visibility) => {
         if (this.state.appliedLayers.includes(sourceName))
             return;
         let hoveredStateId = null;
@@ -104,9 +113,9 @@ class Map extends Component {
             'id': sourceName + ' state-fills',
             'type': 'fill',
             'source': sourceName,
-            'layout': {},
+            'layout': {'visibility': visibility},
             'paint': {
-                'fill-color': '#627BC1',
+                'fill-color': '', // #627BC1
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
@@ -120,7 +129,7 @@ class Map extends Component {
             'id': sourceName + ' state-borders',
             'type': 'line',
             'source': sourceName,
-            'layout': {},
+            'layout': {'visibility': visibility},
             'paint': {
                 'line-color': boundaryColor,
                 'line-width': 2
@@ -184,6 +193,12 @@ class Map extends Component {
 
     }
 
+    setVisibilty = (sourceName, visibility) =>{
+        this.map.setLayoutProperty(sourceName + ' state-fills', 'visibility', visibility);
+        this.map.setLayoutProperty(sourceName + ' state-borders', 'visibility', visibility);
+        console.log(sourceName +  '       ' + visibility);
+    }
+
     zoomTo = (state) => {
         if (state === 'New York')
             this.map.flyTo({
@@ -230,7 +245,7 @@ class Map extends Component {
         }
     }
 
-    applyGeoFilter = (filter) => {
+    applyGeoFilter = (filter, prevFilter) => {
         let appliedLayers = this.state.appliedLayers;
         let stateInitials = this.stateInitials(this.props.state);
         let districts = stateInitials + '_Districts';
@@ -239,36 +254,36 @@ class Map extends Component {
 
         console.log(filter);
 
-        if (!filter.Districts && appliedLayers.includes(districts))
-            this.removeGeoJsonLayer(districts);
-        else if (filter.Districts && !appliedLayers.includes(districts))
-            this.addGeoJsonLayer(districts, this.getGeoJsonFile(districts), "orange");
-        else if (!filter.Precincts && appliedLayers.includes(precincts))
-            this.removeGeoJsonLayer(precincts);
-        else if (filter.Precincts && !appliedLayers.includes(precincts))
-            this.addGeoJsonLayer(precincts, this.getGeoJsonFile(precincts), "black");
+        if (!filter.Districts)
+            this.setVisibilty(districts, "none");
+        else if (filter.Districts)
+            this.setVisibilty(districts, "visible");
+        
+        if (!filter.Precincts)
+            this.setVisibilty(precincts, "none");
+        else if (filter.Precincts)
+            this.setVisibilty(precincts, "visible");
 
         // Heatmap filter logic
-        else if (!filter.Heatmap.show && appliedLayers.includes(heatmap))
+        if (!filter.Heatmap.show && appliedLayers.includes(heatmap))
             this.removeGeoJsonLayer(heatmap);
         else if (filter.Heatmap.show && !appliedLayers.includes(heatmap))
             this.addHeatMap(heatmap, this.getGeoJsonFile(precincts), filter.Heatmap.colorRange, filter.Heatmap.popType);
         else if (filter.Heatmap.show && appliedLayers.includes(heatmap))
             this.updateHeatMapCriteria(heatmap, filter.Heatmap)
 
+        if(filter.Districting.job.value !== 'Select...' && prevFilter.Districting.job.value !== 'filter.Districting.job.value'){
+            this.addGeoJsonLayer('average', average, filter.Districting.color.avg, "none");
+            this.addGeoJsonLayer('random', random, filter.Districting.color.random, "none");
+            this.addGeoJsonLayer('extreme', extreme, filter.Districting.color.extreme, "none");
+        }
+        if(filter.Districting.job.value === prevFilter.Districting.job.value){
+            this.setVisibilty('average', filter.Districting.avg ? "visible" : "none");
+            this.setVisibilty('random', filter.Districting.random ? "visible" : "none");
+            this.setVisibilty('extreme', filter.Districting.extreme ? "visible" : "none");
+        }
 
-    }
 
-    applyDistrictingFilter = (districtingFilter, plan, appliedLayers) => {
-//if (!districtingFilter[plan] && appliedLayers.includes(districtingFilter.file[plan]))
-  //          this.removeGeoJsonLayer(heatmap);
-      //  else if (districtingFilter[plan] && !appliedLayers.includes(districtingFilter.file[plan]))
-           // this.addHeatMap(heatmap, this.getGeoJsonFile(precincts), filter.Heatmap.colorRange, filter.Heatmap.popType);
-       // else if (filter.Heatmap.show && appliedLayers.includes(heatmap))
-        //    this.updateHeatMapCriteria(heatmap, filter.Heatmap)
-        //else 
-          //  return false;
-        return true;
     }
 
     updateHeatMapCriteria = (sourceName, criteria) => {
@@ -420,13 +435,13 @@ class Map extends Component {
         let requestStateInitials = this.stateInitials(requestState);
 
         if (currentState !== 'Select...') {
-            this.addGeoJsonLayer(currentStateInitials + '_Districts', this.getGeoJsonFile(currentStateInitials + '_Districts'), "orange");
-            this.removeGeoJsonLayer(currentStateInitials + '_Precincts');
+            this.setVisibilty(currentStateInitials + '_Districts', "visible");
+            this.setVisibilty(currentStateInitials + '_Precincts', "none");
         }
 
         if (requestState !== 'Select...') {
-            this.addGeoJsonLayer(requestStateInitials + '_Precincts', this.getGeoJsonFile(requestStateInitials + '_Precincts'), "black");
-            this.removeGeoJsonLayer(requestStateInitials + '_Districts');
+            this.setVisibilty(requestStateInitials + '_Precincts', "visible");
+            this.setVisibilty(requestStateInitials + '_Districts', "none");
         }
 
         this.removeGeoJsonLayer(currentStateInitials + '_Heatmap')
