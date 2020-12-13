@@ -84,12 +84,14 @@ class Job extends Component {
                             Delete
                         </button>
                         <button style={{ marginTop: '3%' }} 
-                        disabled={this.props.job.jobStatus === 'CANCELLED'}
-                        class={this.props.job.jobStatus === 'CANCELLED' ? 'btn-disabled' : 'btn-primary'}
+                        class={this.props.job.jobStatus === 'CANCELLED' || this.props.job.jobStatus === 'COMPLETED' ? 'btn-disabled' : 'btn-primary'}
+                        disabled={this.props.job.jobStatus === 'CANCELLED' || this.props.job.jobStatus === 'COMPLETED'}
                         onClick={this.cancelJob}>
                             Cancel
                         </button>
-                        <button style={{ marginTop: '3%' }} class='btn-primary' onClick={this.props.toggleModal}>
+                        <button style={{ marginTop: '3%' }} class='btn-primary' onClick={() => this.props.toggleModal(this.props.job)}
+                        class={this.props.job.boxPlotData === null ? 'btn-disabled' : 'btn-primary'}
+                        disabled={this.props.job.boxPlotData === null}>
                             Graph
                         </button>
                     </div>
@@ -98,6 +100,7 @@ class Job extends Component {
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={colStyle}>
                             <div></div>
+                            <p>{'State: ' + this.props.job.state}</p>
                             <p >{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
                             <p style={{ whiteSpace: 'pre' }}>Demographics:                                  </p>
                             {this.props.job.demographicGroups.map((demoEnum) => <p style={{ color: '#438f88' }}>{demoEnum}</p> )}

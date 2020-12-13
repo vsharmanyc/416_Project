@@ -38,7 +38,10 @@ class Filter extends Component {
     updateDistrictingFilter = (key, val) => {
         let filter = clonedeep(this.props.filter);
         filter.Districting[key] = val;
-        filter.Districting.file[key] = "";
+        if(key === 'job'){
+            filter.Districting.jobObj = this.props.jobs.find(job => job.jobId === parseInt(val.value));
+            console.log(filter.Districting['jobObj']);
+        }
         this.props.updateFilter(filter);
     }
 

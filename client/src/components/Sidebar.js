@@ -64,14 +64,14 @@ class Sidebar extends Component {
                 }}>
                     <div>
                         <Tabs activeKey={this.state.tabNum} onSelect={this.changeTab} id="controlled-tab-example">
-                            <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData} stateIsSelected={this.props.state !== 'Select...'}/></Tab>
+                            <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData} stateIsSelected={this.props.state !== 'Select...'} /></Tab>
 
                             <Tab eventKey={1} title="Filter">
                                 <Filter updateFilter={this.props.updateFilter} filter={this.props.filter} stateIsSelected={this.props.state !== 'Select...'} jobs={this.props.jobs}/>
                             </Tab>
 
                             <Tab eventKey={2} title="Create Job">
-                                <CreateJob jobs={this.props.jobs} updateJobs={this.props.updateJobs} stateIsSelected={this.props.state !== 'Select...'}/>
+                                <CreateJob jobs={this.props.jobs} updateJobs={this.props.updateJobs} stateIsSelected={this.props.state !== 'Select...'} state={this.props.state}/>
                             </Tab>
 
                             <Tab eventKey={3} title="Jobs"><Jobs updateJobs={this.props.updateJobs} toggleModal={this.props.toggleModal} jobs={this.props.jobs} /></Tab>

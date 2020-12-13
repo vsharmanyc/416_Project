@@ -25,8 +25,10 @@ class CreateJob extends Component {
         e.preventDefault();
         let demographics = [];
         this.state.demographics.map((option) => demographics.push(this.getDemographicEnums(option.value)));
+        let states = {'New York': 'NY', 'Pennsylvania': 'PA', 'Maryland': 'MD'}
 
         let job = {
+            state: states[this.props.state],
             numDistrictings: this.state.numDistrictings,
             demographicGroups: demographics,
             popEqThreshold: this.state.popEqThres,

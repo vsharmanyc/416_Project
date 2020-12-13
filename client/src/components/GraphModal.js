@@ -8,9 +8,8 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class GraphModal extends Component {
     render() {
-        let str = "[1-0.0644-0.0951-0.1238-0.1993-0.1103, 2-0.0935-0.1324-0.1782-0.2336-0.1513, 3-0.1303-0.1709-0.2147-0.2793-0.1931, 4-0.1672-0.209-0.26-0.3146-0.2328, 5-0.2077-0.2627-0.3144-0.3708-0.2874, 6-0.2606-0.3221-0.3824-0.4544-0.3579, 7-0.303-0.3845-0.4483-0.5187-0.4174, 8-0.3941-0.4822-0.5387-0.6437-0.5159]";
-        
-        str = str.substring(1, str.length - 1);
+         
+        let str = this.props.job.boxPlotData.substring(1, this.props.job.boxPlotData.length - 1);
         let dataPoints = str.split(',').map((points) => {
             let stats = points.split('-').map((stat) => parseFloat(stat))
             return { label: "" + stats[0], y: [stats[1], stats[2], stats[3], stats[4], stats[5]] };

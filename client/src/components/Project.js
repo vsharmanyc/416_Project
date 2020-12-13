@@ -3,6 +3,7 @@ import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import GraphModal from './GraphModal'
+import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
 
 class Project extends Component {
 
@@ -19,6 +20,7 @@ class Project extends Component {
             },
             Districting: {
                 job: { value: 'Select...', label: 'Select...' },
+                jobObj: null,
                 random: false,
                 avg: false,
                 extreme: false,
@@ -41,7 +43,8 @@ class Project extends Component {
             geoJSON: null,
             geoData: {},
             jobs: [],
-            toggleModal: false
+            toggleModal: false,
+            modalData: null,
         }
     }
 
@@ -63,14 +66,12 @@ class Project extends Component {
     }
 
     updateJobs = (jobs) => {
+        console.log(jobs);
         if(Array.isArray(jobs))
             this.setState({ jobs: jobs });
     }
 
     updateFilter = (filter) => {
-        console.log("WHY");
-        console.log("prev update: ", this.state.filter.Districting.job);
-        console.log("post update: ", filter.Districting.job);
         this.setState({ filter: filter });
     }
 
@@ -78,11 +79,11 @@ class Project extends Component {
         let filter =  this.initial_filter;
         filter.Districts = this.state.state === 'Select...';
         filter.Precincts = this.state.state !== 'Select...';
-        this.setState({filter:  filter});
+        this.setState({filter:  filter, geoData: {}});
     }
 
-    toggleModal = () =>{
-        this.setState({toggleModal: !this.state.toggleModal})
+    toggleModal = (modalData) =>{
+        this.setState({toggleModal: !this.state.toggleModal, modalData: modalData})
     }
 
     getJobHistoryAndUpdateJobs = () => {
@@ -137,7 +138,7 @@ class Project extends Component {
                 />
                 {this.state.toggleModal ?
                     <div style={modalStyle} >
-                        <GraphModal toggleModal={this.toggleModal}/>
+                        <GraphModal toggleModal={this.toggleModal} job={this.state.modalData}/>
                     </div>
                     :
                     <></>

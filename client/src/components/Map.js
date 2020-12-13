@@ -22,7 +22,7 @@ class Map extends Component {
         this.state = {
             geoLevel: 'Districts',
             appliedLayers: [],
-            lng: -95,
+            lng: -107,
             lat: 39,
             zoom: 3.5,
         }
@@ -55,9 +55,6 @@ class Map extends Component {
             this.changeState(prevProps.state, this.props.state);
         else
             this.applyGeoFilter(this.props.filter, prevProps.filter);
-
-        console.log("prev : " + prevProps.filter.Districting.job.value);
-        console.log("this : " + this.props.filter.Districting.job.value);
     }
 
     postReqChangeState = (stateName) => {
@@ -115,7 +112,7 @@ class Map extends Component {
             'source': sourceName,
             'layout': {'visibility': visibility},
             'paint': {
-                'fill-color': '', // #627BC1
+                'fill-color': '#627BC1', // #627BC1
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
@@ -196,31 +193,30 @@ class Map extends Component {
     setVisibilty = (sourceName, visibility) =>{
         this.map.setLayoutProperty(sourceName + ' state-fills', 'visibility', visibility);
         this.map.setLayoutProperty(sourceName + ' state-borders', 'visibility', visibility);
-        console.log(sourceName +  '       ' + visibility);
     }
 
     zoomTo = (state) => {
         if (state === 'New York')
             this.map.flyTo({
-                center: [-74.2179, 43.2994],
+                center: [-78.000, 42.850],
                 zoom: 6,
                 essential: true
             });
         else if (state === 'Pennsylvania')
             this.map.flyTo({
-                center: [-77.1945, 41.2033],
+                center: [-78.750, 41.100],
                 zoom: 6.8,
                 essential: true
             });
         else if (state === 'Maryland')
             this.map.flyTo({
-                center: [-76.6413, 39.0458],
-                zoom: 7,
+                center: [-78.100, 38.9],
+                zoom: 7.25,
                 essential: true
             });
         else
             this.map.flyTo({
-                center: [-95, 39],
+                center: [-107, 39],
                 zoom: 3.5,
                 essential: true
             });
@@ -273,6 +269,21 @@ class Map extends Component {
             this.updateHeatMapCriteria(heatmap, filter.Heatmap)
 
         if(filter.Districting.job.value !== 'Select...' && prevFilter.Districting.job.value !== 'filter.Districting.job.value'){
+
+            console.log(filter.Districting.jobObj);
+
+            fetch('http://localhost:8080/api/job/getSummaryFile',
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                method: "POST",
+                body: JSON.stringify(filter.Districting.jobObj),
+                mode: 'cors'
+            })
+        .then(response => console.log(response.json()));
+
             this.addGeoJsonLayer('average', average, filter.Districting.color.avg, "none");
             this.addGeoJsonLayer('random', random, filter.Districting.color.random, "none");
             this.addGeoJsonLayer('extreme', extreme, filter.Districting.color.extreme, "none");
@@ -320,7 +331,6 @@ class Map extends Component {
     }
 
     addHeatMap = (sourceName, geoJSON, colorRange, popType) => {
-        console.log("CHALLO");
 
         if (this.state.appliedLayers.includes(sourceName))
             return;
