@@ -18,6 +18,8 @@ public class SeaWulfProperties {
     private String transferSummaryBash;
     private String transferResultBash;
     private String transferResultFile;
+    private String monitorSwProgressFile;
+    private String monitorSwProgressBash;
 
     private InputStream input;
 
@@ -48,11 +50,25 @@ public class SeaWulfProperties {
             transferSummaryBash = properties.getProperty("transferSummaryBash");
             transferResultBash = properties.getProperty("transferResultBash");
             transferResultFile = properties.getProperty("transferResultFile");
+            monitorSwProgressFile = properties.getProperty("monitorSwProgressFile");
+            monitorSwProgressBash = properties.getProperty("monitorSwProgressBash");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setSeaWulfDistrictingThreshold(int seaWulfDistrictingThreshold) {
+        this.seaWulfDistrictingThreshold = seaWulfDistrictingThreshold;
+    }
+
+    public String getMonitorSwProgressFile() {
+        return monitorSwProgressFile;
+    }
+
+    public String getMonitorSwProgressBash() {
+        return monitorSwProgressBash;
     }
 
     public String getTransferResultFile() {
