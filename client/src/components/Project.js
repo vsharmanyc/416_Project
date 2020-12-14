@@ -48,8 +48,8 @@ class Project extends Component {
     }
 
     componentDidMount() {
-        this.getJobHistoryAndUpdateJobs();
-        this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 600000);
+        //this.getJobHistoryAndUpdateJobs();
+        //this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 600000);
     }
 
     componentWillUnmount(){

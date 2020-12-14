@@ -282,7 +282,7 @@ class Map extends Component {
                 body: JSON.stringify(filter.Districting.jobObj),
                 mode: 'cors'
             })
-        .then(response => console.log(response.json()));
+        .then(response => response).then(response => 'boom shaklaka');
 
             this.addGeoJsonLayer('average', average, filter.Districting.color.avg, "none");
             this.addGeoJsonLayer('random', random, filter.Districting.color.random, "none");
