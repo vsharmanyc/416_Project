@@ -20,17 +20,17 @@ public class Job {
     @ElementCollection(targetClass = Demographic.class)
     @Column(name = "demographic_groups")
     private List<Demographic> demographicGroups;
-    //    @Column(name = "demographic_groups")
-//    private String demGroups;
     @Column(name = "pop_eq_threshold")
     private Double popEqThreshold;
     @Column(name = "compactness")
     private String compactness;
     @Column(name="box_plot_string")
     private String boxPlotData;
+    @Column(name="sw_job_num")
+    private int swJobNum;
 
     //@Id
-    // @GeneratedValue(strategy = GenerationType.AUTO)
+   // @GeneratedValue(strategy = GenerationType.AUTO)
     //private int id;
 
     @Id
@@ -40,8 +40,6 @@ public class Job {
     @Enumerated(EnumType.STRING)
     @Column(name = "job_status")
     private JobStatus jobStatus;
-    @Column(name = "sw_job_num")
-    private int swJobNum;
     //private RunResults runResults;
 
 
@@ -87,6 +85,14 @@ public class Job {
 //    }
 
     /*GETTERS/SETTERS*/
+
+    public int getSwJobNum() {
+        return swJobNum;
+    }
+
+    public void setSwJobNum(int swJobNum) {
+        this.swJobNum = swJobNum;
+    }
 
     public String getBoxPlotData() {
         return boxPlotData;

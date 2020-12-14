@@ -192,9 +192,9 @@ public class SeaWulfHandler {
     public void getJobFromSeaWulf(int swjobID){
         this.job.setJobId(11);
         transferResultFiles(job);
-//        this.job.setJobStatus(JobStatus.POST_PROCESSING);
-//        RunResults rr = parseDataIntoRunResult(this.job);
-//        postProcessSeaWulfJob(rr);
+        this.job.setJobStatus(JobStatus.POST_PROCESSING);
+        RunResults rr = parseDataIntoRunResult(this.job);
+        postProcessSeaWulfJob(rr);
     }
 
     public void postProcessSeaWulfJob(RunResults rr){

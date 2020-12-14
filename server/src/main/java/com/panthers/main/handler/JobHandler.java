@@ -11,9 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -44,7 +42,7 @@ public class JobHandler{
         this.properties.getProperties();
         this.dispatcherHandler = dispatcherHandler;
         this.state = null;//Originally, no state is selected
-        this.jobHistory = getJobHistory();// Get job history from EM upon first load
+        this.jobHistory = jpaUserDao.getAll();// Get job history from EM upon first load
         System.out.println("Job His Length " + jobHistory.size());
         /*loadPrecincts();
         loadDistricts();
@@ -112,7 +110,7 @@ public class JobHandler{
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
 
-        jpaUserDao.save(job);
+        //jpaUserDao.save(job);
 
         /*Object[] jobs = jpaUserDao.getAll().toArray();
         for(int i = 0; i < jobs.length; i++)
@@ -173,7 +171,20 @@ public class JobHandler{
      * @return returns the job history from the EM
      */
     public List<Job> getJobHistory() {
-        return jpaUserDao.getAll();
+        for (Job j: this.jobHistory){
+            if (j.getSwJobNum() != -1){
+                boolean finished = monitorSeaWulfProgress(j);
+                if (finished){
+                    SeaWulfHandler swh = new SeaWulfHandler(j);
+                    //Job finished. Post process it.
+                    swh.getJobFromSeaWulf(j.getJobId());
+                }
+                else{
+                    System.out.println("Job #" + j.getJobId() + " still running.");
+                }
+            }
+        }
+        return this.jobHistory;
     }
 
     /**
@@ -410,6 +421,56 @@ public class JobHandler{
                     job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
                     job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
                     job.getState(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword());
+            bashOut.write(script);
+
+            bashOut.close();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public boolean monitorSeaWulfProgress(Job job){
+        System.out.println("Transferring Summary from SeaWulf for Job");
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+        ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getMonitorSwProgressBash());
+
+        buildProgressScript(path, job.getJobId());
+
+        System.out.println("Checking if job#" + job.getJobId() + "is finished.");
+        pb.directory(new File(path));
+        pb.redirectErrorStream(true);
+        try{
+            pb.start();
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+        //read the transferred progress.txt
+        BufferedReader reader;
+        try{
+            reader = new BufferedReader(new FileReader(path+"/progress.txt"));
+            String line = reader.readLine();
+            int districtingsComplete = Integer.parseInt(line);
+            if (districtingsComplete >= job.getNumDistrictings())
+                return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void buildProgressScript(String path, int jobId){
+        File bash = new File(path + properties.getMonitorSwProgressBash());
+        FileWriter bashOut;
+        try {
+            bashOut = new FileWriter(bash);
+            ObjectMapper objmp = new ObjectMapper();
+            //grabbing script from system properties file.
+            String script = String.format(properties.getMonitorSwProgressFile(), properties.getNetID(), properties.getNetID(),
+                    properties.getPassword(), jobId, properties.getNetID(), jobId, properties.getNetID(),
+                    properties.getPassword());
             bashOut.write(script);
 
             bashOut.close();
