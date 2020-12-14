@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -284,8 +285,41 @@ public class RunResults {
 
     public void storeBoxPlotInJob(){
         String bpData = aggregateBoxPlotData();
+        String randomData = getRandomDPString();
+        String extremeData = getExtremeDPString();
+        String averageData = getAverageDPString();
         job.setBoxPlotData(bpData);
+        job.setRandomPlanData(randomData);
+        job.setExtremePlanData(extremeData);
+        job.setAveragePlanData(averageData);
         jpaUserDao.update(job);
+    }
+
+    public String getRandomDPString(){
+        List<Double> values = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("#.####");
+        for (District d: randomDistricting.getDistricts()){
+            values.add(Double.parseDouble(df.format(d.getPercentVap())));
+        }
+        return values.toString();
+    }
+
+    public String getExtremeDPString(){
+        List<Double> values = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("#.####");
+        for (District d: extremeDistricting.getDistricts()){
+            values.add(Double.parseDouble(df.format(d.getPercentVap())));
+        }
+        return values.toString();
+    }
+
+    public String getAverageDPString(){
+        List<Double> values = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("#.####");
+        for (District d: averageDistricting.getDistricts()){
+            values.add(Double.parseDouble(df.format(d.getPercentVap())));
+        }
+        return values.toString();
     }
 
     public String aggregateBoxPlotData(){
