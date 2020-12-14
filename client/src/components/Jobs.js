@@ -18,12 +18,14 @@ class Jobs extends Component {
             width: '100%', 
         };
 
+        let jobs = this.props.jobs.filter((job) => job.jobStatus !== 'CANCELLED');
+
         return (
             <div style={style}>
                 <button class="btn-primary" style={{width: '90%'}} onClick={this.props.getJobHistoryAndUpdateJobs}>
                     Refresh
                 </button>
-                {this.props.jobs.map((job) => <Job updateJobs={this.props.updateJobs} job={job} toggleModal={this.props.toggleModal}/>)}
+                {jobs.map((job) => <Job updateJobs={this.props.updateJobs} job={job} toggleModal={this.props.toggleModal}/>)}
             </div>
         );
     }
