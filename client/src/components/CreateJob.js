@@ -143,9 +143,9 @@ class CreateJob extends Component {
                         <button onClick={this.onCreateJob} style={{ backgroundColor: '#63BEB6', color: '#ffffff' }} type="submit" class="btn" disabled={disableSubmit}>Submit</button>
                     </form>
 
-                    <div style={{ color: 'green', fontFamily: 'Arial' }}>
+                    <strong style={{ fontFamily: 'Arial', background: 'white' }}>
                         {!this.props.stateIsSelected ? "Must select a state before creating a job" : ""}
-                    </div>
+                    </strong>
                 </div>
             </div>
         );

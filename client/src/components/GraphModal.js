@@ -20,7 +20,7 @@ class GraphModal extends Component {
             animationEnabled: true,
             theme: "light2",
             title: {
-                text: "BVAP% By District in MD"
+                text: "BVAP% By District in " + this.props.job.state
             },
             axisX: {
                 title: "District Number"

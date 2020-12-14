@@ -125,6 +125,7 @@ class Project extends Component {
                         updateFilter={this.updateFilter}
                         filter={this.state.filter}
                         toggleModal={this.toggleModal}
+                        getJobHistoryAndUpdateJobs={this.getJobHistoryAndUpdateJobs}
                     />
                 </div>
                 <Map

@@ -201,9 +201,9 @@ class Filter extends Component {
                         </div>
                     </div>
 
-                    <div style={{ color: 'green', fontFamily: 'Arial' }}>
+                    <strong style={{ fontFamily: 'Arial', background: 'white' }}>
                         {!this.props.stateIsSelected ? "Must select a state first before selecting above" : ""}
-                    </div>
+                    </strong>
 
                 </div>
             </div>
