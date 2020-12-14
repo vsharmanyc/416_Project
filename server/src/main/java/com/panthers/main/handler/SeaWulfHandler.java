@@ -301,10 +301,15 @@ public class SeaWulfHandler {
     }
 
     public void getJobFromSeaWulf(int swjobID){
-        this.job.setJobId(11);
+        this.job.setJobId(10);
         transferResultFiles(job);
         this.job.setJobStatus(JobStatus.POST_PROCESSING);
-        RunResults rr = parseDataIntoRunResult(this.job);
+        List<DistrictingPlan> plans = new ArrayList<>();
+        for (int i = 0; i < 3; i++){
+            parseDataIntoRunResult(this.job, plans, i);
+        }
+        System.out.println("Created Run Results Object");
+        RunResults rr = new RunResults(this.job, plans);
         postProcessSeaWulfJob(rr);
     }
 
@@ -408,11 +413,11 @@ public class SeaWulfHandler {
 //    }
 
 
-    public RunResults parseDataIntoRunResult(Job j){
+    public void parseDataIntoRunResult(Job j, List<DistrictingPlan> plans, int i){
         System.out.println("Aggregating data from SeaWulf run results.");
         JsonFactory jsonfactory = new JsonFactory();
-        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/NY_result.json");
-        List<DistrictingPlan> plans = new ArrayList<>();
+        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/results/"
+                + this.job.getState() + "_result" + i + ".json");
         try {
             JsonParser parser = jsonfactory.createJsonParser(source);
             while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -428,7 +433,11 @@ public class SeaWulfHandler {
                 parser.nextToken();
             }
             parser.nextToken();
+            int k = 0;
             while (parser.getCurrentToken() != JsonToken.END_ARRAY) {
+//                System.out.println(k);
+//                if (i == 1 && k == 33)
+//                    break;
                 while (parser.getCurrentToken() != JsonToken.START_OBJECT && parser.getCurrentToken() != null) {
                     parser.nextToken();
                 }
@@ -443,7 +452,6 @@ public class SeaWulfHandler {
                             break;
                         parser.nextToken();
                         parser.nextToken();
-
                         //District ID
                         int districtID = parser.getIntValue();
                         parser.nextToken();
@@ -548,15 +556,13 @@ public class SeaWulfHandler {
                     }
                     plans.add(new DistrictingPlan(job.getState(), districts, job.getPopEqThreshold(), job.getCompactness()));
                 }
+                k++;
             }
             parser.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //Create the RunResults object here.
-        System.out.println("Created Run Results Object");
-        return new RunResults(job, plans);
     }
 
     public void writeResultToFile(RunResults rr) {

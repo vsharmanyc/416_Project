@@ -284,7 +284,6 @@ public class RunResults {
 
     public void storeBoxPlotInJob(){
         String bpData = aggregateBoxPlotData();
-        System.out.println(bpData);
         job.setBoxPlotData(bpData);
         jpaUserDao.update(job);
     }
@@ -305,12 +304,13 @@ public class RunResults {
         System.out.println("Generating Summary for job" + job.getJobId());
         String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
-        ProcessBuilder pb = new ProcessBuilder("python3", path + properties.getGenerateSummaryScript() + " "
-                + String.format(properties.getGenerateSummaryScriptInput(), job.getState().toString(), job.getJobId()));
+        ProcessBuilder pb = new ProcessBuilder("python3", path + properties.getGenerateSummaryScript(),
+                String.format(properties.getGenerateSummaryScriptInput(), job.getJobId()));
 
         System.out.println("Generating Job Summary now. \nEST: NY: 10 min | PA: 7 min | MD: 3 min");
         pb.directory(new File(path));
         pb.redirectErrorStream(true);
+        pb.inheritIO();
         try{
             pb.start();
         }
@@ -322,8 +322,9 @@ public class RunResults {
     public void writeSummaryToSeaWulf(){
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
-            String p = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd() + "/results";
+            String p = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
             Path path = Paths.get(p);
+            int i = 0;
             path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
             while (1==1) {
                 WatchKey key;
@@ -336,22 +337,47 @@ public class RunResults {
                         continue;
                     } else if (eventType == StandardWatchEventKinds.ENTRY_CREATE ||
                             eventType == StandardWatchEventKinds.ENTRY_MODIFY) {
-                        final Path itemChanged = (Path) event.context();
-                        if (itemChanged.endsWith(String.format(properties.getSummaryFileName(), job.getJobId(), job.getState().toString()))) {
-                            System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
-                            String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+                        Path itemChanged = (Path) event.context();
+                        System.out.println(itemChanged);
+                        if (itemChanged.toString().contains(".geojson")) {
+                            i++;
+                            System.out.println(i);
+                            if (i == 5){
+                                System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
+                                String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
-                            buildTransferToSWScript(transferPath);
-                            ProcessBuilder pb = new ProcessBuilder("expect", transferPath + properties.getTransferSummaryFilesToSeaWulfFile());
+                                buildTransferToSWScript(transferPath);
+                                ProcessBuilder pb = new ProcessBuilder("expect", transferPath + properties.getTransferSummaryFilesToSeaWulfFile());
 
-                            System.out.println("Transferring files to SeaWulf. Expect a DUO prompt...");
-                            pb.directory(new File(transferPath));
-                            pb.redirectErrorStream(true);
-                            try{
-                                pb.start();
+                                System.out.println("Transferring files to SeaWulf. Expect a DUO prompt...");
+                                pb.directory(new File(transferPath));
+                                pb.redirectErrorStream(true);
+                                try{
+                                    pb.start();
+                                }
+                                catch (Exception io){
+                                    io.printStackTrace();
+                                }
                             }
-                            catch (Exception io){
-                                io.printStackTrace();
+                        }
+                        else if (itemChanged.toString().contains(".json")){
+                            i++;
+                            if (i == 5){
+                                System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
+                                String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+
+                                buildTransferToSWScript(transferPath);
+                                ProcessBuilder pb = new ProcessBuilder("expect", transferPath + properties.getTransferSummaryFilesToSeaWulfFile());
+
+                                System.out.println("Transferring files to SeaWulf. Expect a DUO prompt...");
+                                pb.directory(new File(transferPath));
+                                pb.redirectErrorStream(true);
+                                try{
+                                    pb.start();
+                                }
+                                catch (Exception io){
+                                    io.printStackTrace();
+                                }
                             }
                         }
                     }
