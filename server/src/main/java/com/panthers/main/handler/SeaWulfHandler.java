@@ -11,6 +11,8 @@ import com.panthers.main.jobmodel.DistrictingPlan;
 import com.panthers.main.jobmodel.Job;
 import com.panthers.main.jobmodel.JobStatus;
 import com.panthers.main.jobmodel.RunResults;
+import com.panthers.main.jpa.Dao;
+import com.panthers.main.jpa.JpaJobDao;
 import com.panthers.main.mapmodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +31,8 @@ import java.util.List;
 public class SeaWulfHandler {
     private Job job;
     private SeaWulfProperties properties;
+
+    private static Dao<Job> jpaUserDao = new JpaJobDao();
 
     public SeaWulfHandler(Job job) {
         this.job = job;
@@ -53,6 +57,26 @@ public class SeaWulfHandler {
      */
     public void executeJob(){
         aggregateSeawulfData();
+        startJobOnSeaWulf();
+        grabSeaWulfJobNumber();
+        //should probably update the job in DB
+        this.job.setJobStatus(JobStatus.RUNNING);
+        jpaUserDao.update(this.job);
+    }
+
+    public void grabSeaWulfJobNumber(){
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+        //read the transferred progress.txt
+        BufferedReader reader;
+        try{
+            reader = new BufferedReader(new FileReader(path+"/id.txt"));
+            String line = reader.readLine();
+            int swJobId = Integer.parseInt(line.substring(20,line.length()));
+            this.job.setSwJobNum(swJobId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -67,6 +91,7 @@ public class SeaWulfHandler {
         System.out.println(path + properties.getTransferDataBash());
         ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferDataBash());
 
+        pb.inheritIO();
         buildDataFiles(path);
 
         System.out.println("Sending files to SeaWulf. Expect a DUO Push...");
@@ -75,7 +100,7 @@ public class SeaWulfHandler {
         try{
             pb.start();
         }
-        catch (IOException io){
+        catch (Exception io){
             io.printStackTrace();
         }
     }
@@ -168,16 +193,53 @@ public class SeaWulfHandler {
 
     private void buildBashScript(String path){
         File bash = new File(path + properties.getTransferDataBash());
+        System.out.println(bash);
         FileWriter bashOut;
         try {
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
-            String script = String.format(properties.getBashScript(), job.getJobId(), job.getState().toString() + "_job#" + job.getJobId());
+            String script = String.format(properties.getBashScript(), properties.getNetID(), properties.getNetID(), properties.getPassword(), job.getState().toString(), job.getJobId(), job.getJobId(), job.getState().toString(), job.getJobId(), properties.getNetID(), properties.getPassword());
             bashOut.write(script);
 
             bashOut.close();
-//            swData.delete();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void startJobOnSeaWulf(){
+        System.out.println("Sending sbatch command to start job on seawulf");
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+
+        buildStartScript(path);
+        ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getBashStartJobScriptPath());
+        pb.inheritIO();
+        buildDataFiles(path);
+
+        System.out.println("Logging in and starting job. Expect a DUO push...");
+        pb.directory(new File(path));
+        pb.redirectErrorStream(true);
+        try{
+            pb.start();
+        }
+        catch (Exception io){
+            io.printStackTrace();
+        }
+    }
+
+    public void buildStartScript(String path){
+        File bash = new File(path + properties.getBashStartJobScriptPath());
+        FileWriter bashOut;
+        try {
+            bashOut = new FileWriter(bash);
+            ObjectMapper objmp = new ObjectMapper();
+            //grabbing script from system properties file.
+            String script = String.format(properties.getJobStartScript(), properties.getNetID(), properties.getNetID(), properties.getPassword(), job.getState().toString(), job.getJobId(), properties.getNetID(), job.getState().toString(), job.getJobId(), properties.getNetID(), properties.getPassword());
+            bashOut.write(script);
+            bashOut.close();
         }
 
         catch (Exception e){
@@ -481,7 +543,7 @@ public class SeaWulfHandler {
         ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferSummaryBash());
 
         buildTransferScript(path, job);
-
+        pb.inheritIO();
         System.out.println("Sending files to SeaWulf. Expect a DUO Push...unless your on VPN :)");
         pb.directory(new File(path));
         pb.redirectErrorStream(true);

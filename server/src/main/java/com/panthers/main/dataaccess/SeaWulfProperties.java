@@ -9,6 +9,7 @@ public class SeaWulfProperties {
     private String swDataPrefix;
     private String precinctDataSuffix;
     private String bashScript;
+    private String bashStartJobScriptPath;
     private String serverStaticWd;
     private String slurmScript;
     private String slurmScriptPath;
@@ -20,6 +21,7 @@ public class SeaWulfProperties {
     private String transferResultFile;
     private String monitorSwProgressFile;
     private String monitorSwProgressBash;
+    private String jobStartScript;
 
     private InputStream input;
 
@@ -52,11 +54,21 @@ public class SeaWulfProperties {
             transferResultFile = properties.getProperty("transferResultFile");
             monitorSwProgressFile = properties.getProperty("monitorSwProgressFile");
             monitorSwProgressBash = properties.getProperty("monitorSwProgressBash");
+            bashStartJobScriptPath = properties.getProperty("bashStartJobScriptPath");
+            jobStartScript = properties.getProperty("jobStartScript");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getJobStartScript() {
+        return jobStartScript;
+    }
+
+    public String getBashStartJobScriptPath() {
+        return bashStartJobScriptPath;
     }
 
     public void setSeaWulfDistrictingThreshold(int seaWulfDistrictingThreshold) {
