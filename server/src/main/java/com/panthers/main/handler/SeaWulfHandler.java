@@ -191,9 +191,10 @@ public class SeaWulfHandler {
 
     public void getJobFromSeaWulf(int swjobID){
         this.job.setJobId(11);
-        this.job.setJobStatus(JobStatus.POST_PROCESSING);
-        RunResults rr = parseDataIntoRunResult(this.job);
-        postProcessSeaWulfJob(rr);
+        transferResultFiles(job);
+//        this.job.setJobStatus(JobStatus.POST_PROCESSING);
+//        RunResults rr = parseDataIntoRunResult(this.job);
+//        postProcessSeaWulfJob(rr);
     }
 
     public void postProcessSeaWulfJob(RunResults rr){
@@ -469,6 +470,47 @@ public class SeaWulfHandler {
             bashOut.close();
 //            swData.delete();
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void transferResultFiles(Job job){
+        System.out.println("Transferring Summary from SeaWulf for Job#"+job.getJobId());
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+        ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferSummaryBash());
+
+        buildTransferScript(path, job);
+
+        System.out.println("Sending files to SeaWulf. Expect a DUO Push...unless your on VPN :)");
+        pb.directory(new File(path));
+        pb.redirectErrorStream(true);
+        try{
+            pb.start();
+        }
+        catch (IOException io){
+            io.printStackTrace();
+        }
+    }
+
+    private void buildTransferScript(String path, Job job){
+        File bash = new File(path + properties.getTransferResultBash());
+        FileWriter bashOut;
+        try {
+            bashOut = new FileWriter(bash);
+            ObjectMapper objmp = new ObjectMapper();
+            //grabbing script from system properties file.
+            String script = String.format(properties.getTransferResultFile(), properties.getNetID(), job.getJobId(),
+                    properties.getNetID(), job.getJobId(),properties.getNetID(), job.getJobId(),properties.getNetID(),
+                    job.getJobId(),properties.getNetID(), job.getJobId(),properties.getNetID(), job.getJobId(),
+                    properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(),
+                    properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(),
+                    properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword());
+            bashOut.write(script);
+
+            bashOut.close();
+        }
+
         catch (Exception e){
             e.printStackTrace();
         }

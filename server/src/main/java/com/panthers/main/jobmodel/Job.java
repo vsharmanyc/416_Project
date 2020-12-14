@@ -20,7 +20,7 @@ public class Job {
     @ElementCollection(targetClass = Demographic.class)
     @Column(name = "demographic_groups")
     private List<Demographic> demographicGroups;
-//    @Column(name = "demographic_groups")
+    //    @Column(name = "demographic_groups")
 //    private String demGroups;
     @Column(name = "pop_eq_threshold")
     private Double popEqThreshold;
@@ -30,7 +30,7 @@ public class Job {
     private String boxPlotData;
 
     //@Id
-   // @GeneratedValue(strategy = GenerationType.AUTO)
+    // @GeneratedValue(strategy = GenerationType.AUTO)
     //private int id;
 
     @Id
@@ -40,6 +40,8 @@ public class Job {
     @Enumerated(EnumType.STRING)
     @Column(name = "job_status")
     private JobStatus jobStatus;
+    @Column(name = "sw_job_num")
+    private int swJobNum;
     //private RunResults runResults;
 
 
@@ -55,6 +57,7 @@ public class Job {
         this.jobId = -1;
         this.jobStatus = JobStatus.PENDING;
         this.boxPlotData = "NOT GENERATED";
+        this.swJobNum = -1;
     }
 
 //    public Job(Integer jobId, String state, Integer numDistrictings, String demographicGroups, String popEqThreshold,

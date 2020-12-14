@@ -112,7 +112,7 @@ public class JobHandler{
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
 
-        //jpaUserDao.save(job);
+        jpaUserDao.save(job);
 
         /*Object[] jobs = jpaUserDao.getAll().toArray();
         for(int i = 0; i < jobs.length; i++)
