@@ -22,6 +22,8 @@ public class SeaWulfProperties {
     private String monitorSwProgressFile;
     private String monitorSwProgressBash;
     private String jobStartScript;
+    private String cancelSwJobBash;
+    private String cancelSwJobFile;
 
     private InputStream input;
 
@@ -56,11 +58,22 @@ public class SeaWulfProperties {
             monitorSwProgressBash = properties.getProperty("monitorSwProgressBash");
             bashStartJobScriptPath = properties.getProperty("bashStartJobScriptPath");
             jobStartScript = properties.getProperty("jobStartScript");
+            cancelSwJobBash = properties.getProperty("cancelSwJobBash");
+            cancelSwJobFile = properties.getProperty("cancelSwJobFile");
+
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getCancelSwJobBash() {
+        return cancelSwJobBash;
+    }
+
+    public String getCancelSwJobFile() {
+        return cancelSwJobFile;
     }
 
     public String getJobStartScript() {
