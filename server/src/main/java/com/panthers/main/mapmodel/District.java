@@ -175,7 +175,6 @@ public class District implements Comparable<District>{
             if (!checkIfCountedCounty(precinct.getCounty())) {
                 addCounty(precinct.getCounty());
                 countyCount++;
-                System.out.println(countyCount);
                 setCounties(countyCount);
             }
         }

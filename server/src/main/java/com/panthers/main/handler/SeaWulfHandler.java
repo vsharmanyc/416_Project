@@ -19,11 +19,11 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 
 /**
  * Main branch of program that will run/extract results from algorithm run on SEAWULF.
@@ -56,27 +56,55 @@ public class SeaWulfHandler {
      * @return returns districting plans resulting from the job.
      */
     public void executeJob(){
-        aggregateSeawulfData();
+        //aggregateSeawulfData();
         startJobOnSeaWulf();
         grabSeaWulfJobNumber();
-        //should probably update the job in DB
-        this.job.setJobStatus(JobStatus.RUNNING);
-        jpaUserDao.update(this.job);
     }
 
     public void grabSeaWulfJobNumber(){
-        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
-        //read the transferred progress.txt
-        BufferedReader reader;
-        try{
-            reader = new BufferedReader(new FileReader(path+"/id.txt"));
-            String line = reader.readLine();
-            int swJobId = Integer.parseInt(line.substring(20,line.length()));
-            this.job.setSwJobNum(swJobId);
+        try {
+            WatchService watcher = FileSystems.getDefault().newWatchService();
+            String p = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+            Path path = Paths.get(p);
+            path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
+            while (1==1) {
+                WatchKey key;
+                key = watcher.take();
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    WatchEvent.Kind<?> eventType = event.kind();
+                    WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                    Path fileName = ev.context();
+                    if (eventType == StandardWatchEventKinds.OVERFLOW) {
+                        continue;
+                    } else if (eventType == StandardWatchEventKinds.ENTRY_CREATE ||
+                            eventType == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        final Path itemChanged = (Path) event.context();
+                        if (itemChanged.endsWith("id.txt")) {
+                            System.out.println("Found file change. Writing to SW object");
+                            //read the transferred progress.txt
+                            BufferedReader reader;
+                            try{
+                                reader = new BufferedReader(new FileReader(path+"/id.txt"));
+                                String line = reader.readLine();
+                                int swJobId = Integer.parseInt(line.substring(20,line.length()));
+                                this.job.setSwJobNum(swJobId);
+                                //should probably update the job in DB
+                                this.job.setJobStatus(JobStatus.RUNNING);
+                                jpaUserDao.update(this.job);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                boolean changed = key.reset();
+                if (!changed) {
+                    break;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -86,12 +114,11 @@ public class SeaWulfHandler {
         System.out.println("Aggregating Data for SeaWulf");
         String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
-        buildBashScript(path);
-        buildSlurmScript(path);
+        //buildBashScript(path);
+//        buildSlurmScript(path);
         System.out.println(path + properties.getTransferDataBash());
         ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferDataBash());
 
-        pb.inheritIO();
         buildDataFiles(path);
 
         System.out.println("Sending files to SeaWulf. Expect a DUO Push...");
@@ -103,27 +130,6 @@ public class SeaWulfHandler {
         catch (Exception io){
             io.printStackTrace();
         }
-    }
-
-    /**
-     * Method should update seawulf progress to the client side...somehow
-     */
-    public void updateSeaWulfProgress(){
-
-    }
-
-    /**
-     * method would send the request to the seawulf, along with the necessary files
-     */
-    public void sendRequestToSeaWulf(){
-
-    }
-
-    /**
-     * prepares seawulf for performing the requested job/algorithm running
-     */
-    public void prepareSeaWulf(){
-
     }
 
     private void buildDataFiles(String path){
@@ -199,7 +205,9 @@ public class SeaWulfHandler {
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
-            String script = String.format(properties.getBashScript(), properties.getNetID(), properties.getNetID(), properties.getPassword(), job.getState().toString(), job.getJobId(), job.getJobId(), job.getState().toString(), job.getJobId(), properties.getNetID(), properties.getPassword());
+            String script = String.format(properties.getBashScript(), properties.getNetID(), properties.getNetID(),
+                    properties.getPassword(), job.getState().toString(), job.getJobId(), job.getJobId(), job.getState().toString(),
+                    job.getJobId(), properties.getNetID(), properties.getPassword());
             bashOut.write(script);
 
             bashOut.close();
@@ -214,9 +222,10 @@ public class SeaWulfHandler {
         System.out.println("Sending sbatch command to start job on seawulf");
         String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
+        buildSlurmScript(path);
         buildStartScript(path);
         ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getBashStartJobScriptPath());
-        pb.inheritIO();
+
         buildDataFiles(path);
 
         System.out.println("Logging in and starting job. Expect a DUO push...");
@@ -237,7 +246,12 @@ public class SeaWulfHandler {
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
-            String script = String.format(properties.getJobStartScript(), properties.getNetID(), properties.getNetID(), properties.getPassword(), job.getState().toString(), job.getJobId(), properties.getNetID(), job.getState().toString(), job.getJobId(), properties.getNetID(), properties.getPassword());
+            String script = String.format(properties.getJobStartScript(), properties.getNetID(), properties.getNetID(),
+                    properties.getPassword(), job.getState().toString(), job.getJobId(), job.getJobId(), job.getState().toString(),
+                    job.getJobId(), properties.getNetID(), properties.getPassword(), properties.getNetID(),
+                    properties.getNetID(), properties.getPassword(), job.getState().toString(), job.getJobId(),
+                    properties.getNetID(), job.getState().toString(), job.getJobId(), properties.getNetID(),
+                    properties.getPassword());
             bashOut.write(script);
             bashOut.close();
         }
@@ -248,14 +262,54 @@ public class SeaWulfHandler {
     }
 
     public void cancelJob(){
+        System.out.println("Cancelling job" + job.getJobId() + " on SeaWulf.");
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
+        buildCancelScript(path);
+        ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getCancelSwJobFile());
+
+        buildDataFiles(path);
+
+        System.out.println("Logging in and cancelling Job. Expect a DUO push...");
+        pb.directory(new File(path));
+        pb.redirectErrorStream(true);
+        try{
+            pb.start();
+        }
+        catch (Exception io){
+            io.printStackTrace();
+        }
+    }
+
+    public void buildCancelScript(String path){
+        File bash = new File(path + properties.getCancelSwJobFile());
+        FileWriter bashOut;
+        try {
+            bashOut = new FileWriter(bash);
+            ObjectMapper objmp = new ObjectMapper();
+            //grabbing script from system properties file.
+            String script = String.format(properties.getCancelSwJobBash(), properties.getNetID(), properties.getNetID(),
+                    properties.getPassword(), job.getSwJobNum());
+            bashOut.write(script);
+
+            bashOut.close();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void getJobFromSeaWulf(int swjobID){
-        this.job.setJobId(11);
+        this.job.setJobId(10);
         transferResultFiles(job);
         this.job.setJobStatus(JobStatus.POST_PROCESSING);
-        RunResults rr = parseDataIntoRunResult(this.job);
+        List<DistrictingPlan> plans = new ArrayList<>();
+        for (int i = 0; i < 3; i++){
+            parseDataIntoRunResult(this.job, plans, i);
+        }
+        System.out.println("Created Run Results Object");
+        RunResults rr = new RunResults(this.job, plans);
         postProcessSeaWulfJob(rr);
     }
 
@@ -270,12 +324,13 @@ public class SeaWulfHandler {
         rr.findHighestScoringDistricting();
         rr.findRandomDistricting();
         writeResultToFile(rr);
-        System.out.println(rr.getRandomDistricting().getDistricts());
         rr.addDistrictingsBack();
         rr.generateBoxPlot();
         System.out.println("Storing Box Plot Data in Database.");
         this.job.setJobStatus(JobStatus.COMPLETED);
         rr.storeBoxPlotInJob();
+        rr.generateSummary();
+        rr.writeSummaryToSeaWulf();
         System.out.println("Run Results Processing Complete.");
     }
 
@@ -358,11 +413,11 @@ public class SeaWulfHandler {
 //    }
 
 
-    public RunResults parseDataIntoRunResult(Job j){
+    public void parseDataIntoRunResult(Job j, List<DistrictingPlan> plans, int i){
         System.out.println("Aggregating data from SeaWulf run results.");
         JsonFactory jsonfactory = new JsonFactory();
-        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/NY_result.json");
-        List<DistrictingPlan> plans = new ArrayList<>();
+        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/results/"
+                + this.job.getState() + "_result" + i + ".json");
         try {
             JsonParser parser = jsonfactory.createJsonParser(source);
             while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -378,7 +433,11 @@ public class SeaWulfHandler {
                 parser.nextToken();
             }
             parser.nextToken();
+            int k = 0;
             while (parser.getCurrentToken() != JsonToken.END_ARRAY) {
+//                System.out.println(k);
+//                if (i == 1 && k == 33)
+//                    break;
                 while (parser.getCurrentToken() != JsonToken.START_OBJECT && parser.getCurrentToken() != null) {
                     parser.nextToken();
                 }
@@ -393,7 +452,6 @@ public class SeaWulfHandler {
                             break;
                         parser.nextToken();
                         parser.nextToken();
-
                         //District ID
                         int districtID = parser.getIntValue();
                         parser.nextToken();
@@ -498,15 +556,13 @@ public class SeaWulfHandler {
                     }
                     plans.add(new DistrictingPlan(job.getState(), districts, job.getPopEqThreshold(), job.getCompactness()));
                 }
+                k++;
             }
             parser.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //Create the RunResults object here.
-        System.out.println("Created Run Results Object");
-        return new RunResults(job, plans);
     }
 
     public void writeResultToFile(RunResults rr) {
@@ -519,10 +575,9 @@ public class SeaWulfHandler {
             e.printStackTrace();
         }
         String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
-        File bash = new File(path + "/NY_ResultProcessed.json");
+        File bash = new File(path + "/job" + job.getJobId() + "_processed.json");
         FileWriter bashOut;
         System.out.println("Writing result to file...");
-        System.out.println(path + "/NY_ResultProcessed.json");
         try {
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
@@ -543,14 +598,13 @@ public class SeaWulfHandler {
         ProcessBuilder pb = new ProcessBuilder("expect", path + properties.getTransferSummaryBash());
 
         buildTransferScript(path, job);
-        pb.inheritIO();
         System.out.println("Sending files to SeaWulf. Expect a DUO Push...unless your on VPN :)");
         pb.directory(new File(path));
         pb.redirectErrorStream(true);
         try{
             pb.start();
         }
-        catch (IOException io){
+        catch (Exception io){
             io.printStackTrace();
         }
     }

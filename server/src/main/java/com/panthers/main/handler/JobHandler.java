@@ -216,8 +216,8 @@ public class JobHandler{
             return jobHistory;
 
         jobHistory.get(index).setJobStatus(JobStatus.CANCELLED);
-        dispatcherHandler.cancelJob(jobHistory.get(index));
         jpaUserDao.update(jobHistory.get(index));
+        dispatcherHandler.cancelJob(jobHistory.get(index));
         System.out.println("Cancelled execution of Job #" + jobId);
         return jobHistory;
     }

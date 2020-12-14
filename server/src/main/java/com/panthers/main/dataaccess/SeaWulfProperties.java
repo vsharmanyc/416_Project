@@ -22,6 +22,16 @@ public class SeaWulfProperties {
     private String monitorSwProgressFile;
     private String monitorSwProgressBash;
     private String jobStartScript;
+    private String cancelSwJobBash;
+    private String cancelSwJobFile;
+    private String generateSummaryScript;
+    private String generateSummaryScriptInput;
+    private String summaryFileName;
+    private String transferSummaryFilesToSeaWulfBash;
+    private String transferSummaryFilesToSeaWulfFile;
+    private String algorithmStaticWd;
+    private String transferFileFromAlg;
+    private String transferFileFromAlgFile;
 
     private InputStream input;
 
@@ -56,11 +66,61 @@ public class SeaWulfProperties {
             monitorSwProgressBash = properties.getProperty("monitorSwProgressBash");
             bashStartJobScriptPath = properties.getProperty("bashStartJobScriptPath");
             jobStartScript = properties.getProperty("jobStartScript");
+            cancelSwJobBash = properties.getProperty("cancelSwJobBash");
+            cancelSwJobFile = properties.getProperty("cancelSwJobFile");
+            generateSummaryScript = properties.getProperty("generateSummaryScript");
+            generateSummaryScriptInput = properties.getProperty("generateSummaryScriptInput");
+            summaryFileName = properties.getProperty("summaryFileName");
+            transferSummaryFilesToSeaWulfBash = properties.getProperty("transferSummaryFilesToSeaWulfBash");
+            transferSummaryFilesToSeaWulfFile = properties.getProperty("transferSummaryFilesToSeaWulfFile");
+            algorithmStaticWd = properties.getProperty("algorithmStaticWd");
+            transferFileFromAlg = properties.getProperty("transferFileFromAlg");
+            transferFileFromAlgFile = properties.getProperty("transferFileFromAlgFile");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getTransferFileFromAlg() {
+        return transferFileFromAlg;
+    }
+
+    public String getTransferFileFromAlgFile() {
+        return transferFileFromAlgFile;
+    }
+
+    public String getAlgorithmStaticWd() {
+        return algorithmStaticWd;
+    }
+
+    public String getTransferSummaryFilesToSeaWulfFile() {
+        return transferSummaryFilesToSeaWulfFile;
+    }
+
+    public String getTransferSummaryFilesToSeaWulfBash() {
+        return transferSummaryFilesToSeaWulfBash;
+    }
+
+    public String getSummaryFileName() {
+        return summaryFileName;
+    }
+
+    public String getGenerateSummaryScriptInput() {
+        return generateSummaryScriptInput;
+    }
+
+    public String getGenerateSummaryScript() {
+        return generateSummaryScript;
+    }
+
+    public String getCancelSwJobBash() {
+        return cancelSwJobBash;
+    }
+
+    public String getCancelSwJobFile() {
+        return cancelSwJobFile;
     }
 
     public String getJobStartScript() {
