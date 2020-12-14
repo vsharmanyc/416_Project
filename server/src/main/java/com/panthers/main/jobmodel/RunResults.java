@@ -1,11 +1,18 @@
 package com.panthers.main.jobmodel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.panthers.main.dataaccess.SeaWulfProperties;
 import com.panthers.main.jpa.Dao;
 import com.panthers.main.jpa.JpaJobDao;
 import com.panthers.main.mapmodel.District;
 import com.panthers.main.mapmodel.Precinct;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +41,8 @@ public class RunResults {
     private List<Double> averageDistrictingMVAP;
     @JsonIgnore
     private static Dao<Job> jpaUserDao = new JpaJobDao();
+    @JsonIgnore
+    private SeaWulfProperties properties;
 
     public RunResults(Job job, List<DistrictingPlan> plans) {
         this.job = job;
@@ -46,6 +55,8 @@ public class RunResults {
         this.averageDistrictingMVAP = null;
         this.counties = 0;
         this.boxAndWhiskerData = new ArrayList<>();
+        this.properties = new SeaWulfProperties();
+        this.properties.getProperties();
     }
 
     /*GETTERS/SETTERS*/
@@ -133,14 +144,6 @@ public class RunResults {
     }
 
     /**
-     * generates summary of key information about this result from a job run.
-     * @return returns the summary requested
-     */
-    public String generateRunSummary(){
-        return null;
-    }
-
-    /**
      * function determines a districting fitting the type requested (RANDOM, EXTREME, AVERAGE)
      * @param type the type requested from the districtings
      * @return returns the districtingplan that coinsides with the requested type.
@@ -163,22 +166,6 @@ public class RunResults {
         for (DistrictingPlan dp: plans){
             dp.sortDistrictsByMVAP();
         }
-    }
-
-    /**
-     * function adds given precincts to precinct geometry.
-     * @param geo the precincts we are to add to this runresults precinctgeometry.
-     */
-    public void addToPrecinctGeometry(List<Precinct> geo){
-        precinctGeometry.addAll(geo);
-    }
-
-    /**
-     * adds the given districts to this runresults districting graph (stored as adjacency list)
-     * @param graph list of districts to add
-     */
-    public void addToDistrictingGraphs(List<List<District>> graph){
-        districtingGraph.add(graph);
     }
 
     /**
@@ -312,6 +299,93 @@ public class RunResults {
     @Override
     public String toString(){
         return "districtingPlans:";
+    }
+
+    public void generateSummary(){
+        System.out.println("Generating Summary for job" + job.getJobId());
+        String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+
+        ProcessBuilder pb = new ProcessBuilder("python3", path + properties.getGenerateSummaryScript() + " "
+                + String.format(properties.getGenerateSummaryScriptInput(), job.getState().toString(), job.getJobId()));
+
+        System.out.println("Generating Job Summary now. \nEST: NY: 10 min | PA: 7 min | MD: 3 min");
+        pb.directory(new File(path));
+        pb.redirectErrorStream(true);
+        try{
+            pb.start();
+        }
+        catch (Exception io){
+            io.printStackTrace();
+        }
+    }
+
+    public void writeSummaryToSeaWulf(){
+        try {
+            WatchService watcher = FileSystems.getDefault().newWatchService();
+            String p = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd() + "/results";
+            Path path = Paths.get(p);
+            path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
+            while (1==1) {
+                WatchKey key;
+                key = watcher.take();
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    WatchEvent.Kind<?> eventType = event.kind();
+                    WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                    Path fileName = ev.context();
+                    if (eventType == StandardWatchEventKinds.OVERFLOW) {
+                        continue;
+                    } else if (eventType == StandardWatchEventKinds.ENTRY_CREATE ||
+                            eventType == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        final Path itemChanged = (Path) event.context();
+                        if (itemChanged.endsWith(String.format(properties.getSummaryFileName(), job.getJobId(), job.getState().toString()))) {
+                            System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
+                            String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+
+                            buildTransferToSWScript(transferPath);
+                            ProcessBuilder pb = new ProcessBuilder("expect", transferPath + properties.getTransferSummaryFilesToSeaWulfFile());
+
+                            System.out.println("Transferring files to SeaWulf. Expect a DUO prompt...");
+                            pb.directory(new File(transferPath));
+                            pb.redirectErrorStream(true);
+                            try{
+                                pb.start();
+                            }
+                            catch (Exception io){
+                                io.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                boolean changed = key.reset();
+                if (!changed) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void buildTransferToSWScript(String path){
+            File bash = new File(path + properties.getTransferSummaryFilesToSeaWulfFile());
+            FileWriter bashOut;
+            try {
+                bashOut = new FileWriter(bash);
+                ObjectMapper objmp = new ObjectMapper();
+                //grabbing script from system properties file.
+                String script = String.format(properties.getTransferSummaryFilesToSeaWulfBash(),
+                        job.getJobId(), job.getState().toString(), job.getJobId(), job.getState().toString(),
+                        job.getJobId(), job.getState().toString(), job.getJobId(), job.getState().toString(),
+                        properties.getNetID(), job.getState().toString(), job.getJobId(), properties.getNetID(),
+                        properties.getPassword());
+                bashOut.write(script);
+
+                bashOut.close();
+            }
+
+            catch (Exception e){
+                e.printStackTrace();
+            }
     }
 
 }

@@ -24,6 +24,11 @@ public class SeaWulfProperties {
     private String jobStartScript;
     private String cancelSwJobBash;
     private String cancelSwJobFile;
+    private String generateSummaryScript;
+    private String generateSummaryScriptInput;
+    private String summaryFileName;
+    private String transferSummaryFilesToSeaWulfBash;
+    private String transferSummaryFilesToSeaWulfFile;
 
     private InputStream input;
 
@@ -60,12 +65,37 @@ public class SeaWulfProperties {
             jobStartScript = properties.getProperty("jobStartScript");
             cancelSwJobBash = properties.getProperty("cancelSwJobBash");
             cancelSwJobFile = properties.getProperty("cancelSwJobFile");
+            generateSummaryScript = properties.getProperty("generateSummaryScript");
+            generateSummaryScriptInput = properties.getProperty("generateSummaryScriptInput");
+            summaryFileName = properties.getProperty("summaryFileName");
+            transferSummaryFilesToSeaWulfBash = properties.getProperty("transferSummaryFilesToSeaWulfBash");
+            transferSummaryFilesToSeaWulfFile = properties.getProperty("transferSummaryFilesToSeaWulfFile");
 
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getTransferSummaryFilesToSeaWulfFile() {
+        return transferSummaryFilesToSeaWulfFile;
+    }
+
+    public String getTransferSummaryFilesToSeaWulfBash() {
+        return transferSummaryFilesToSeaWulfBash;
+    }
+
+    public String getSummaryFileName() {
+        return summaryFileName;
+    }
+
+    public String getGenerateSummaryScriptInput() {
+        return generateSummaryScriptInput;
+    }
+
+    public String getGenerateSummaryScript() {
+        return generateSummaryScript;
     }
 
     public String getCancelSwJobBash() {

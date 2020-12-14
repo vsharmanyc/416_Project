@@ -132,27 +132,6 @@ public class SeaWulfHandler {
         }
     }
 
-    /**
-     * Method should update seawulf progress to the client side...somehow
-     */
-    public void updateSeaWulfProgress(){
-
-    }
-
-    /**
-     * method would send the request to the seawulf, along with the necessary files
-     */
-    public void sendRequestToSeaWulf(){
-
-    }
-
-    /**
-     * prepares seawulf for performing the requested job/algorithm running
-     */
-    public void prepareSeaWulf(){
-
-    }
-
     private void buildDataFiles(String path){
         File swData = new File(path + properties.getSwDataPrefix() + job.getJobId() + ".json");
         FileWriter swDataOutput;
@@ -340,12 +319,13 @@ public class SeaWulfHandler {
         rr.findHighestScoringDistricting();
         rr.findRandomDistricting();
         writeResultToFile(rr);
-        System.out.println(rr.getRandomDistricting().getDistricts());
         rr.addDistrictingsBack();
         rr.generateBoxPlot();
         System.out.println("Storing Box Plot Data in Database.");
         this.job.setJobStatus(JobStatus.COMPLETED);
         rr.storeBoxPlotInJob();
+        rr.generateSummary();
+        rr.writeSummaryToSeaWulf();
         System.out.println("Run Results Processing Complete.");
     }
 
@@ -589,10 +569,9 @@ public class SeaWulfHandler {
             e.printStackTrace();
         }
         String path = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
-        File bash = new File(path + "/NY_ResultProcessed.json");
+        File bash = new File(path + "/job" + job.getJobId() + "_processed.json");
         FileWriter bashOut;
         System.out.println("Writing result to file...");
-        System.out.println(path + "/NY_ResultProcessed.json");
         try {
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
