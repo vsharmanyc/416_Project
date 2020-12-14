@@ -125,7 +125,7 @@ public class SeaWulfHandler {
         pb.directory(new File(path));
         pb.redirectErrorStream(true);
         try{
-            //pb.start();
+            pb.start();
         }
         catch (Exception io){
             io.printStackTrace();
@@ -232,7 +232,7 @@ public class SeaWulfHandler {
         pb.directory(new File(path));
         pb.redirectErrorStream(true);
         try{
-            //pb.start();
+            pb.start();
         }
         catch (Exception io){
             io.printStackTrace();
@@ -274,7 +274,7 @@ public class SeaWulfHandler {
         pb.directory(new File(path));
         pb.redirectErrorStream(true);
         try{
-            //pb.start();
+            pb.start();
         }
         catch (Exception io){
             io.printStackTrace();
@@ -596,7 +596,7 @@ public class SeaWulfHandler {
         pb.directory(new File(path));
         pb.redirectErrorStream(true);
         try{
-            //pb.start();
+            pb.start();
         }
         catch (Exception io){
             io.printStackTrace();

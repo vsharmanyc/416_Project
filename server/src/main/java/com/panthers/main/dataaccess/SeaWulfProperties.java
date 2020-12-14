@@ -29,6 +29,9 @@ public class SeaWulfProperties {
     private String summaryFileName;
     private String transferSummaryFilesToSeaWulfBash;
     private String transferSummaryFilesToSeaWulfFile;
+    private String algorithmStaticWd;
+    private String transferFileFromAlg;
+    private String transferFileFromAlgFile;
 
     private InputStream input;
 
@@ -70,12 +73,26 @@ public class SeaWulfProperties {
             summaryFileName = properties.getProperty("summaryFileName");
             transferSummaryFilesToSeaWulfBash = properties.getProperty("transferSummaryFilesToSeaWulfBash");
             transferSummaryFilesToSeaWulfFile = properties.getProperty("transferSummaryFilesToSeaWulfFile");
-
+            algorithmStaticWd = properties.getProperty("algorithmStaticWd");
+            transferFileFromAlg = properties.getProperty("transferFileFromAlg");
+            transferFileFromAlgFile = properties.getProperty("transferFileFromAlgFile");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getTransferFileFromAlg() {
+        return transferFileFromAlg;
+    }
+
+    public String getTransferFileFromAlgFile() {
+        return transferFileFromAlgFile;
+    }
+
+    public String getAlgorithmStaticWd() {
+        return algorithmStaticWd;
     }
 
     public String getTransferSummaryFilesToSeaWulfFile() {
