@@ -23,6 +23,7 @@ class Project extends Component {
                 random: false,
                 avg: false,
                 extreme: false,
+                importStatus: '',
                 file: {
                     random: '',
                     avg: '',
@@ -41,15 +42,15 @@ class Project extends Component {
             filter: this.initial_filter,
             geoJSON: null,
             geoData: {},
-            jobs: [],
+            jobs: [{jobId: 11, state: 'NY', demographicGroups: [], jobStatus: 'COMPLETED'}, {jobId: 10, state: 'MD', demographicGroups: [], jobStatus: 'COMPLETED'}],
             toggleModal: false,
             modalData: null,
         }
     }
 
     componentDidMount() {
-        this.getJobHistoryAndUpdateJobs();
-        this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 600000);
+        //this.getJobHistoryAndUpdateJobs();
+        //this.interval = setInterval(this.getJobHistoryAndUpdateJobs, 600000);
     }
 
     componentWillUnmount(){

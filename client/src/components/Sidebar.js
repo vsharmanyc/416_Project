@@ -67,7 +67,7 @@ class Sidebar extends Component {
                             <Tab eventKey={0} title="Data"><Data geoData={this.props.geoData} stateIsSelected={this.props.state !== 'Select...'} /></Tab>
 
                             <Tab eventKey={1} title="Filter">
-                                <Filter updateFilter={this.props.updateFilter} filter={this.props.filter} stateIsSelected={this.props.state !== 'Select...'} jobs={this.props.jobs}/>
+                                <Filter updateFilter={this.props.updateFilter} filter={this.props.filter} state={this.props.state} stateIsSelected={this.props.state !== 'Select...'} jobs={this.props.jobs}/>
                             </Tab>
 
                             <Tab eventKey={2} title="Create Job">

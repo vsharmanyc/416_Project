@@ -20,7 +20,7 @@ class GraphModal extends Component {
             animationEnabled: true,
             theme: "light2",
             title: {
-                text: "BVAP% By District in " + this.props.job.state
+                text: "VAP% By District in " + this.props.job.state
             },
             axisX: {
                 title: "District Number"
@@ -38,6 +38,8 @@ class GraphModal extends Component {
             }, 
             {
                 type: "scatter",
+                markerType: "cross",
+                markerColor: "#FF0000",
                 name: "Enacted Plan",
                 toolTipContent: `<span style="color:#C0504E">{name}</span>: {y} km/s`,
                 showInLegend: true,

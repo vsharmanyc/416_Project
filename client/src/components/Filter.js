@@ -41,8 +41,22 @@ class Filter extends Component {
         if (key === 'job') {
             filter.Districting.jobObj = this.props.jobs.find(job => job.jobId === parseInt(val.value));
             console.log(filter.Districting['jobObj']);
+            filter.Districting.importStatus = '';
+            filter.Districting.random = false;
+            filter.Districting.avg = false;
+            filter.Districting.extreme = false;
         }
         this.props.updateFilter(filter);
+    }
+
+    stateInitials = (stateName) => {
+        if (stateName === 'Maryland')
+            return 'MD';
+        else if (stateName === 'New York')
+            return 'NY';
+        else if (stateName === 'Pennsylvania')
+            return 'PA';
+        return stateName;
     }
 
     render() {
@@ -68,7 +82,8 @@ class Filter extends Component {
 
         const colorRange = this.props.filter.Heatmap.colorRange;
 
-        let jobs = this.props.jobs.map((job) => ({ value: job.jobId, label: "Job " + job.jobId }));
+        let jobs = this.props.jobs.filter((job) => (job.jobStatus === 'COMPLETED' && job.state === this.stateInitials(this.props.state)));
+        jobs = jobs.map((job) => ({ value: job.jobId, label: "Job " + job.jobId }));
         jobs.unshift({ value: 'Select...', label: 'Select...' });
 
         let percentages = [];
@@ -172,10 +187,12 @@ class Filter extends Component {
                         </div>
                     </div>
 
-                    <h6>Display Districtings</h6>
+                    <h6>{`Display ${this.props.state !== 'Select...' ? this.stateInitials(this.props.state) : ''} Districtings`}</h6>
                     <div style={{ textAlign: 'start' }}>
                         <Select options={jobs} value={this.props.filter.Districting.job} onChange={(selected) => this.updateDistrictingFilter('job', selected)}
                             isDisabled={!this.props.stateIsSelected || jobs.length === 0} />
+
+                        { this.props.filter.Districting.importStatus !== '' ? 
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                             <div>
                                 <Form.Check
@@ -211,6 +228,8 @@ class Filter extends Component {
                                 <div style={{ background: this.props.filter.Districting.color.extreme, width: '100%', height: '20%', border: 'solid', opacity: this.props.stateIsSelected ? 1 : 0 }} />
                             </div>
                         </div>
+                        : <></>
+                        }
                     </div>
 
                     <strong style={{ fontFamily: 'Arial', background: 'white' }}>

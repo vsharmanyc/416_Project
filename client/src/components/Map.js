@@ -6,10 +6,8 @@ import MD_Districts from './../geoJSON/MD_district.geojson'
 import NY_Precincts from './../geoJSON/NY_normalized.geojson'
 import PA_Precincts from './../geoJSON/PA_normalized.geojson'
 import MD_Precincts from './../geoJSON/MD_normalized.geojson'
-import average from './../geoJSON/jobID-1_MD_average_districting.geojson'
-import random from './../geoJSON/jobID-1_MD_random_districting.geojson'
-import extreme from './../geoJSON/jobID-1_MD_extreme_districting.geojson'
 import '../App.css';
+const clonedeep = require('lodash/cloneDeep');
 
 
 class Map extends Component {
@@ -19,6 +17,7 @@ class Map extends Component {
 
         mapboxgl.accessToken = 'pk.eyJ1IjoidmFzZWdvZCIsImEiOiJja2ZiZXNnOHQxMXI1MnRvOG1yY25icHZrIn0.8eLTRoe92V02KENueM7PqQ';
         this.map = null;
+        this.imports = [];
         this.state = {
             geoLevel: 'Districts',
             appliedLayers: [],
@@ -53,7 +52,8 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.state !== prevProps.state)
             this.changeState(prevProps.state, this.props.state);
-        else
+
+        if (JSON.stringify(this.props.filter) !== JSON.stringify(prevProps.filter))
             this.applyGeoFilter(this.props.filter, prevProps.filter);
     }
 
@@ -110,9 +110,9 @@ class Map extends Component {
             'id': sourceName + ' state-fills',
             'type': 'fill',
             'source': sourceName,
-            'layout': {'visibility': visibility},
+            'layout': { 'visibility': visibility },
             'paint': {
-                'fill-color': '#627BC1', // #627BC1
+                'fill-color': sourceName.includes('districting') ? '' : '#627BC1', // #627BC1
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
@@ -126,7 +126,7 @@ class Map extends Component {
             'id': sourceName + ' state-borders',
             'type': 'line',
             'source': sourceName,
-            'layout': {'visibility': visibility},
+            'layout': { 'visibility': visibility },
             'paint': {
                 'line-color': boundaryColor,
                 'line-width': 2
@@ -190,7 +190,7 @@ class Map extends Component {
 
     }
 
-    setVisibilty = (sourceName, visibility) =>{
+    setVisibilty = (sourceName, visibility) => {
         this.map.setLayoutProperty(sourceName + ' state-fills', 'visibility', visibility);
         this.map.setLayoutProperty(sourceName + ' state-borders', 'visibility', visibility);
     }
@@ -254,11 +254,17 @@ class Map extends Component {
             this.setVisibilty(districts, "none");
         else if (filter.Districts)
             this.setVisibilty(districts, "visible");
-        
-        if (!filter.Precincts)
+
+        if (!filter.Precincts) {
             this.setVisibilty(precincts, "none");
-        else if (filter.Precincts)
+            if (filter.Districts)
+                this.map.setLayoutProperty(districts + ' state-fills', 'visibility', 'visible');
+        }
+        else if (filter.Precincts) {
             this.setVisibilty(precincts, "visible");
+            if (filter.Districts)
+                this.map.setLayoutProperty(districts + ' state-fills', 'visibility', 'none');
+        }
 
         // Heatmap filter logic
         if (!filter.Heatmap.show && appliedLayers.includes(heatmap))
@@ -268,31 +274,47 @@ class Map extends Component {
         else if (filter.Heatmap.show && appliedLayers.includes(heatmap))
             this.updateHeatMapCriteria(heatmap, filter.Heatmap)
 
-        if(filter.Districting.job.value !== 'Select...' && prevFilter.Districting.job.value !== 'filter.Districting.job.value'){
 
-            console.log(filter.Districting.jobObj);
+        if (prevFilter.Districting.importStatus === 'success' && filter.Districting.importStatus === '') {
+            this.removeGeoJsonLayer('average districting');
+            this.removeGeoJsonLayer('random districting');
+            this.removeGeoJsonLayer('extreme districting');
+        }
+
+        if (filter.Districting.job.value !== 'Select...' && filter.Districting.importStatus === '') {
+            let jobObj = filter.Districting.jobObj;
+            let random = 'jobID' + jobObj.jobId + '_' + jobObj.state + '_random_districting';
+            let average = 'jobID' + jobObj.jobId + '_' + jobObj.state + '_average_districting';
+            let extreme = 'jobID' + jobObj.jobId + '_' + jobObj.state + '_extreme_districting';
 
             fetch('http://localhost:8080/api/job/getSummaryFile',
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                method: "POST",
-                body: JSON.stringify(filter.Districting.jobObj),
-                mode: 'cors'
-            })
-        .then(response => console.log(response.json()));
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*"
+                    },
+                    method: "POST",
+                    body: JSON.stringify(filter.Districting.jobObj),
+                    mode: 'cors'
+                })
+                .then(response => response)
+                .then(response => {
+                    import(`./../geoJSON/${random}.geojson`).then(({ default: data }) => this.addGeoJsonLayer('random districting', data, filter.Districting.color.random, "none"));
+                    import(`./../geoJSON/${average}.geojson`).then(({ default: data }) => this.addGeoJsonLayer('average districting', data, filter.Districting.color.avg, "none"));
+                    import(`./../geoJSON/${extreme}.geojson`).then(({ default: data }) => {
+                        this.addGeoJsonLayer('extreme districting', data, filter.Districting.color.extreme, "none")
+                        let filterUpdate = clonedeep(this.props.filter);
+                        filterUpdate.Districting.importStatus = 'success';
+                        this.props.updateFilter(filterUpdate);
+                    });
+                });
+        }
+        if (filter.Districting.importStatus === 'success') {
+            this.setVisibilty('average districting', filter.Districting.avg ? "visible" : "none");
+            this.setVisibilty('random districting', filter.Districting.random ? "visible" : "none");
+            this.setVisibilty('extreme districting', filter.Districting.extreme ? "visible" : "none");
+        }
 
-            this.addGeoJsonLayer('average', average, filter.Districting.color.avg, "none");
-            this.addGeoJsonLayer('random', random, filter.Districting.color.random, "none");
-            this.addGeoJsonLayer('extreme', extreme, filter.Districting.color.extreme, "none");
-        }
-        if(filter.Districting.job.value === prevFilter.Districting.job.value){
-            this.setVisibilty('average', filter.Districting.avg ? "visible" : "none");
-            this.setVisibilty('random', filter.Districting.random ? "visible" : "none");
-            this.setVisibilty('extreme', filter.Districting.extreme ? "visible" : "none");
-        }
 
 
     }
@@ -350,12 +372,12 @@ class Map extends Component {
             ['to-color', colorRange.low], // '#001769'
             638,
             ['to-color', colorRange.avg],
-            colorRange.avg === '' ? 1 : 1551,
+            1551,
             ['to-color', colorRange.high]
         ];
 
         if (colorRange.avg === '') {
-            mapColorRange.splice(3, 4);
+            mapColorRange.splice(5, 2);
         }
 
         // The feature-state dependent fill-opacity expression will render the hover effect
