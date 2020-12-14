@@ -17,11 +17,12 @@ public class Job {
     @Enumerated(EnumType.STRING)
     @Column(name="state")
     private States state;
-    @ElementCollection(targetClass = Demographic.class)
-    @Column(name = "demographic_groups")
+    //@ElementCollection(targetClass = Demographic.class)
+    //@Column(name = "demographic_groups")
+    @Transient
     private List<Demographic> demographicGroups;
-//    @Column(name = "demographic_groups")
-//    private String demGroups;
+    @Column(name = "demographic_groups")
+    private String demGroups;
     @Column(name = "pop_eq_threshold")
     private Double popEqThreshold;
     @Column(name = "compactness")
@@ -55,6 +56,7 @@ public class Job {
         this.jobId = -1;
         this.jobStatus = JobStatus.PENDING;
         this.boxPlotData = "NOT GENERATED";
+        this.demGroups = this.demographicGroups.toString();
     }
 
 //    public Job(Integer jobId, String state, Integer numDistrictings, String demographicGroups, String popEqThreshold,

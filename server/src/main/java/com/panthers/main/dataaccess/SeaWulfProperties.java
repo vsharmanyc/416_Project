@@ -16,6 +16,8 @@ public class SeaWulfProperties {
     private String password;
     private String swSummaryTransferFile;
     private String transferSummaryBash;
+    private String transferResultBash;
+    private String transferResultFile;
 
     private InputStream input;
 
@@ -44,11 +46,21 @@ public class SeaWulfProperties {
             password = properties.getProperty("password");
             swSummaryTransferFile = properties.getProperty("swSummaryTransferFile");
             transferSummaryBash = properties.getProperty("transferSummaryBash");
+            transferResultBash = properties.getProperty("transferResultBash");
+            transferResultFile = properties.getProperty("transferResultFile");
             input.close();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getTransferResultFile() {
+        return transferResultFile;
+    }
+
+    public String getTransferResultBash() {
+        return transferResultBash;
     }
 
     public String getNetID() {
