@@ -18,11 +18,11 @@ class Job extends Component {
                     "Access-Control-Allow-Origin": "*"
                 },
                 method: "POST",
-                body: JSON.stringify({jobId: this.props.job.jobId}),
+                body: JSON.stringify({ jobId: this.props.job.jobId }),
                 mode: 'cors'
             })
-        .then(response => response.json())
-        .then(response => this.props.updateJobs(response));
+            .then(response => response.json())
+            .then(response => this.props.updateJobs(response));
     }
 
     deleteJob = () => {
@@ -33,11 +33,11 @@ class Job extends Component {
                     "Access-Control-Allow-Origin": "*"
                 },
                 method: "POST",
-                body: JSON.stringify({jobId: this.props.job.jobId}),
+                body: JSON.stringify({ jobId: this.props.job.jobId }),
                 mode: 'cors'
             })
-        .then(response => response.json())
-        .then(response => this.props.updateJobs(response));
+            .then(response => response.json())
+            .then(response => this.props.updateJobs(response));
     }
 
     toggleDetails = (e) => {
@@ -46,71 +46,74 @@ class Job extends Component {
     }
 
     strNumWithCommas = (num) => {
-        if(num === undefined)
+        if (num === undefined)
             return "";
         return parseInt(num).toLocaleString();
     }
 
 
     render() {
-        const statusColor = { 'COMPLETED' : 'blue', 'CANCELLED' : 'red', 'QUEUED': 'black'};
-        const colStyle = { display: 'flex', flexDirection: 'column', textAlign: 'left', };
+        const statusColor = { 'COMPLETED': 'blue', 'CANCELLED': 'red', 'QUEUED': 'black' };
+        const colStyle = { textAlign: 'left', };
         const style = {
-            display: 'flex', flexDirection: 'column',
+            position: 'relative',
             marginTop: '2%',
             height: '20%',
             width: '90%',
             border: 'solid',
             borderWidth: '3px',
             borderColor: '#438f88',
-            overflow: 'auto'
+            background: 'white',
+            overflow: 'auto',
+            padding: '2%',
         };
 
         return (
             <div style={style}>
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-                    <div style={colStyle}>
-                        <p style={{  }}>{'ID: ' + this.props.job.jobId}</p>
-                        <p style={{  }}>Status: 
+                <div style={{  textAlign: 'left' }}>
+                    <p>{'ID: ' + this.props.job.jobId}</p>
+                    <p>{'State: ' + this.props.job.state}</p>
+                    <p>Status:
                             <span style={{ color: statusColor[this.props.job.jobStatus] }}>
-                                {" " + this.props.job.jobStatus}
-                            </span>
-                        </p>
-                        <a href="" onClick={this.toggleDetails}>{!this.state.toggle ? 'expand details' : 'see less'}</a>
-                    </div>
+                            {" " + this.props.job.jobStatus}
+                        </span>
+                    </p>
 
-                    <div style={colStyle}>
+                    <a href="" onClick={this.toggleDetails}>{!this.state.toggle ? 'expand details' : 'see less'}</a>
+
+                    {this.state.toggle ?
+                        <>
+                            <div></div>
+                            <p >{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
+                            <p>Demographics:</p>
+                            <ul>{this.props.job.demographicGroups.map((demoEnum) => <li>{demoEnum}</li>)}</ul>
+                            <p >{'Compactness: ' + this.props.job.compactness}</p>
+                            <p >{'Population Equation Threshold: ' + this.props.job.popEqThreshold}</p>
+                        </>
+                        :
+                        <></>
+                    }
+                </div>
+
+                <div style={{ position: 'absolute', top: '0px', right: '0px', width: '100%', height: '100%', pointerEvents: 'none' }}>
+                    <div style={{ width: '25%', height: '15%', float: 'right', pointerEvents: 'all', textAlign: 'start' }}>
                         <button style={{ marginTop: '3%' }} class='btn-primary' onClick={this.deleteJob}>
                             Delete
                         </button>
-                        <button style={{ marginTop: '3%' }} 
-                        class={this.props.job.jobStatus === 'CANCELLED' || this.props.job.jobStatus === 'COMPLETED' ? 'btn-disabled' : 'btn-primary'}
-                        disabled={this.props.job.jobStatus === 'CANCELLED' || this.props.job.jobStatus === 'COMPLETED'}
-                        onClick={this.cancelJob}>
+                        <button style={{ marginTop: '3%' }}
+                            class={this.props.job.jobStatus === 'CANCELLED' || this.props.job.jobStatus === 'COMPLETED' ? 'btn-disabled' : 'btn-primary'}
+                            disabled={this.props.job.jobStatus === 'CANCELLED' || this.props.job.jobStatus === 'COMPLETED'}
+                            onClick={this.cancelJob}>
                             Cancel
                         </button>
                         <button style={{ marginTop: '3%' }} class='btn-primary' onClick={() => this.props.toggleModal(this.props.job)}
-                        class={this.props.job.boxPlotData === null ? 'btn-disabled' : 'btn-primary'}
-                        disabled={this.props.job.boxPlotData === null}>
+                            class={this.props.job.boxPlotData === null ? 'btn-disabled' : 'btn-primary'}
+                            disabled={this.props.job.boxPlotData === null}>
                             Graph
                         </button>
                     </div>
                 </div>
-                {this.state.toggle ?
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <div style={colStyle}>
-                            <div></div>
-                            <p>{'State: ' + this.props.job.state}</p>
-                            <p >{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
-                            <p style={{ whiteSpace: 'pre' }}>Demographics:                                  </p>
-                            {this.props.job.demographicGroups.map((demoEnum) => <p style={{ color: '#438f88' }}>{demoEnum}</p> )}
-                            <p >{'Compactness: ' + this.props.job.compactness}</p>
-                            <p >{'Population Equation Threshold: ' + this.props.job.popEqThreshold}</p>
-                        </div>
-                    </div>
-                    :
-                    <div></div>
-                }
+
             </div>
         );
     }
