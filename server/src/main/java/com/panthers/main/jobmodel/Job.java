@@ -26,6 +26,14 @@ public class Job {
     private String compactness;
     @Column(name="box_plot_string")
     private String boxPlotData;
+    @Column(name="enacted_plan_string")
+    private String enactedPlanData;
+    @Column(name="random_plan_string")
+    private String randomPlanData;
+    @Column(name="extreme_plan_string")
+    private String extremePlanData;
+    @Column(name="average_plan_string")
+    private String averagePlanData;
     @Column(name="sw_job_num")
     private int swJobNum;
 
@@ -56,6 +64,10 @@ public class Job {
         this.jobStatus = JobStatus.PENDING;
         this.boxPlotData = "NOT GENERATED";
         this.swJobNum = -1;
+        this.enactedPlanData = "";
+        this.extremePlanData = "";
+        this.averagePlanData = "";
+        this.randomPlanData = "";
     }
 
 //    public Job(Integer jobId, String state, Integer numDistrictings, String demographicGroups, String popEqThreshold,
@@ -85,6 +97,38 @@ public class Job {
 //    }
 
     /*GETTERS/SETTERS*/
+
+    public String getEnactedPlanData() {
+        return enactedPlanData;
+    }
+
+    public void setEnactedPlanData(String enactedPlanData) {
+        this.enactedPlanData = enactedPlanData;
+    }
+
+    public String getRandomPlanData() {
+        return randomPlanData;
+    }
+
+    public void setRandomPlanData(String randomPlanData) {
+        this.randomPlanData = randomPlanData;
+    }
+
+    public String getExtremePlanData() {
+        return extremePlanData;
+    }
+
+    public void setExtremePlanData(String extremePlanData) {
+        this.extremePlanData = extremePlanData;
+    }
+
+    public String getAveragePlanData() {
+        return averagePlanData;
+    }
+
+    public void setAveragePlanData(String averagePlanData) {
+        this.averagePlanData = averagePlanData;
+    }
 
     public int getSwJobNum() {
         return swJobNum;

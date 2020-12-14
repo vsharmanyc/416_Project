@@ -83,7 +83,7 @@ public class JobController {
     public void parseJobData(){
         ArrayList<Demographic> dem = new ArrayList<>();
         dem.add(Demographic.AFRICAN_AMERICAN);
-        dem.add(Demographic.HISPANIC_LATINO);
+//        dem.add(Demographic.HISPANIC_LATINO);
         SeaWulfHandler swh = new SeaWulfHandler(new Job(States.MD, 510, dem, 0.034,
                "Very Compact"));
         swh.getJobFromSeaWulf(1);
