@@ -38,7 +38,7 @@ class Filter extends Component {
     updateDistrictingFilter = (key, val) => {
         let filter = clonedeep(this.props.filter);
         filter.Districting[key] = val;
-        if(key === 'job'){
+        if (key === 'job') {
             filter.Districting.jobObj = this.props.jobs.find(job => job.jobId === parseInt(val.value));
             console.log(filter.Districting['jobObj']);
         }
@@ -116,8 +116,8 @@ class Filter extends Component {
                             </div>
 
                             {this.props.filter.Heatmap.show ?
-                                <div style={{ width: '100%', height: '25%' }}>
-                                    <div style={{ fontFamily: 'sans-serif', fontSize: '75%' }}>Population Color Range</div>
+                                <div style={{ width: '100%', height: '25%', marginTop: '2%' }}>
+                                    <div style={{ fontFamily: 'sans-serif', fontSize: '85%', textAlign: 'center' }}>Population Color Range</div>
                                     <div style={{
                                         marginTop: '1%',
                                         width: '100%',
@@ -133,20 +133,32 @@ class Filter extends Component {
                                         }}>
                                             {colorRange.avg !== '' ?
                                                 <>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.low }} /> {percentages[0]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.8 * .75, background: colorRange.low }} /> {percentages[1]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.6 * .75, background: colorRange.low }} /> {percentages[2]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.4 * .75, background: colorRange.low }} /> {percentages[3]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.2 * .75, background: colorRange.low }} /> {percentages[4]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.avg }} /> {percentages[5]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.2 * .75, background: colorRange.high }} /> {percentages[6]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.4 * .75, background: colorRange.high }} /> {percentages[7]}</div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.6 * .75, background: colorRange.high }} /> {percentages[8]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.8 * .75, background: colorRange.high }} /> {percentages[9]} </div>
-                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.high }} /> {percentages[10]} </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.low }} /> min </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.8 * .75, background: colorRange.low }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.6 * .75, background: colorRange.low }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.4 * .75, background: colorRange.low }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.2 * .75, background: colorRange.low }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.avg }} /> avg </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.2 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.4 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.6 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 0.8 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1.0 * .75, background: colorRange.high }} /> max </div>
                                                 </>
                                                 :
-                                                normRange
+                                                <>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 1 / 11 * .75, background: colorRange.high }} /> min </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 2 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 3 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 4 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 5 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 6 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 7 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 8 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 9 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 10 / 11 * .75, background: colorRange.high }} /> </div>
+                                                    <div style={boxStyle}> <div style={{ width: '100%', height: '100%', opacity: 11 / 11 * .75, background: colorRange.high }} /> max </div>
+                                                </>
                                             }
                                         </div>
                                     </div>

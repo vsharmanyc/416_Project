@@ -3,7 +3,6 @@ import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import GraphModal from './GraphModal'
-import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
 
 class Project extends Component {
 

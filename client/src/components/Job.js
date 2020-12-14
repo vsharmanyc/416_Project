@@ -54,7 +54,6 @@ class Job extends Component {
 
     render() {
         const statusColor = { 'COMPLETED': 'blue', 'CANCELLED': 'red', 'QUEUED': 'black' };
-        const colStyle = { textAlign: 'left', };
         const style = {
             position: 'relative',
             marginTop: '2%',
