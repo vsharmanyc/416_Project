@@ -310,7 +310,7 @@ class Map extends Component {
             ['to-color', criteria.colorRange.high]
         ];
 
-        if (criteria.colorRange.avg == '') {
+        if (criteria.colorRange.avg === '') {
             mapColorRange.splice(5, 2);
         }
 
@@ -318,7 +318,7 @@ class Map extends Component {
             [
                 'let',
                 'density',
-                criteria.popType.value != "MTOT" ? ['/', ['get', criteria.popType.value], 1] : ['-', ['get', 'TOTAL'], ['get', 'WTOT']],
+                criteria.popType.value !== "MTOT" ? ['/', ['get', criteria.popType.value], 1] : ['-', ['get', 'TOTAL'], ['get', 'WTOT']],
                 [
                     'interpolate',
                     ['linear'],
@@ -350,12 +350,12 @@ class Map extends Component {
             ['to-color', colorRange.low], // '#001769'
             638,
             ['to-color', colorRange.avg],
-            1551,
+            colorRange.avg === '' ? 1 : 1551,
             ['to-color', colorRange.high]
         ];
 
-        if (colorRange.avg == '') {
-            mapColorRange.splice(5, 2);
+        if (colorRange.avg === '') {
+            mapColorRange.splice(3, 4);
         }
 
         // The feature-state dependent fill-opacity expression will render the hover effect
@@ -369,7 +369,7 @@ class Map extends Component {
                 'fill-color': [
                     'let',
                     'density',
-                    popType.value != "MTOT" ? ['/', ['get', popType.value], 1] : ['-', ['get', 'TOTAL'], ['get', 'WTOT']],
+                    popType.value !== "MTOT" ? ['/', ['get', popType.value], 1] : ['-', ['get', 'TOTAL'], ['get', 'WTOT']],
                     [
                         'interpolate',
                         ['linear'],

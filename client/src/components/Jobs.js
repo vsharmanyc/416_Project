@@ -20,6 +20,9 @@ class Jobs extends Component {
 
         return (
             <div style={style}>
+                <button class="btn-primary" style={{width: '90%'}} onClick={this.props.getJobHistoryAndUpdateJobs}>
+                    Refresh
+                </button>
                 {this.props.jobs.map((job) => <Job updateJobs={this.props.updateJobs} job={job} toggleModal={this.props.toggleModal}/>)}
             </div>
         );

@@ -3,7 +3,6 @@ import Map from './Map'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import GraphModal from './GraphModal'
-import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
 
 class Project extends Component {
 
@@ -125,6 +124,7 @@ class Project extends Component {
                         updateFilter={this.updateFilter}
                         filter={this.state.filter}
                         toggleModal={this.toggleModal}
+                        getJobHistoryAndUpdateJobs={this.getJobHistoryAndUpdateJobs}
                     />
                 </div>
                 <Map
