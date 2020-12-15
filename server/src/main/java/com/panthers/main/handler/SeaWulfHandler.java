@@ -301,11 +301,11 @@ public class SeaWulfHandler {
     }
 
     public void getJobFromSeaWulf(int swjobID){
-        this.job.setJobId(11);
+        this.job.setJobId(14);
         transferResultFiles(job);
         this.job.setJobStatus(JobStatus.POST_PROCESSING);
         List<DistrictingPlan> plans = new ArrayList<>();
-        for (int i = 0; i < 2; i++){
+        for (int i = 0; i < 1; i++){
             parseDataIntoRunResult(this.job, plans, i);
         }
         System.out.println("Created Run Results Object");

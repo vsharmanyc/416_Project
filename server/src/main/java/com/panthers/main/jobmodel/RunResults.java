@@ -359,7 +359,7 @@ public class RunResults {
     public void getEnactedPlanValuesFromSummary(){
         System.out.println("Aggregating data from SeaWulf run results.");
         JsonFactory jsonfactory = new JsonFactory();
-        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/results/"
+        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/"
                  + "jobID" + this.job.getJobId() + "_" + this.job.getState() + ".json");
         try {
             JsonParser parser = jsonfactory.createJsonParser(source);
@@ -401,10 +401,9 @@ public class RunResults {
                             eventType == StandardWatchEventKinds.ENTRY_MODIFY) {
                         Path itemChanged = (Path) event.context();
                         System.out.println(itemChanged);
-                        if (itemChanged.toString().contains(".geojson")) {
-                            i++;
+                        if (itemChanged.toString().contains("temp.geojson")) {
                             System.out.println(i);
-                            if (i == 5){
+                            if (i == 4){
                                 System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
                                 String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 
@@ -424,9 +423,9 @@ public class RunResults {
                                 }
                             }
                         }
-                        else if (itemChanged.toString().contains(".json")){
+                        else if (itemChanged.toString().contains(".json") || itemChanged.toString().contains(".geojson")){
                             i++;
-                            if (i == 5){
+                            if (i == 4){
                                 System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
                                 String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
 

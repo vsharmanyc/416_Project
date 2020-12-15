@@ -11,6 +11,8 @@ import com.panthers.main.jobmodel.DistrictingPlan;
 import com.panthers.main.jobmodel.JobStatus;
 import com.panthers.main.jobmodel.RunResults;
 import com.panthers.main.jobmodel.Job;
+import com.panthers.main.jpa.Dao;
+import com.panthers.main.jpa.JpaJobDao;
 import com.panthers.main.mapmodel.*;
 
 import java.io.*;
@@ -26,6 +28,8 @@ public class ServerHandler {
     private Job job;
 
     private SeaWulfProperties properties;
+
+    private static Dao<Job> jpaUserDao = new JpaJobDao();
 
     public ServerHandler(Job job) {
         this.job = job;
@@ -46,19 +50,22 @@ public class ServerHandler {
 
     public void executeJob(){
         startJobOnServer();
+        this.job.setJobStatus(JobStatus.RUNNING);
+        jpaUserDao.update(this.job);
         getJobFromServer();//Waits until its done, basically busy waiting.
     }
 
     public void cancelJob(){
-
+        this.job.setJobStatus(JobStatus.CANCELLED);
+        jpaUserDao.update(this.job);
     }
 
     public void startJobOnServer(){
         System.out.println("Sending sbatch command to start job on seawulf");
         String path = System.getProperty("java.class.path").split("server")[0] + properties.getAlgorithmStaticWd();
-
+        System.out.println(path);
         buildDataFiles(path);
-        ProcessBuilder pb = new ProcessBuilder("python3", path + "algorithm.py " + job.getJobId());
+        ProcessBuilder pb = new ProcessBuilder("python3", "algorithm.py", String.valueOf(job.getJobId()));
         pb.inheritIO();
 
         System.out.println("Starting job on Server");
@@ -80,7 +87,7 @@ public class ServerHandler {
             ObjectMapper objmp = new ObjectMapper();
             swDataOutput.write("{\"data\": [" + objmp.writeValueAsString(job) +",");
 
-            FileReader fr = new FileReader(path + "/" + job.getState().name() + properties.getPrecinctDataSuffix());
+            FileReader fr = new FileReader("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static" + "/" + job.getState().name() + properties.getPrecinctDataSuffix());
             int c = fr.read();
 
             while (c != -1){

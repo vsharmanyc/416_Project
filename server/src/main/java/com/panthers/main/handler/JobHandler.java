@@ -110,7 +110,7 @@ public class JobHandler{
         dispatcherHandler.dispatchJob(job);
         System.out.println("Dispatched job #" + job.getJobId());
 
-        //jpaUserDao.save(job);
+        jpaUserDao.save(job);
 
         /*Object[] jobs = jpaUserDao.getAll().toArray();
         for(int i = 0; i < jobs.length; i++)
@@ -173,14 +173,16 @@ public class JobHandler{
     public List<Job> getJobHistory() {
         for (Job j: this.jobHistory){
             if (j.getSwJobNum() != -1){
-                boolean finished = monitorSeaWulfProgress(j);
-                if (finished){
-                    SeaWulfHandler swh = new SeaWulfHandler(j);
-                    //Job finished. Post process it.
-                    swh.getJobFromSeaWulf(j.getJobId());
-                }
-                else{
-                    System.out.println("Job #" + j.getJobId() + " still running.");
+                if (j.getJobStatus() == JobStatus.RUNNING){
+                    boolean finished = monitorSeaWulfProgress(j);
+                    if (finished){
+                        SeaWulfHandler swh = new SeaWulfHandler(j);
+                        //Job finished. Post process it.
+                        swh.getJobFromSeaWulf(j.getJobId());
+                    }
+                    else{
+                        System.out.println("Job #" + j.getJobId() + " still running.");
+                    }
                 }
             }
         }
@@ -416,11 +418,12 @@ public class JobHandler{
             bashOut = new FileWriter(bash);
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
-            String script = String.format(properties.getSwSummaryTransferFile(), properties.getNetID(), job.getJobId(), job.getJobId(),
-                    job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
-                    job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
-                    job.getState(), properties.getNetID(), job.getJobId(), job.getJobId(),
-                    job.getState(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword());
+            String script = String.format(properties.getSwSummaryTransferFile(), properties.getNetID(), job.getState().toString(), job.getJobId(),
+                    job.getJobId(), job.getState(), properties.getNetID(), job.getState().toString(), job.getJobId(),
+                    job.getJobId(), job.getState(), properties.getNetID(), job.getState().toString(), job.getJobId(),
+                    job.getJobId(), job.getState(), properties.getNetID(), job.getState().toString(), job.getJobId(),
+                    job.getJobId(), job.getState(),
+                    properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword(), properties.getNetID(), properties.getPassword());
             bashOut.write(script);
 
             bashOut.close();
