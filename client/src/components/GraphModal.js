@@ -76,7 +76,8 @@ class GraphModal extends Component {
                 { x: 5, label: "6", y: 0.3601981608689068 },
                 { x: 6, label: "7", y: 0.5504211717002624 },
                 { x: 7, label: "8", y: 0.5601521279761627 }
-            ]
+            ],
+        PA: []
         }
     }
 

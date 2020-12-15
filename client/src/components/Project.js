@@ -42,9 +42,10 @@ class Project extends Component {
             filter: this.initial_filter,
             geoJSON: null,
             geoData: {},
-            jobs: [{jobId: 11, state: 'NY', demographicGroups: [], jobStatus: 'COMPLETED'}, {jobId: 10, state: 'MD', demographicGroups: [], jobStatus: 'COMPLETED'}],
+            jobs: [],
             toggleModal: false,
             modalData: null,
+            showSideBar: true,
         }
     }
 
@@ -84,6 +85,10 @@ class Project extends Component {
 
     toggleModal = (modalData) =>{
         this.setState({toggleModal: !this.state.toggleModal, modalData: modalData})
+    }
+
+    toggleSideBar = () =>{
+        this.setState({showSideBar: !this.state.showSideBar})
     }
 
     getJobHistoryAndUpdateJobs = () => {
@@ -126,6 +131,8 @@ class Project extends Component {
                         filter={this.state.filter}
                         toggleModal={this.toggleModal}
                         getJobHistoryAndUpdateJobs={this.getJobHistoryAndUpdateJobs}
+                        toggleSideBar={this.toggleSideBar}
+                        showSideBar={this.state.showSideBar}
                     />
                 </div>
                 <Map
@@ -136,10 +143,11 @@ class Project extends Component {
                     updateFilter={this.updateFilter}
                     filter={this.state.filter}
                     resetFilter={this.resetFilter}
+                    showSideBar={this.state.showSideBar}
                 />
                 {this.state.toggleModal ?
                     <div style={modalStyle} >
-                        <GraphModal toggleModal={this.toggleModal} job={this.state.modalData}/>
+                        <GraphModal toggleModal={this.toggleModal} job={this.state.modalData} />
                     </div>
                     :
                     <></>

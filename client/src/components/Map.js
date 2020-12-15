@@ -204,7 +204,7 @@ class Map extends Component {
             });
         else if (state === 'Pennsylvania')
             this.map.flyTo({
-                center: [-78.750, 41.100],
+                center: [-79.15, 41.100],
                 zoom: 6.8,
                 essential: true
             });
@@ -492,10 +492,107 @@ class Map extends Component {
     }
 
     render() {
+        let boxStyle = { width: '30px', height: '18px', border: 'solid', borderWidth: '0.2px' };
+        let heatMapColorRange = [];
+        
+        if (this.props.filter.Heatmap.show) {
+            let colorRange = this.props.filter.Heatmap.colorRange;
+            let numBoxes = 11;
+            let center = parseInt(numBoxes / 2);
+            if (colorRange.avg !== '') {
+                for (let i = 0; i < numBoxes; i++) {
+                    heatMapColorRange.push(
+                        <div style={{ display: 'flex', flexDirection: 'row', height: '100%', width: '100%', margin: '1%' }}>
+                            <div style={boxStyle}>
+                                <div style={{
+                                    width: '100%', height: '100%', opacity: Math.abs(1 - (.20 * i)) * .75,
+                                    background: i === center ? colorRange.avg : i < center ? colorRange.low : colorRange.high
+                                }} />
+                            </div>
+                            <div style={{ fontFamily: 'monospace', marginLeft: '4%' }}>
+                                {i === center ? 'avg' : `avg ${i > center ? '+' : '-'} ` + Math.abs(100 - (20 * i)) + '%'}
+                            </div>
+                        </div>
+                    );
+                }
+            }
+            else {
+                for (let i = 0; i < 10; i++) {
+                    heatMapColorRange.push(
+                        <div style={{ display: 'flex', flexDirection: 'row', height: '100%', width: '100%', margin: '1%' }}>
+                            <div style={boxStyle}>
+                                <div style={{
+                                    width: '100%', height: '100%', opacity: (i + 1) / 11 * .75,
+                                    background: colorRange.high
+                                }} />
+                            </div>
+                            <div style={{ fontFamily: 'monospace', marginLeft: '4%' }}>
+                                {`${i * 10}% - ${i * 10 + 10}%`}
+                            </div>
+                        </div>
+                    );
+                }
+            }
+        }
+
+        let legendStyle = {
+            zIndex: 1, width: '10%', position: 'absolute', borderRadius: '3%',
+            bottom: '1%', left: this.props.showSideBar ? '25.5%' : '0.5%', padding: '0.5%', background: '#ebf3f5', border: 'solid', borderWidth: '2px'
+        }
+
+        let boundaryLabelStyle = { textAlign: 'start' };
 
         return (
-            <div style={this.props.style}
-                ref={el => this.mapContainer = el} />
+            <>
+                <div style={this.props.style}
+                    ref={el => this.mapContainer = el} />
+
+                <div style={legendStyle}>
+                    <div style={{
+                        width: '100%',
+                        height: '100%',
+                        fontFamily: 'monospace'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                            height: '100%',
+                        }}>
+                            {heatMapColorRange}
+
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <div>
+                                    <div style={boundaryLabelStyle}>
+                                        Enacted
+                                        <div style={{ padding: '2%', background: 'orange' }} />
+                                    </div>
+                                    <div style={boundaryLabelStyle}>
+                                        Random
+                                        <div style={{ padding: '2%', background: 'red' }} />
+                                    </div>
+                                    <div style={boundaryLabelStyle}>
+                                        Precincts
+                                        <div style={{ padding: '2%', background: 'black' }} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style={boundaryLabelStyle}>
+                                        Average
+                                        <div style={{ padding: '2.5%', background: 'green' }} />
+                                    </div>
+                                    <div style={boundaryLabelStyle}>
+                                        Extreme
+                                        <div style={{ padding: '2.5%', background: 'purple' }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>
+
+
         );
     }
 }
