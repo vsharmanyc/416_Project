@@ -13,7 +13,6 @@ class Sidebar extends Component {
         super(props);
         this.state = {
             tabNum: 0,
-            toggle: false,
         }
     }
 
@@ -27,15 +26,10 @@ class Sidebar extends Component {
         this.setState({ tabNum: tabNum });
     }
 
-    toggle = () => {
-        this.setState({ toggle: !this.state.toggle });
-    }
-
-
     render() {
         let toggleStyle = {
             position: "absolute",
-            left: !this.state.toggle ? '99.5%' : '',
+            left: this.props.showSideBar ? '99.5%' : '',
             top: '40%',
             height: '10%',
             width: '10%',
@@ -51,7 +45,7 @@ class Sidebar extends Component {
             alignItems: 'center'
         };
 
-        if (!this.state.toggle)
+        if (this.props.showSideBar)
             return (
                 <div style={{
                     height: '100%',
@@ -78,14 +72,14 @@ class Sidebar extends Component {
                                 getJobHistoryAndUpdateJobs={this.props.getJobHistoryAndUpdateJobs}/></Tab>
                         </Tabs>
                     </div>
-                    <div style={toggleStyle} onClick={this.toggle}>
+                    <div style={toggleStyle} onClick={this.props.toggleSideBar}>
                         {'🡄'}
                     </div>
                 </div>
             );
         else
             return (
-                <div style={toggleStyle} onClick={this.toggle}>
+                <div style={toggleStyle} onClick={this.props.toggleSideBar}>
                     {'🡆'}
                 </div>
             );
