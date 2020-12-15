@@ -367,8 +367,9 @@ public class RunResults {
                 parser.nextToken();
             }
             List<Double> mvaps = new ArrayList<>();
+            DecimalFormat df = new DecimalFormat("#.####");
             while (parser.nextToken() != JsonToken.END_ARRAY){
-                mvaps.add(parser.getDoubleValue());
+                mvaps.add(Double.parseDouble(df.format(parser.getDoubleValue())));
             }
             parser.close();
             String enactedPlans = mvaps.toString();
