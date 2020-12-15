@@ -85,7 +85,7 @@ public class JobController {
         dem.add(Demographic.ASIAN);
         dem.add(Demographic.NH_OR_OPI);
         dem.add(Demographic.AM_INDIAN_AK_NATIVE);
-        SeaWulfHandler swh = new SeaWulfHandler(new Job(States.PA, 10, dem, 0.034,
+        SeaWulfHandler swh = new SeaWulfHandler(new Job(States.NY, 120, dem, 0.034,
                "Very Compact"));
         swh.getJobFromSeaWulf(1);
     }

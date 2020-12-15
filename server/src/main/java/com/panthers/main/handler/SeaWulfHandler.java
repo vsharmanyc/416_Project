@@ -133,7 +133,7 @@ public class SeaWulfHandler {
     }
 
     private void buildDataFiles(String path){
-        File swData = new File(path + properties.getSwDataPrefix() + job.getJobId() + ".json");
+        File swData = new File(path + properties.getSwDataPrefix() + ".json");
         FileWriter swDataOutput;
         try {
             swDataOutput = new FileWriter(swData);
@@ -206,7 +206,7 @@ public class SeaWulfHandler {
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
             String script = String.format(properties.getBashScript(), properties.getNetID(), properties.getNetID(),
-                    properties.getPassword(), job.getState().toString(), job.getJobId(), job.getJobId(), job.getState().toString(),
+                    properties.getPassword(), job.getState().toString(), job.getJobId(), job.getState().toString(),
                     job.getJobId(), properties.getNetID(), properties.getPassword());
             bashOut.write(script);
 
@@ -247,7 +247,7 @@ public class SeaWulfHandler {
             ObjectMapper objmp = new ObjectMapper();
             //grabbing script from system properties file.
             String script = String.format(properties.getJobStartScript(), properties.getNetID(), properties.getNetID(),
-                    properties.getPassword(), job.getState().toString(), job.getJobId(), job.getJobId(), job.getState().toString(),
+                    properties.getPassword(), job.getState().toString(), job.getJobId(), job.getState().toString(),
                     job.getJobId(), properties.getNetID(), properties.getPassword(), properties.getNetID(),
                     properties.getNetID(), properties.getPassword(), job.getState().toString(), job.getJobId(),
                     properties.getNetID(), job.getState().toString(), job.getJobId(), properties.getNetID(),
@@ -301,11 +301,11 @@ public class SeaWulfHandler {
     }
 
     public void getJobFromSeaWulf(int swjobID){
-        this.job.setJobId(14);
+        this.job.setJobId(15);
         transferResultFiles(job);
         this.job.setJobStatus(JobStatus.POST_PROCESSING);
         List<DistrictingPlan> plans = new ArrayList<>();
-        for (int i = 0; i < 1; i++){
+        for (int i = 2; i < 3; i++){
             parseDataIntoRunResult(this.job, plans, i);
         }
         System.out.println("Created Run Results Object");
@@ -435,8 +435,8 @@ public class SeaWulfHandler {
             parser.nextToken();
             int k = 0;
             while (parser.getCurrentToken() != JsonToken.END_ARRAY) {
-//                if (i == 1 && k == 33)
-//                    break;
+                if (i == 2 && k == 120)
+                    break;
                 while (parser.getCurrentToken() != JsonToken.START_OBJECT && parser.getCurrentToken() != null) {
                     parser.nextToken();
                 }
