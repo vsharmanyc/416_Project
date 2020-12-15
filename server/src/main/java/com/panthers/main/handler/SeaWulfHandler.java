@@ -301,11 +301,11 @@ public class SeaWulfHandler {
     }
 
     public void getJobFromSeaWulf(int swjobID){
-        this.job.setJobId(10);
+        this.job.setJobId(11);
         transferResultFiles(job);
         this.job.setJobStatus(JobStatus.POST_PROCESSING);
         List<DistrictingPlan> plans = new ArrayList<>();
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 2; i++){
             parseDataIntoRunResult(this.job, plans, i);
         }
         System.out.println("Created Run Results Object");
@@ -435,7 +435,6 @@ public class SeaWulfHandler {
             parser.nextToken();
             int k = 0;
             while (parser.getCurrentToken() != JsonToken.END_ARRAY) {
-//                System.out.println(k);
 //                if (i == 1 && k == 33)
 //                    break;
                 while (parser.getCurrentToken() != JsonToken.START_OBJECT && parser.getCurrentToken() != null) {

@@ -1,21 +1,24 @@
 package com.panthers.main.jobmodel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.panthers.main.dataaccess.SeaWulfProperties;
 import com.panthers.main.jpa.Dao;
 import com.panthers.main.jpa.JpaJobDao;
+import com.panthers.main.mapmodel.Demographic;
 import com.panthers.main.mapmodel.District;
+import com.panthers.main.mapmodel.Population;
 import com.panthers.main.mapmodel.Precinct;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.file.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -353,6 +356,30 @@ public class RunResults {
         }
     }
 
+    public void getEnactedPlanValuesFromSummary(){
+        System.out.println("Aggregating data from SeaWulf run results.");
+        JsonFactory jsonfactory = new JsonFactory();
+        File source = new File("/Users/james/Documents/Code/University/416/416_Project/server/src/main/resources/static/results/"
+                 + "jobID" + this.job.getJobId() + "_" + this.job.getState() + ".json");
+        try {
+            JsonParser parser = jsonfactory.createJsonParser(source);
+            while (parser.getText() != "enactedPlanMVAPs") {
+                parser.nextToken();
+            }
+            List<Double> mvaps = new ArrayList<>();
+            while (parser.nextToken() != JsonToken.END_ARRAY){
+                mvaps.add(parser.getDoubleValue());
+            }
+            parser.close();
+            String enactedPlans = mvaps.toString();
+            this.job.setEnactedPlanData(enactedPlans);
+            jpaUserDao.update(this.job);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void writeSummaryToSeaWulf(){
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -379,6 +406,8 @@ public class RunResults {
                             if (i == 5){
                                 System.out.println("Summary file has been generated. Transferring summary files to the seawulf");
                                 String transferPath = System.getProperty("java.class.path").split("server")[0] + properties.getServerStaticWd();
+
+                                getEnactedPlanValuesFromSummary();
 
                                 buildTransferToSWScript(transferPath);
                                 ProcessBuilder pb = new ProcessBuilder("expect", transferPath + properties.getTransferSummaryFilesToSeaWulfFile());
