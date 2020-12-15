@@ -18,13 +18,13 @@ class Subgraph:
                          node.COUNTY)
             if "AFRICAN_AMERICAN" in minorities:
                 p.set_aa(node.BTOT, node.BVAP)
-            elif "ASIAN" in minorities:
+            if "ASIAN" in minorities:
                 p.set_asian(node.AIANTOT, node.AIANVAP)
-            elif "HISPANIC_LATINO" in minorities:
+            if "HISPANIC_LATINO" in minorities:
                 p.set_h(node.HTOT, node.HVAP)
-            elif "AM_INDIAN_AK_NATIVE" in minorities:
+            if "AM_INDIAN_AK_NATIVE" in minorities:
                 p.set_aa(node.ATOT, node.AVAP)
-            elif "NH_OR_OPI" in minorities:
+            if "NH_OR_OPI" in minorities:
                 p.set_nhop(node.NHOPTOT, node.NHOPVAP)
             precincts.append(p)
         return precincts
@@ -37,13 +37,13 @@ class Subgraph:
             for minority in minorities:
                 if minority == "AFRICAN_AMERICAN":
                     mvap += precinct.BVAP
-                elif minority == "ASIAN":
+                if minority == "ASIAN":
                     mvap += precinct.AIANVAP
-                elif minority == "HISPANIC_LATINO":
+                if minority == "HISPANIC_LATINO":
                     mvap += precinct.HVAP
-                elif minority == "AM_INDIAN_AK_NATIVE":
+                if minority == "AM_INDIAN_AK_NATIVE":
                     mvap += precinct.AVAP
-                elif minority == "NH_OR_OPI":
+                if minority == "NH_OR_OPI":
                     mvap += precinct.NHOPVAP
             tvap += precinct.TOTVAP
         if tvap != 0:

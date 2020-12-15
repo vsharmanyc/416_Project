@@ -1,7 +1,12 @@
 import json
 import random
 import sys
+import cProfile
+import re
 from Node import Node
+import pstats
+from Request import Request
+from pstats import SortKey
 from Request import Request
 # import networkx as nx
 # import matplotlib.pyplot as plt
@@ -10,9 +15,19 @@ from Graph import Graph
 from Subgraph import Subgraph
 import datetime
 
-debug = False
+debug = True
 ideal_population_per_district = 0
 avoid_clusters = {}  # when we find pairs of clusters where we cant find a suitable edge, we do not use them.
+accepted_edge_count = 0
+improved_edge_count = 0
+worse_edge_count = 0
+iterations = 0
+threshold_1 = 0
+threshold_2 = 0
+pop_thresh1 = 0
+pop_thresh2 = 0
+compactness = [0.0, 0.0]
+districts = 0
 
 
 def entry_point():
@@ -21,11 +36,51 @@ def entry_point():
     n = data[0]
     nodes = filter_nodes(n)
     request = data[1]
+    parse_properties(request)
+
+    compactness = request.compactness
     graph = prepare_seed(nodes)
     # write_to_results_file(graph, request)
     reset_avoid_list(graph)
     algorithm(graph, request)
     write_to_results_file(graph, request)
+
+
+def parse_properties(req):
+    global iterations
+    global threshold_1
+    global threshold_2
+    global pop_thresh1
+    global pop_thresh2
+    global compactness
+    global districts
+    f = open("algorithm.properties", "r")
+    iterations = int(f.readline())
+    threshold_1 = int(f.readline())
+    threshold_2 = int(f.readline())
+    pop_thresh1 = float(f.readline())
+    pop_thresh2 = float(f.readline())
+    if req.compactness == "Not Compact":
+        compactness[0] = float(f.readline())
+        compactness[1] = float(f.readline())
+    elif req.compactness == "Somewhat Compact":
+        f.readline()
+        compactness[0] = float(f.readline())
+        compactness[1] = float(f.readline())
+    else:
+        f.readline()
+        f.readline()
+        compactness[0] = float(f.readline())
+        compactness[1] = float(f.readline())
+    if req.state == "NY":
+        districts = 29
+    elif req.state == "PA":
+        districts = 19
+    else:
+        districts = 8
+    print(compactness)
+    print(districts)
+    f.close()
 
 
 def enter_after_seed():
@@ -35,7 +90,7 @@ def enter_after_seed():
     for clust in g.nodes:
         for node in clust.nodes:
             ideal_population_per_district += node.TOTAL
-    ideal_population_per_district = ideal_population_per_district / 19
+    ideal_population_per_district = ideal_population_per_district / districts
     if debug:
         print("Ideal population per district:", ideal_population_per_district)
     algorithm(g, request)
@@ -60,7 +115,7 @@ def prepare_seed(nodes):
     global ideal_population_per_district
     for node in nodes:
         ideal_population_per_district += node.TOTAL
-    ideal_population_per_district = ideal_population_per_district / 19
+    ideal_population_per_district = ideal_population_per_district / districts
     if debug:
         print("Ideal population per district:", ideal_population_per_district)
     # parsing nodes into clusters
@@ -92,7 +147,7 @@ def test_from_seed():
 
 
 def parse_data_from_file():
-    f = open("swData_job1.json")
+    f = open("swData.json")
     # data = json.load(f)
     data = json.load(f)
     job = data["data"][0]
@@ -157,12 +212,12 @@ def algorithm(graph, request):
     two = 0
     no_edge = 0
     not_found = 0
-    pop_diff_target = 0.2
-    while i <= 100:
-        if i > 80:
-            pop_diff_target = 0.1
-        if i > 90:
-            pop_diff_target = 0.017
+    pop_diff_target = pop_thresh1
+    while i <= iterations:
+        if i > threshold_2:
+            pop_diff_target = pop_thresh2
+        if i > threshold_1:
+            pop_diff_target = request.popEqThreshold / 2
         if debug:
             print("================================================ITERATION", i,
                   "================================================")
@@ -204,6 +259,11 @@ def algorithm(graph, request):
     f = open(fname, "a")
     f.write(output + "\n")
     f.close()
+    total_edges = accepted_edge_count + improved_edge_count + worse_edge_count
+    print("<====================EDGE CUT PERFORMACE====================>")
+    print("- Accepted Edges found:", accepted_edge_count, "-->", (accepted_edge_count/total_edges) * 100, "%")
+    print("- Improved Edges found:", improved_edge_count, "-->", (improved_edge_count/total_edges) * 100, "%")
+    print("- Worse Edges found:", worse_edge_count, "-->", (worse_edge_count/total_edges) * 100, "%")
 
 
 def main_algorithm_loop(graph, pop_diff_target):
@@ -248,7 +308,7 @@ def determine_seed_districting(graph):
     # wrap node in cluster
     ext_clusts = []
     # combine clusters randomly until we have target districts
-    while len(graph.nodes) != 19:
+    while len(graph.nodes) != districts:
         clust = graph.nodes[random.randrange(0, len(graph.nodes))]
         neighs = graph.get_neighbors(clust)
         if not neighs:
@@ -409,6 +469,9 @@ def find_acceptable_edges(clust, prev_clusts, target_diff, ideal_pop, prev_compa
 
 
 def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compact):
+    global accepted_edge_count
+    global improved_edge_count
+    global worse_edge_count
     edges = clust.spanning_tree_edges.copy()
     st_dict = clust.mst_neighbors_dict.copy()
     prev_clusts_diff = calculate_previous_clusters_pop_diff(prev_clusts, ideal_pop)
@@ -447,6 +510,7 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
         #     return (edge, nodes1, nodes2)
         check = check_new_pop_range(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff)
         if check == "Accepted":
+            accepted_edge_count += 1
             # print("AN ACCEPTED EDGE WAS FOUND")
             compact_info1 = find_compactness(res1[2][0], res1[2][1])
             other_nodes = get_other_side_nodes(clust.nodes, nodes1)
@@ -456,8 +520,11 @@ def find_acceptable_edge(clust, prev_clusts, target_diff, ideal_pop, prev_compac
                     print("EDGE ACCEPTED:", edge)
                 return edge, list(nodes1), other_nodes[0]
         elif check == "Improved":
+            improved_edge_count += 1
             improved[edge] = res1
             continue
+        else:
+            worse_edge_count += 1
         # if check_new_pop(pop1, pop2, ideal_pop, target_diff, prev_clusts_diff):
         #     # check if compactness is OK too
         #     compact_info1 = find_compactness(res1[2][0], res1[2][1])
@@ -643,27 +710,26 @@ def check_new_compactness(vis, unvis, prev_compact):
     # if debug:
     #     print("Unvisited: ", unvis_ratio)
     #     print("Visited: ", vis_ratio)
-    if user_compact == "Somewhat Compact":
-        if 0.3 <= unvis_ratio <= 0.6 and 0.3 <= vis_ratio <= 0.6:
-            if debug:
-                print("ACCEPTED: Compactness is", unvis_ratio, vis_ratio)
-            return True
-        elif abs(unvis_ratio - 0.6) <= abs(prev_compact[0] - 0.6) and abs(vis_ratio - 0.6) <= abs(
-                prev_compact[1] - 0.6) or \
-                abs(unvis_ratio - 0.99) <= abs(prev_compact[1] - 0.99) and abs(vis_ratio - 0.99) <= abs(
-            prev_compact[0] - 0.99) or \
-                abs(unvis_ratio - 0.99) <= abs(prev_compact[0] - 0.99) and abs(vis_ratio - 0.99) <= abs(
-            prev_compact[1] - 0.99) or \
-                abs(unvis_ratio - 0.6) <= abs(prev_compact[1] - 0.6) and abs(vis_ratio - 0.6) <= abs(
-            prev_compact[0] - 0.6):
-            if debug:
-                print("IMPROVED: Compactness is", unvis_ratio, vis_ratio)
-            return True
-        elif (unvis_ratio+vis_ratio-1.98) <= (prev_compact[0]+prev_compact[1]-1.98) and \
-            (unvis_ratio + vis_ratio - 1.2) <= (prev_compact[0] + prev_compact[1] - 1.2):
-            if debug:
-                print("IMPROVED: Compactness is", unvis_ratio, vis_ratio)
-            return True
+    if compactness[0] <= unvis_ratio <= compactness[1] and compactness[0] <= vis_ratio <= compactness[1]:
+        if debug:
+            print("ACCEPTED: Compactness is", unvis_ratio, vis_ratio)
+        return True
+    elif abs(unvis_ratio - compactness[0]) <= abs(prev_compact[0] - compactness[0]) and abs(vis_ratio -compactness[0]) <= abs(
+            prev_compact[1] - compactness[0]) or \
+            abs(unvis_ratio - compactness[1]) <= abs(prev_compact[1] - compactness[1]) and abs(vis_ratio - compactness[1]) <= abs(
+        prev_compact[0] - compactness[1]) or \
+            abs(unvis_ratio - compactness[1]) <= abs(prev_compact[0] - compactness[1]) and abs(vis_ratio - compactness[1]) <= abs(
+        prev_compact[1] - compactness[1]) or \
+            abs(unvis_ratio - compactness[0]) <= abs(prev_compact[1] -compactness[0]) and abs(vis_ratio -compactness[0]) <= abs(
+        prev_compact[0] - compactness[0]):
+        if debug:
+            print("IMPROVED: Compactness is", unvis_ratio, vis_ratio)
+        return True
+    elif (unvis_ratio+vis_ratio-(compactness[1]*2)) <= (prev_compact[0]+prev_compact[1]-(compactness[1]*2)) and \
+        (unvis_ratio + vis_ratio - (compactness[0]*2)) <= (prev_compact[0] + prev_compact[1] - (compactness[0]*2)):
+        if debug:
+            print("IMPROVED: Compactness is", unvis_ratio, vis_ratio)
+        return True
     # if debug:
     #     print("Compactness is", unvis_ratio, vis_ratio)
     return False
@@ -955,5 +1021,8 @@ def write_to_results_file(graph, request):
     results.close()
 
 
-entry_point()
+cProfile.run('entry_point()', 'stats')
+p = pstats.Stats('stats').strip_dirs()
+p.sort_stats(SortKey.TIME)
+p.print_stats()
 # enter_after_seed()
