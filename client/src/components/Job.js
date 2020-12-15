@@ -40,6 +40,25 @@ class Job extends Component {
             .then(response => this.props.updateJobs(response));
     }
 
+    enumToDemographic = (demoEnum) => {
+        switch (demoEnum) {
+            case 'WHITE':
+                return 'White';
+            case 'AFRICAN_AMERICAN':
+                return 'Black';
+            case 'ASIAN':
+                return 'Asian';
+            case 'HISPANIC_LATINO':
+                return 'Hispanic or Latino';
+            case 'AM_INDIAN_AK_NATIVE':
+                return 'American Indian or Alaska Native';
+            case 'NH_OR_OPI':
+                return 'Native Hawaiian or Other Pacific Islander';
+            default:
+                return 'Other'
+        }
+    }
+
     toggleDetails = (e) => {
         e.preventDefault();
         this.setState({ toggle: !this.state.toggle })
@@ -85,7 +104,7 @@ class Job extends Component {
                             <div></div>
                             <p >{'Number of Districtings: ' + this.strNumWithCommas(this.props.job.numDistrictings)}</p>
                             <p>Demographics:</p>
-                            <ul>{this.props.job.demographicGroups.map((demoEnum) => <li>{demoEnum}</li>)}</ul>
+                            <ul>{this.props.job.demographicGroups.map((demoEnum) => <li>{this.enumToDemographic(demoEnum)}</li>)}</ul>
                             <p >{'Compactness: ' + this.props.job.compactness}</p>
                             <p >{'Population Equation Threshold: ' + this.props.job.popEqThreshold}</p>
                         </>
