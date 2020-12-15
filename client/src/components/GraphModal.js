@@ -84,7 +84,7 @@ class GraphModal extends Component {
         let job = this.props.job;
 
         if(job.enactedPlanData !== '')
-            this.enactedPlans[job.state] = job.averagePlanData.substring(1, job.enactedPlanData.length - 1).split(',').map((point, i) => ({ x: i, label: '' + (i + 1), y: parseFloat(point) }));
+            this.enactedPlans[job.state] = job.enactedPlanData.substring(1, job.enactedPlanData.length - 1).split(',').map((point, i) => ({ x: i, label: '' + (i + 1), y: parseFloat(point) }));
 
         let str = job.boxPlotData.substring(1, job.boxPlotData.length - 1);
         let dataPoints = str.split(',').map((points) => {
@@ -92,11 +92,11 @@ class GraphModal extends Component {
             return { label: "" + stats[0], y: [stats[1], stats[2], stats[3], stats[4], stats[5]] };
         });
 
-        let demograhics = "VAP (Voting Age Population) for: ";
+        let demograhics = "VAP (Voting Age Population) for:";
         job.demographicGroups.forEach(demoEnum => {
-            demograhics += this.enumToDemographic(demoEnum) + ' ,'
+            demograhics += ' ' + this.enumToDemographic(demoEnum) + ','
         });
-        demograhics = demograhics.substring(0, demograhics.length - 1) + 'demographic(s)';
+        demograhics = demograhics.substring(0, demograhics.length - 1) + ' demographic(s)';
 
         
 
