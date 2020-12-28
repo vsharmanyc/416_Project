@@ -1,9 +1,9 @@
 # A Deeper Look into Gerrymandering in the United States
 ### Team Members
-* Harsh Vig - Front End, Server-Front End Connection
+* Harsh Vig - Front End, Server-Front End Communication
 * James Lungu - Server-Side, Algorithm, Supercomputer Connectivity
 * Travis Li - Preprocessing of Data, Post-Processing of Districting Plans
-* Vasu Sharma - Front End, Server-Front End Connection
+* Vasu Sharma - Front End, Server-Front End Communication
 
 ## Quick Information
 This project was part of our Stony Brook Computer Science Capstone Course, CSE 416. We created a Full-Stack Web Application that generated completely random congressional districtings for three states; New York, Pennsylvania, and Maryland. These random distractions were compared to the enacted plans, in order for us to determine whether or not the state seemed to have traces of Gerrymandering in their congressional districting plans. 
