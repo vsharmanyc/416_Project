@@ -1,0 +1,3 @@
+[config]
+state=PA
+file=./PA/PA_with_district_FINAL/PA_normalized_IDs/PA_normalized_IDs.shp

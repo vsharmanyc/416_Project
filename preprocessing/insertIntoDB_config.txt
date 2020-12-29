@@ -1,0 +1,9 @@
+[database]
+host=mysqlhost
+user=username
+password=password
+db=database
+[files]
+states=state_csv.csv
+districts=PA_district_with_pop.csv
+precincts=precinct_csv.csv
